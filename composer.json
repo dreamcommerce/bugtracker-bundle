@@ -1,0 +1,26 @@
+{
+  "name": "dreamcommerce/bugtracker",
+  "type": "library",
+  "description": "Bugtracker",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.5.9",
+    "psr/log": "1.0.0",
+    "symfony/debug": "^3.0",
+    "symfony/polyfill-php70": "^1.0"
+  },
+  "suggest": {
+    "monolog/monolog": "Allows more advanced logging of the application flow"
+  },
+  "autoload": {
+    "psr-4": {
+      "DreamCommerce\\": "src/DreamCommerce"
+    }
+  },
+  "authors": [
+    {
+      "name": "Michał Korus",
+      "email": "michal.korus@shoper.pl"
+    }
+  ]
+}
