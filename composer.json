@@ -9,6 +9,9 @@
     "symfony/debug": "^3.0",
     "symfony/polyfill-php70": "^1.0"
   },
+  "require-dev": {
+    "monolog/monolog": "^1.19"
+  },
   "suggest": {
     "monolog/monolog": "Allows more advanced logging of the application flow"
   },

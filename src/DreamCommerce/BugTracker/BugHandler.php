@@ -4,6 +4,9 @@ namespace DreamCommerce\BugTracker;
 
 use DreamCommerce\BugTracker\Collector\CollectorInterface;
 use DreamCommerce\BugTracker\Collector\CollectorQueue;
+use DreamCommerce\BugTracker\Exception\ContextInterface;
+use DreamCommerce\BugTracker\Exception\RuntimeException;
+use DreamCommerce\BugTracker\Handler\HelperHandler;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;
@@ -12,9 +15,9 @@ use Symfony\Component\Debug\ExceptionHandler;
 
 class BugHandler
 {
-    const PRIORITY_LOW = -512;
+    const PRIORITY_LOW = -100;
     const PRIORITY_NORMAL = 0;
-    const PRIORITY_HIGH = 512;
+    const PRIORITY_HIGH = 100;
 
     /**
      * @var int
@@ -32,6 +35,11 @@ class BugHandler
     private static $_enabled = false;
 
     /**
+     * @var array
+     */
+    private static $_logLevels;
+
+    /**
      * Enables the debug tools.
      *
      * This method registers an error handler and an exception handler.
@@ -39,8 +47,8 @@ class BugHandler
      * If the Symfony ClassLoader component is available, a special
      * class loader is also registered.
      *
-     * @param int  $errorReportingLevel The level of error reporting you want
-     * @param bool $displayErrors       Whether to display errors (for development) or just log them (for production)
+     * @param int $errorReportingLevel The level of error reporting you want
+     * @param bool $displayErrors Whether to display errors (for development) or just log them (for production)
      */
     public static function enable($errorReportingLevel = E_ALL, $displayErrors = true)
     {
@@ -66,7 +74,7 @@ class BugHandler
         if ($displayErrors) {
             ErrorHandler::register(new ErrorHandler(new BufferingLogger()));
         } else {
-            ErrorHandler::register()->throwAt(0, true);
+            ErrorHandler::register(new HelperHandler())->throwAt(0, true);
         }
 
         DebugClassLoader::enable();
@@ -99,7 +107,7 @@ class BugHandler
                 'collector' => $collector,
                 'level' => $level
             ),
-        $priority);
+            $priority);
     }
 
     /**
@@ -115,6 +123,9 @@ class BugHandler
         }
     }
 
+    /**
+     * Remove all collectors from bugtracker
+     */
     public static function unregisterAllCollectors()
     {
         static::$_collectorQueue = null;
@@ -127,18 +138,18 @@ class BugHandler
      */
     public static function getCollectors($collector = null)
     {
-        if($collector === null) {
+        if ($collector === null) {
             return static::$_collectorQueue->toArray();
         }
 
         $result = array();
-        foreach(clone static::$_collectorQueue as $data) {
-            if(is_object($collector)) {
-                if($collector === $data['collector']) {
+        foreach (clone static::$_collectorQueue as $data) {
+            if (is_object($collector)) {
+                if ($collector === $data['collector']) {
                     $result[] = $data;
                 }
-            } elseif(is_string($collector)) {
-                if(get_class($data['collector']) == $collector) {
+            } elseif (is_string($collector)) {
+                if (get_class($data['collector']) == $collector) {
                     $result[] = $data;
                 }
             } else {
@@ -151,45 +162,129 @@ class BugHandler
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param string $level
+     * @param string|int $level
      * @param array $context
      * @return bool
      */
     public static function handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if(static::$_collectorQueue === null || count(static::$_collectorQueue) === 0) {
+        if(!is_object($exc)) {
+            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
+        }
+
+        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
+            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: ' . get_class($exc) . ')');
+        }
+
+        $levelPriority = static::getLogLevelPriority($level);
+        if (static::$_collectorQueue === null || count(static::$_collectorQueue) === 0) {
             return false;
         }
 
+        $context = array_merge($context, static::getContext($exc));
         $isCollected = false;
-        foreach(clone static::$_collectorQueue as $data) {
-            if($data['level'] < $level) {
+        foreach (clone static::$_collectorQueue as $data) {
+            $collectorLevelPriority = static::getLogLevelPriority($data['level']);
+            if ($collectorLevelPriority > $levelPriority) {
                 continue;
             }
 
             /** @var CollectorInterface $collector */
             $collector = $data['collector'];
-            if(!$collector->hasSupportException($exc, $level)) {
+            if (!$collector->hasSupportException($exc, $level, $context)) {
                 continue;
             }
 
             try {
                 $result = $collector->handle($exc, $level, $context);
-                if($isCollected === false && $collector->isCollected()) {
+                if ($isCollected === false && $collector->isCollected()) {
                     $isCollected = true;
                 }
-                if($result === true) {
+                if ($result === true) {
                     break;
                 }
-            } catch(\Exception $exc) {
+            } catch (\Exception $exc) {
                 static::unregisterCollector($collector);
-                static::handle($exc);
+                static::handle($exc, LogLevel::CRITICAL);
             } catch (\Throwable $exc) {
                 static::unregisterCollector($collector);
-                static::handle($exc);
+                static::handle($exc, LogLevel::CRITICAL);
             }
         }
 
         return $isCollected;
+    }
+
+    /**
+     * @param \Exception|\Throwable $exc
+     * @return array
+     */
+    public static function getContext($exc)
+    {
+        if(!is_object($exc)) {
+            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
+        }
+
+        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
+            throw new RuntimeException('Unsupported class of object (expected: \Exception or \Throwable; got: ' . get_class($exc) . ')');
+        }
+
+        $context = array();
+        if($exc instanceof ContextInterface) {
+            $context = $exc->getContext();
+        }
+
+        return array_merge(
+            $context,
+            array(
+                'message' => $exc->getMessage(),
+                'code' => $exc->getCode(),
+                'line' => $exc->getLine(),
+                'file' => $exc->getFile()
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public static function getLogLevelPriorities()
+    {
+        if(static::$_logLevels === null) {
+            static::$_logLevels = array_flip(
+                array(
+                    LogLevel::DEBUG,
+                    LogLevel::INFO,
+                    LogLevel::NOTICE,
+                    LogLevel::WARNING,
+                    LogLevel::ERROR,
+                    LogLevel::CRITICAL,
+                    LogLevel::ALERT,
+                    LogLevel::EMERGENCY
+                )
+            );
+        }
+
+        return static::$_logLevels;
+    }
+
+    /**
+     * @param string $level
+     * @return int
+     */
+    public static function getLogLevelPriority($level)
+    {
+        if(is_string($level)) {
+            $level = strtolower($level);
+            $prioLevels = static::getLogLevelPriorities();
+            if (!isset($prioLevels[$level])) {
+                throw new RuntimeException('Unknown log level "' . $level . '"');
+            }
+            $level = $prioLevels[$level];
+        } else {
+            throw new RuntimeException('Unsupported type of variable (expected: string; got: ' . gettype($level) . ')');
+        }
+
+        return (int)$level;
     }
 }

@@ -37,6 +37,8 @@ abstract class BaseCollector implements CollectorInterface
      */
     public function hasSupportException($exc, $level, array $context = array())
     {
+
+
         if($this->_isLocked) {
             return false;
         }
@@ -162,12 +164,24 @@ abstract class BaseCollector implements CollectorInterface
             }
 
             if(property_exists($this, $option)) {
-                call_user_func(array($this, $option), $value);
+                $this->$camelCase = $value;
                 continue;
             }
 
             if(property_exists($this, '_' . $option)) {
-                call_user_func(array($this, '_' . $option), $value);
+                $this->$camelCase = $value;
+                continue;
+            }
+
+            $camelCase = lcfirst($camelCase);
+            if(property_exists($this, $camelCase)) {
+                $this->$camelCase = $value;
+                continue;
+            }
+
+            $camelCase = '_' . $camelCase;
+            if(property_exists($this, $camelCase)) {
+                $this->$camelCase = $value;
                 continue;
             }
         }
