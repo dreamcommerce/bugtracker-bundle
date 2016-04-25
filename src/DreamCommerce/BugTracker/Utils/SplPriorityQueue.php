@@ -1,8 +1,10 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Collector;
+namespace DreamCommerce\BugTracker\Utils;
 
-class CollectorQueue extends \SplPriorityQueue
+use DreamCommerce\BugTracker\Collector\CollectorInterface;
+
+class SplPriorityQueue extends \SplPriorityQueue
 {
     protected $_recoverList = array();
 

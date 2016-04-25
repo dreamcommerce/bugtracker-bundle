@@ -10,9 +10,11 @@ use Monolog\Handler\StreamHandler;
 $logger = new Logger('test');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/logs/php_error.log', Logger::WARNING));
 
-BugHandler::registerCollector(new Psr3Collector(array(
+$collector = new Psr3Collector(array(
     'logger' => $logger
-)));
+));
+
 BugHandler::enable(E_ALL, false);
+BugHandler::setCollector($collector);
 
 trigger_error("Test user error", E_USER_ERROR);

@@ -4,6 +4,7 @@ require_once '../vendor/autoload.php';
 
 use DreamCommerce\BugTracker\BugHandler;
 use DreamCommerce\BugTracker\Collector\Psr3Collector;
+use DreamCommerce\BugTracker\Collector\QueueCollector;
 use DreamCommerce\BugTracker\Exception\ContextInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -49,21 +50,21 @@ class SecondCollector extends Psr3Collector
     }
 }
 
+$queue = new QueueCollector();
+
 $logger = new Logger('test');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/logs/first_advanced.log'));
 
-BugHandler::registerCollector(new FirstCollector(array(
+$queue->registerCollector(new FirstCollector(array(
     'logger' => $logger
 )));
 
 $logger2 = new Logger('test');
 $logger2->pushHandler(new StreamHandler(__DIR__ . '/logs/second_advanced.log'));
 
-BugHandler::registerCollector(new SecondCollector(array(
+$queue->registerCollector(new SecondCollector(array(
     'logger' => $logger2
 )));
-
-BugHandler::enable(E_ALL, false);
 
 try {
     throw new TestException('test');

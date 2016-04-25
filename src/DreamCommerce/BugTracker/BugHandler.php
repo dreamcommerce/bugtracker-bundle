@@ -3,36 +3,29 @@
 namespace DreamCommerce\BugTracker;
 
 use DreamCommerce\BugTracker\Collector\CollectorInterface;
-use DreamCommerce\BugTracker\Collector\CollectorQueue;
 use DreamCommerce\BugTracker\Exception\ContextInterface;
 use DreamCommerce\BugTracker\Exception\RuntimeException;
-use DreamCommerce\BugTracker\Handler\HelperHandler;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
 
-class BugHandler
+class BugHandler extends ErrorHandler
 {
     const PRIORITY_LOW = -100;
     const PRIORITY_NORMAL = 0;
     const PRIORITY_HIGH = 100;
 
     /**
-     * @var int
-     */
-    private static $_collectorSerials = PHP_INT_MAX;
-
-    /**
-     * @var CollectorQueue
-     */
-    private static $_collectorQueue;
-
-    /**
      * @var bool
      */
     private static $_enabled = false;
+
+    /**
+     * @var CollectorInterface
+     */
+    private static $_collector;
 
     /**
      * @var array
@@ -72,147 +65,12 @@ class BugHandler
             ini_set('display_errors', 1);
         }
         if ($displayErrors) {
-            ErrorHandler::register(new ErrorHandler(new BufferingLogger()));
+            ErrorHandler::register(new static(new BufferingLogger()));
         } else {
-            ErrorHandler::register(new HelperHandler())->throwAt(0, true);
+            ErrorHandler::register(new static())->throwAt(0, true);
         }
 
         DebugClassLoader::enable();
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isEnabled()
-    {
-        return static::$_enabled;
-    }
-
-    /**
-     * @param CollectorInterface $collector
-     * @param string $level
-     * @param int $priority
-     */
-    public static function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0)
-    {
-        if (static::$_collectorQueue === null) {
-            static::$_collectorQueue = new CollectorQueue();
-        }
-        if (!is_array($priority)) {
-            $priority = array($priority, static::$_collectorSerials--);
-        }
-
-        static::$_collectorQueue->insert(
-            array(
-                'collector' => $collector,
-                'level' => $level
-            ),
-            $priority);
-    }
-
-    /**
-     * @param string|CollectorInterface $collector
-     * @throws \Exception
-     */
-    public static function unregisterCollector($collector)
-    {
-        if (static::$_collectorQueue === null) {
-            static::$_collectorQueue = new CollectorQueue();
-        } else {
-            static::$_collectorQueue->remove($collector);
-        }
-    }
-
-    /**
-     * Remove all collectors from bugtracker
-     */
-    public static function unregisterAllCollectors()
-    {
-        static::$_collectorQueue = null;
-    }
-
-    /**
-     * @param string|CollectorInterface|null $collector
-     * @return array
-     * @throws \Exception
-     */
-    public static function getCollectors($collector = null)
-    {
-        if ($collector === null) {
-            return static::$_collectorQueue->toArray();
-        }
-
-        $result = array();
-        foreach (clone static::$_collectorQueue as $data) {
-            if (is_object($collector)) {
-                if ($collector === $data['collector']) {
-                    $result[] = $data;
-                }
-            } elseif (is_string($collector)) {
-                if (get_class($data['collector']) == $collector) {
-                    $result[] = $data;
-                }
-            } else {
-                throw new \RuntimeException('Unsupported type of variable');
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param \Exception|\Throwable $exc
-     * @param string|int $level
-     * @param array $context
-     * @return bool
-     */
-    public static function handle($exc, $level = LogLevel::WARNING, array $context = array())
-    {
-        if(!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
-        }
-
-        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: ' . get_class($exc) . ')');
-        }
-
-        $levelPriority = static::getLogLevelPriority($level);
-        if (static::$_collectorQueue === null || count(static::$_collectorQueue) === 0) {
-            return false;
-        }
-
-        $context = array_merge($context, static::getContext($exc));
-        $isCollected = false;
-        foreach (clone static::$_collectorQueue as $data) {
-            $collectorLevelPriority = static::getLogLevelPriority($data['level']);
-            if ($collectorLevelPriority > $levelPriority) {
-                continue;
-            }
-
-            /** @var CollectorInterface $collector */
-            $collector = $data['collector'];
-            if (!$collector->hasSupportException($exc, $level, $context)) {
-                continue;
-            }
-
-            try {
-                $result = $collector->handle($exc, $level, $context);
-                if ($isCollected === false && $collector->isCollected()) {
-                    $isCollected = true;
-                }
-                if ($result === true) {
-                    break;
-                }
-            } catch (\Exception $exc) {
-                static::unregisterCollector($collector);
-                static::handle($exc, LogLevel::CRITICAL);
-            } catch (\Throwable $exc) {
-                static::unregisterCollector($collector);
-                static::handle($exc, LogLevel::CRITICAL);
-            }
-        }
-
-        return $isCollected;
     }
 
     /**
@@ -269,6 +127,22 @@ class BugHandler
     }
 
     /**
+     * @return CollectorInterface|null
+     */
+    public static function getCollector()
+    {
+        return self::$_collector;
+    }
+
+    /**
+     * @param CollectorInterface $collector
+     */
+    public static function setCollector(CollectorInterface $collector)
+    {
+        self::$_collector = $collector;
+    }
+
+    /**
      * @param string $level
      * @return int
      */
@@ -286,5 +160,17 @@ class BugHandler
         }
 
         return (int)$level;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleException($exception, array $error = null)
+    {
+        if(static::$_collector === null) {
+            parent::handleException($exception, $error);
+        } else {
+            static::$_collector->handle($exception, LogLevel::ERROR);
+        }
     }
 }

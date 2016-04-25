@@ -3,6 +3,7 @@
 namespace DreamCommerce\BugTracker\Collector;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class Psr3Collector extends BaseCollector
 {
@@ -19,7 +20,7 @@ class Psr3Collector extends BaseCollector
     /**
      * {@inheritdoc}
      */
-    public function handle($exc, $level, array $context = array())
+    public function handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
         if($this->_formatException) {
             $exc = "exception '" . get_class($exc) . "' with message '" . $exc->getMessage() . "' in '" . $exc->getFile() . ':' . $exc->getLine() . ' Stack trace: ' . $exc->getTraceAsString();
