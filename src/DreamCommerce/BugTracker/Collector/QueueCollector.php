@@ -4,11 +4,14 @@ namespace DreamCommerce\BugTracker\Collector;
 
 use DreamCommerce\BugTracker\BugHandler;
 use DreamCommerce\BugTracker\Exception\RuntimeException;
-use DreamCommerce\BugTracker\Utils\SplPriorityQueue;
 use Psr\Log\LogLevel;
 
 class QueueCollector implements CollectorInterface
 {
+    const PRIORITY_LOW = -100;
+    const PRIORITY_NORMAL = 0;
+    const PRIORITY_HIGH = 100;
+
     /**
      * @var int
      */
@@ -98,10 +101,7 @@ class QueueCollector implements CollectorInterface
     }
 
     /**
-     * @param \Exception|\Throwable $exc
-     * @param string|int $level
-     * @param array $context
-     * @return bool
+     * {@inheritdoc}
      */
     public function handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
@@ -123,8 +123,6 @@ class QueueCollector implements CollectorInterface
             return false;
         }
 
-        $context = array_merge($context, BugHandler::getContext($exc));
-
         foreach (clone $this->_collectorQueue as $data) {
             $collectorLevelPriority = BugHandler::getLogLevelPriority($data['level']);
             if ($collectorLevelPriority > $levelPriority) {
@@ -133,9 +131,6 @@ class QueueCollector implements CollectorInterface
 
             /** @var CollectorInterface $collector */
             $collector = $data['collector'];
-            if (!$collector->hasSupportException($exc, $level, $context)) {
-                continue;
-            }
 
             try {
                 $result = $collector->handle($exc, $level, $context);
@@ -156,12 +151,9 @@ class QueueCollector implements CollectorInterface
     }
 
     /**
-     * @param \Error|\Exception $exc
-     * @param int $level
-     * @param array $context
-     * @return bool
+     * {@inheritdoc}
      */
-    public function hasSupportException($exc, $level, array $context = array())
+    public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
     {
         if ($this->_collectorQueue === null) {
             $this->_collectorQueue = new SplPriorityQueue();
@@ -186,7 +178,7 @@ class QueueCollector implements CollectorInterface
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isCollected()
     {

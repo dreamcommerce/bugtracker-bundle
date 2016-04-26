@@ -1,8 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Utils;
-
-use DreamCommerce\BugTracker\Collector\CollectorInterface;
+namespace DreamCommerce\BugTracker\Collector;
 
 class SplPriorityQueue extends \SplPriorityQueue
 {

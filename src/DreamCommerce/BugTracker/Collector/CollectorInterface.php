@@ -2,23 +2,25 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
+use Psr\Log\LogLevel;
+
 interface CollectorInterface
 {
     /**
      * @param \Error|\Exception $exc
-     * @param int $level
+     * @param string $level
      * @param array $context
      * @return bool
      */
-    public function hasSupportException($exc, $level, array $context = array());
+    public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array());
 
     /**
      * @param \Error|\Exception $exc
-     * @param int $level
+     * @param string $level
      * @param array $context
      * @return bool
      */
-    public function handle($exc, $level, array $context = array());
+    public function handle($exc, $level = LogLevel::WARNING, array $context = array());
 
     /**
      * @return bool

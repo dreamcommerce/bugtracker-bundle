@@ -13,10 +13,6 @@ use Symfony\Component\Debug\ExceptionHandler;
 
 class BugHandler extends ErrorHandler
 {
-    const PRIORITY_LOW = -100;
-    const PRIORITY_NORMAL = 0;
-    const PRIORITY_HIGH = 100;
-
     /**
      * @var bool
      */

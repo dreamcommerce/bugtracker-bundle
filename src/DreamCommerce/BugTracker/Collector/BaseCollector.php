@@ -2,6 +2,8 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
+use Psr\Log\LogLevel;
+
 abstract class BaseCollector implements CollectorInterface
 {
     /**
@@ -35,10 +37,8 @@ abstract class BaseCollector implements CollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function hasSupportException($exc, $level, array $context = array())
+    public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
     {
-
-
         if($this->_isLocked) {
             return false;
         }
@@ -76,6 +76,16 @@ abstract class BaseCollector implements CollectorInterface
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handle($exc, $level = LogLevel::WARNING, array $context = array())
+    {
+        if($this->hasSupportException($exc, $level, $context)) {
+            return $this->_handle($exc, $level, $context);
+        }
     }
 
     /**
@@ -212,4 +222,12 @@ abstract class BaseCollector implements CollectorInterface
     {
         $this->_isLocked = false;
     }
+
+    /**
+     * @param \Error|\Exception $exc
+     * @param string $level
+     * @param array $context
+     * @return bool
+     */
+    abstract protected function _handle($exc, $level = LogLevel::WARNING, array $context = array());
 }
