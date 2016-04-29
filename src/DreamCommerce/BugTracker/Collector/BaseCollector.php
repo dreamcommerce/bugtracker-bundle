@@ -2,6 +2,7 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
+use DreamCommerce\BugTracker\Exception\RuntimeException;
 use Psr\Log\LogLevel;
 
 abstract class BaseCollector implements CollectorInterface
@@ -53,7 +54,7 @@ abstract class BaseCollector implements CollectorInterface
                     return false;
                 }
             } else {
-                throw new \RuntimeException('Unsupported type of exception condition');
+                throw new RuntimeException('Unsupported type of exception condition');
             }
         }
 
@@ -68,7 +69,7 @@ abstract class BaseCollector implements CollectorInterface
                         return true;
                     }
                 } else {
-                    throw new \RuntimeException('Unsupported type of exception condition');
+                    throw new RuntimeException('Unsupported type of exception condition');
                 }
             }
 

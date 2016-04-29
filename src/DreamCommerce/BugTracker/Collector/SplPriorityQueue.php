@@ -2,6 +2,8 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
+use DreamCommerce\BugTracker\Exception\RuntimeException;
+
 class SplPriorityQueue extends \SplPriorityQueue
 {
     protected $_recoverList = array();
@@ -10,10 +12,10 @@ class SplPriorityQueue extends \SplPriorityQueue
     {
         if(is_object($item)) {
             if(!($item instanceof CollectorInterface)) {
-                throw new \RuntimeException('Cannot delete the item from the queue. Invalid type of object [ expected: DreamCommerce\BugTracker\Collector\CollectorInterface; got: ' . get_class($item) . ' ]');
+                throw new RuntimeException('Cannot delete the item from the queue. Invalid type of object [ expected: DreamCommerce\BugTracker\Collector\CollectorInterface; got: ' . get_class($item) . ' ]');
             }
         } elseif(!is_string($item)) {
-            throw new \RuntimeException('Cannot delete the item from the queue');
+            throw new RuntimeException('Cannot delete the item from the queue');
         }
 
         $this->setExtractFlags(self::EXTR_BOTH);

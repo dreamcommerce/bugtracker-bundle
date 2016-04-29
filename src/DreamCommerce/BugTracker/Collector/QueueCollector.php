@@ -93,7 +93,7 @@ class QueueCollector implements CollectorInterface
                     $result[] = $data;
                 }
             } else {
-                throw new \RuntimeException('Unsupported type of variable');
+                throw new RuntimeException('Unsupported type of variable');
             }
         }
 

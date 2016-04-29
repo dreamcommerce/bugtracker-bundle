@@ -169,4 +169,17 @@ class BugHandler extends ErrorHandler
             static::$_collector->handle($exception, LogLevel::ERROR);
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleError($type, $message, $file, $line, array $context, array $backtrace = null)
+    {
+        try {
+            parent::handleError($type, $message, $file, $line, $context, $backtrace);
+        } catch (\Exception $ex) {
+            $this->handleException($ex);
+            throw $ex;
+        }
+    }
 }
