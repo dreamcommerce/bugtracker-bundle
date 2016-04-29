@@ -8,6 +8,7 @@ use DreamCommerce\BugTracker\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LogLevel;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 
 class JiraCollector extends BaseCollector
 {
@@ -603,12 +604,12 @@ class JiraCollector extends BaseCollector
      */
     protected function _getJiraSummary($exc, $level, array $context = array())
     {
-        return substr(
-            get_class($exc) . ': ' .
-            substr($exc->getMessage(), 0, 200) .
-            ' (code: ' . $exc->getCode() . ')',
-            0, 255
-        );
+        $message = substr($exc->getMessage(), 0, 200) . ' (code: ' . $exc->getCode() . ')';
+        if(!($exc instanceof ContextErrorException)) {
+            $message = get_class($exc) . ': ' . $message;
+        }
+
+        return substr($message, 0, 255);
     }
 
     /**
