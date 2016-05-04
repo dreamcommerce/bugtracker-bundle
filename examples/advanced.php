@@ -2,7 +2,6 @@
 
 require_once '../vendor/autoload.php';
 
-use DreamCommerce\BugTracker\BugHandler;
 use DreamCommerce\BugTracker\Collector\Psr3Collector;
 use DreamCommerce\BugTracker\Collector\QueueCollector;
 use DreamCommerce\BugTracker\Exception\ContextInterface;
@@ -14,7 +13,7 @@ class TestException extends \Exception implements ContextInterface
     /**
      * @return array
      */
-    public function getContext()
+    public function getExceptionContext()
     {
         return array(
             'field_a' => 'A',
@@ -31,10 +30,9 @@ class FirstCollector extends Psr3Collector
     /**
      * {@inheritdoc}
      */
-    public function hasSupportException($exc, $level, array $context = array())
+    protected function _hasSupportException($exc, $level, array $context = array())
     {
-        return  parent::hasSupportException($exc, $level, $context) &&
-                $exc instanceof Test1Exception;
+        return $exc instanceof Test1Exception;
     }
 }
 
@@ -43,10 +41,9 @@ class SecondCollector extends Psr3Collector
     /**
      * {@inheritdoc}
      */
-    public function hasSupportException($exc, $level, array $context = array())
+    protected function _hasSupportException($exc, $level, array $context = array())
     {
-        return  parent::hasSupportException($exc, $level, $context) &&
-                isset($context['field_a']) && $context['field_a'] == 'A';
+        return isset($context['field_a']) && $context['field_a'] == 'A';
     }
 }
 
@@ -69,5 +66,5 @@ $queue->registerCollector(new SecondCollector(array(
 try {
     throw new TestException('test');
 } catch(\Exception $exc) {
-    BugHandler::handle($exc);
+    $queue->handle($exc);
 }

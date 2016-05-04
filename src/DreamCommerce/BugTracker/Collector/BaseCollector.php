@@ -2,11 +2,17 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
+use DreamCommerce\BugTracker\Exception\ContextInterface;
 use DreamCommerce\BugTracker\Exception\RuntimeException;
 use Psr\Log\LogLevel;
 
 abstract class BaseCollector implements CollectorInterface
 {
+    /**
+     * @var array
+     */
+    private $_logLevels;
+
     /**
      * @var bool
      */
@@ -40,17 +46,25 @@ abstract class BaseCollector implements CollectorInterface
      */
     public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if($this->_isLocked) {
+        if (!is_object($exc)) {
+            throw new RuntimeException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
+        }
+
+        if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
+            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
+        }
+
+        if ($this->isLocked()) {
             return false;
         }
 
-        foreach($this->_ignoreExceptions as $ignoredException) {
-            if(is_object($ignoredException)) {
-                if($ignoredException === $exc) {
+        foreach ($this->_ignoreExceptions as $ignoredException) {
+            if (is_object($ignoredException)) {
+                if ($ignoredException === $exc) {
                     return false;
                 }
-            } elseif(is_string($ignoredException)) {
-                if($exc instanceof $ignoredException) {
+            } elseif (is_string($ignoredException)) {
+                if ($exc instanceof $ignoredException) {
                     return false;
                 }
             } else {
@@ -58,7 +72,7 @@ abstract class BaseCollector implements CollectorInterface
             }
         }
 
-        if(is_array($this->_exceptions) && count($this->_exceptions) > 0) {
+        if (is_array($this->_exceptions) && count($this->_exceptions) > 0) {
             foreach ($this->_exceptions as $includeException) {
                 if (is_object($includeException)) {
                     if ($includeException === $exc) {
@@ -76,7 +90,9 @@ abstract class BaseCollector implements CollectorInterface
             return false;
         }
 
-        return true;
+        $context = array_merge($context, $this->getContext($exc));
+
+        return $this->_hasSupportException($exc, $level, $context);
     }
 
     /**
@@ -84,9 +100,21 @@ abstract class BaseCollector implements CollectorInterface
      */
     public function handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if($this->hasSupportException($exc, $level, $context)) {
-            return $this->_handle($exc, $level, $context);
+        if (!is_object($exc)) {
+            throw new RuntimeException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
         }
+
+        if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
+            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
+        }
+
+        $context = array_merge($context, $this->getContext($exc));
+
+        if (!$this->hasSupportException($exc, $level, $context)) {
+            return false;
+        }
+
+        return $this->_handle($exc, $level, $context);
     }
 
     /**
@@ -94,7 +122,7 @@ abstract class BaseCollector implements CollectorInterface
      */
     public function isCollected()
     {
-        return (bool)$this->_isCollected;
+        return (bool) $this->_isCollected;
     }
 
     /**
@@ -107,21 +135,25 @@ abstract class BaseCollector implements CollectorInterface
 
     /**
      * @param \Error|\Exception|string $exc
+     *
      * @return $this
      */
     public function addIgnoreException($exc)
     {
         $this->_ignoreExceptions[] = $exc;
+
         return $this;
     }
 
     /**
      * @param array $ignoreExceptions
+     *
      * @return $this
      */
     public function setIgnoreExceptions($ignoreExceptions)
     {
         $this->_ignoreExceptions = $ignoreExceptions;
+
         return $this;
     }
 
@@ -135,63 +167,67 @@ abstract class BaseCollector implements CollectorInterface
 
     /**
      * @param \Error|\Exception|string $exc
+     *
      * @return $this
      */
     public function addException($exc)
     {
         $this->_exceptions[] = $exc;
+
         return $this;
     }
 
     /**
      * @param array $exceptions
+     *
      * @return $this
      */
     public function setExceptions($exceptions)
     {
         $this->_exceptions = $exceptions;
+
         return $this;
     }
 
     /**
      * @param array $options
+     *
      * @return $this
      */
     public function setOptions(array $options = array())
     {
-        foreach($options as $option => $value)
-        {
+        foreach ($options as $option => $value) {
             $camelCase = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $option))));
-            $funcName = 'set' . ucfirst($option);
-            if(method_exists($this, $funcName)) {
-                call_user_func(array($this, $funcName), $value);
-                continue;
-            }
-
-            $funcName = 'set' . $camelCase;
+            $funcName = 'set'.ucfirst($option);
             if (method_exists($this, $funcName)) {
                 call_user_func(array($this, $funcName), $value);
                 continue;
             }
 
-            if(property_exists($this, $option)) {
+            $funcName = 'set'.$camelCase;
+            if (method_exists($this, $funcName)) {
+                call_user_func(array($this, $funcName), $value);
+                continue;
+            }
+
+            if (property_exists($this, $option)) {
                 $this->$camelCase = $value;
                 continue;
             }
 
-            if(property_exists($this, '_' . $option)) {
+            if (property_exists($this, '_'.$option)) {
                 $this->$camelCase = $value;
                 continue;
             }
 
             $camelCase = lcfirst($camelCase);
-            if(property_exists($this, $camelCase)) {
+            if (property_exists($this, $camelCase)) {
                 $this->$camelCase = $value;
                 continue;
             }
 
-            $camelCase = '_' . $camelCase;
-            if(property_exists($this, $camelCase)) {
+            $camelCase = '_'.$camelCase;
+            if (property_exists($this, $camelCase)) {
                 $this->$camelCase = $value;
                 continue;
             }
@@ -205,7 +241,7 @@ abstract class BaseCollector implements CollectorInterface
      */
     public function isLocked()
     {
-        return (bool)$this->_isLocked;
+        return (bool) $this->_isLocked;
     }
 
     /**
@@ -225,9 +261,97 @@ abstract class BaseCollector implements CollectorInterface
     }
 
     /**
-     * @param \Error|\Exception $exc
+     * @param \Exception|\Throwable $exc
+     *
+     * @return array
+     */
+    public function getContext($exc)
+    {
+        if (!is_object($exc)) {
+            throw new RuntimeException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
+        }
+
+        if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
+            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
+        }
+
+        $context = array();
+        if ($exc instanceof ContextInterface) {
+            $context = $exc->getExceptionContext();
+        }
+
+        return array_merge(
+            $context,
+            array(
+                'message' => $exc->getMessage(),
+                'code' => $exc->getCode(),
+                'line' => $exc->getLine(),
+                'file' => $exc->getFile(),
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getLogLevelPriorities()
+    {
+        if ($this->_logLevels === null) {
+            $this->_logLevels = array_flip(
+                array(
+                    LogLevel::DEBUG,
+                    LogLevel::INFO,
+                    LogLevel::NOTICE,
+                    LogLevel::WARNING,
+                    LogLevel::ERROR,
+                    LogLevel::CRITICAL,
+                    LogLevel::ALERT,
+                    LogLevel::EMERGENCY,
+                )
+            );
+        }
+
+        return $this->_logLevels;
+    }
+
+    /**
      * @param string $level
-     * @param array $context
+     *
+     * @return int
+     */
+    public function getLogLevelPriority($level)
+    {
+        if (is_string($level)) {
+            $level = strtolower($level);
+            $prioLevels = $this->getLogLevelPriorities();
+            if (!isset($prioLevels[$level])) {
+                throw new RuntimeException('Unknown log level "'.$level.'"');
+            }
+            $level = $prioLevels[$level];
+        } else {
+            throw new RuntimeException('Unsupported type of variable (expected: string; got: '.gettype($level).')');
+        }
+
+        return (int) $level;
+    }
+
+    /**
+     * @param \Error|\Exception $exc
+     * @param string            $level
+     * @param array             $context
+     *
+     * @return bool
+     */
+    protected function _hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
+    {
+        return true;
+    }
+
+    /**
+     * @param \Error|\Exception $exc
+     * @param string            $level
+     * @param array             $context
+     *
      * @return bool
      */
     abstract protected function _handle($exc, $level = LogLevel::WARNING, array $context = array());

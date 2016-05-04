@@ -2,8 +2,6 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
-use DreamCommerce\BugTracker\BugHandler;
-use DreamCommerce\BugTracker\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -24,17 +22,8 @@ class Psr3Collector extends BaseCollector
      */
     protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if(!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
-        }
-
-        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: ' . get_class($exc) . ')');
-        }
-
-        $context = array_merge($context, BugHandler::getContext($exc));
-        if($this->_formatException) {
-            $exc = "exception '" . get_class($exc) . "' with message '" . $exc->getMessage() . "' in '" . $exc->getFile() . ':' . $exc->getLine() . ' Stack trace: ' . $exc->getTraceAsString();
+        if ($this->_formatException) {
+            $exc = "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
         }
         unset($context['message']);
         unset($context['code']);
@@ -55,16 +44,18 @@ class Psr3Collector extends BaseCollector
 
     /**
      * @param LoggerInterface $logger
+     *
      * @return $this
      */
     public function setLogger(LoggerInterface $logger)
     {
         $this->_logger = $logger;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isFormatException()
     {
@@ -72,12 +63,14 @@ class Psr3Collector extends BaseCollector
     }
 
     /**
-     * @param boolean $formatException
+     * @param bool $formatException
+     *
      * @return $this
      */
     public function setFormatException($formatException)
     {
-        $this->_formatException = (bool)$formatException;
+        $this->_formatException = (bool) $formatException;
+
         return $this;
     }
 }

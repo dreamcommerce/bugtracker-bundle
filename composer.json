@@ -12,7 +12,8 @@
   },
   "require-dev": {
     "monolog/monolog": "^1.19",
-    "guzzlehttp/guzzle": "^6.2.0"
+    "guzzlehttp/guzzle": "^6.2.0",
+    "phpunit/phpunit": "^4.8"
   },
   "suggest": {
     "monolog/monolog": "Allows more advanced logging of the application flow",
@@ -20,8 +21,26 @@
   },
   "autoload": {
     "psr-4": {
-      "DreamCommerce\\": "src/DreamCommerce"
+      "DreamCommerce\\BugTracker\\": "src/DreamCommerce/BugTracker"
     }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload-dev": {
+    "psr-4": {
+      "DreamCommerceTest\\BugTracker\\": "test/DreamCommerce/BugTracker"
+    }
+  },
+  "scripts": {
+    "check": [
+      "@cs-check",
+      "@test"
+    ],
+    "upload-coverage": "coveralls -v",
+    "cs-check": "php-cs-fixer --version && php-cs-fixer fix -v --diff --dry-run",
+    "cs-fix": "php-cs-fixer fix -v",
+    "test": "phpunit",
+    "test-coverage": "phpunit --coverage-clover clover.xml"
   },
   "authors": [
     {

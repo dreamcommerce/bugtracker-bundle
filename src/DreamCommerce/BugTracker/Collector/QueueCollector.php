@@ -2,11 +2,10 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
-use DreamCommerce\BugTracker\BugHandler;
 use DreamCommerce\BugTracker\Exception\RuntimeException;
 use Psr\Log\LogLevel;
 
-class QueueCollector implements CollectorInterface
+class QueueCollector extends BaseCollector
 {
     const PRIORITY_LOW = -100;
     const PRIORITY_NORMAL = 0;
@@ -23,14 +22,9 @@ class QueueCollector implements CollectorInterface
     private $_collectorQueue;
 
     /**
-     * @var bool
-     */
-    protected $_isCollected = false;
-
-    /**
      * @param CollectorInterface $collector
-     * @param string $level
-     * @param int $priority
+     * @param string             $level
+     * @param int                $priority
      */
     public function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0)
     {
@@ -45,13 +39,14 @@ class QueueCollector implements CollectorInterface
         $this->_collectorQueue->insert(
             array(
                 'collector' => $collector,
-                'level' => $level
+                'level' => $level,
             ),
             $priority);
     }
 
     /**
      * @param string|CollectorInterface $collector
+     *
      * @throws \Exception
      */
     public function unregisterCollector($collector)
@@ -64,7 +59,7 @@ class QueueCollector implements CollectorInterface
     }
 
     /**
-     * Remove all collectors from bugtracker
+     * Remove all collectors from bugtracker.
      */
     public function unregisterAllCollectors()
     {
@@ -73,13 +68,15 @@ class QueueCollector implements CollectorInterface
 
     /**
      * @param string|CollectorInterface|null $collector
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function getCollectors($collector = null)
     {
         if ($collector === null) {
-            return $this->toArray();
+            return $this->_collectorQueue->toArray();
         }
 
         $result = array();
@@ -103,32 +100,18 @@ class QueueCollector implements CollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function handle($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if(!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
-        }
-
-        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: ' . get_class($exc) . ')');
-        }
-
         if ($this->_collectorQueue === null) {
             $this->_collectorQueue = new SplPriorityQueue();
         }
         $this->_isCollected = false;
 
-        $levelPriority = BugHandler::getLogLevelPriority($level);
         if (count($this->_collectorQueue) === 0) {
             return false;
         }
 
         foreach (clone $this->_collectorQueue as $data) {
-            $collectorLevelPriority = BugHandler::getLogLevelPriority($data['level']);
-            if ($collectorLevelPriority > $levelPriority) {
-                continue;
-            }
-
             /** @var CollectorInterface $collector */
             $collector = $data['collector'];
 
@@ -153,20 +136,13 @@ class QueueCollector implements CollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
     {
         if ($this->_collectorQueue === null) {
             $this->_collectorQueue = new SplPriorityQueue();
         }
 
-        $levelPriority = BugHandler::getLogLevelPriority($level);
-
         foreach (clone $this->_collectorQueue as $data) {
-            $collectorLevelPriority = BugHandler::getLogLevelPriority($data['level']);
-            if ($collectorLevelPriority > $levelPriority) {
-                continue;
-            }
-
             /** @var CollectorInterface $collector */
             $collector = $data['collector'];
             if ($collector->hasSupportException($exc, $level, $context)) {
@@ -175,13 +151,5 @@ class QueueCollector implements CollectorInterface
         }
 
         return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isCollected()
-    {
-        return $this->_isCollected;
     }
 }

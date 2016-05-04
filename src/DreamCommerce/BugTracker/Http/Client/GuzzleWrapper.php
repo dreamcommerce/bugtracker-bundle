@@ -21,6 +21,7 @@ class GuzzleWrapper implements ClientInterface
     public function __construct(GuzzleClientInterface $guzzleClient)
     {
         $this->_guzzleClient = $guzzleClient;
+
         return $this;
     }
 
@@ -63,6 +64,4 @@ class GuzzleWrapper implements ClientInterface
     {
         return Psr7\stream_for($data);
     }
-
-
 }

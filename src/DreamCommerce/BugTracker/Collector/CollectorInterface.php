@@ -8,16 +8,18 @@ interface CollectorInterface
 {
     /**
      * @param \Error|\Exception $exc
-     * @param string $level
-     * @param array $context
+     * @param string            $level
+     * @param array             $context
+     *
      * @return bool
      */
     public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array());
 
     /**
      * @param \Error|\Exception $exc
-     * @param string $level
-     * @param array $context
+     * @param string            $level
+     * @param array             $context
+     *
      * @return bool
      */
     public function handle($exc, $level = LogLevel::WARNING, array $context = array());

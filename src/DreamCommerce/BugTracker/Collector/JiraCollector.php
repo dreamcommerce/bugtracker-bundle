@@ -2,7 +2,6 @@
 
 namespace DreamCommerce\BugTracker\Collector;
 
-use DreamCommerce\BugTracker\BugHandler;
 use DreamCommerce\BugTracker\Exception\RuntimeException;
 use DreamCommerce\BugTracker\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
@@ -122,22 +121,13 @@ class JiraCollector extends BaseCollector
      */
     protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if(!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
-        }
-
-        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: ' . get_class($exc) . ')');
-        }
-
-        $context = array_merge($context, BugHandler::getContext($exc));
-        if($this->isUseHash()) {
+        if ($this->isUseHash()) {
             $hash = $this->_getJiraHash($exc, $level, $context);
             $result = $this->_apiGetIssueByHash($hash);
             if ($result === null) {
                 $this->_apiCreateIssue($exc, $level, $context, $hash);
             } elseif ($this->isUseCounter()) {
-                $counterField = 'customfield_' . $this->getCounterFieldId();
+                $counterField = 'customfield_'.$this->getCounterFieldId();
                 if ($result['fields'][$counterField] < $this->getMaxCounter()) {
                     $this->_apiUpdateCounterForIssue($result['id'], ++$result['fields'][$counterField]);
                 }
@@ -159,11 +149,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param ClientInterface $httpClient
+     *
      * @return $this
      */
     public function setHttpClient(ClientInterface $httpClient)
     {
         $this->_httpClient = $httpClient;
+
         return $this;
     }
 
@@ -172,7 +164,7 @@ class JiraCollector extends BaseCollector
      */
     public function getEntryPoint()
     {
-        if($this->_entryPoint === null) {
+        if ($this->_entryPoint === null) {
             throw new RuntimeException('Entry point has been not defined');
         }
 
@@ -181,11 +173,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $entryPoint
+     *
      * @return $this
      */
     public function setEntryPoint($entryPoint)
     {
         $this->_entryPoint = $entryPoint;
+
         return $this;
     }
 
@@ -194,7 +188,7 @@ class JiraCollector extends BaseCollector
      */
     public function getUsername()
     {
-        if($this->_username === null) {
+        if ($this->_username === null) {
             throw new RuntimeException('Username has been not defined');
         }
 
@@ -203,11 +197,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $username
+     *
      * @return $this
      */
     public function setUsername($username)
     {
         $this->_username = $username;
+
         return $this;
     }
 
@@ -216,7 +212,7 @@ class JiraCollector extends BaseCollector
      */
     public function getPassword()
     {
-        if($this->_password === null) {
+        if ($this->_password === null) {
             throw new RuntimeException('Password has been not defined');
         }
 
@@ -225,11 +221,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $password
+     *
      * @return $this
      */
     public function setPassword($password)
     {
         $this->_password = $password;
+
         return $this;
     }
 
@@ -243,11 +241,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param int $maxCounter
+     *
      * @return $this
      */
     public function setMaxCounter($maxCounter)
     {
         $this->_maxCounter = $maxCounter;
+
         return $this;
     }
 
@@ -261,11 +261,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $openStatus
+     *
      * @return $this
      */
     public function setOpenStatus($openStatus)
     {
         $this->_openStatus = $openStatus;
+
         return $this;
     }
 
@@ -279,11 +281,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param array $inProgressStatuses
+     *
      * @return $this
      */
     public function setInProgressStatuses($inProgressStatuses)
     {
         $this->_inProgressStatuses = $inProgressStatuses;
+
         return $this;
     }
 
@@ -297,11 +301,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $reopenStatus
+     *
      * @return $this
      */
     public function setReopenStatus($reopenStatus)
     {
         $this->_reopenStatus = $reopenStatus;
+
         return $this;
     }
 
@@ -310,7 +316,7 @@ class JiraCollector extends BaseCollector
      */
     public function getProject()
     {
-        if($this->_entryPoint === null) {
+        if ($this->_entryPoint === null) {
             throw new RuntimeException('Project has been not defined');
         }
 
@@ -319,11 +325,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $project
+     *
      * @return $this
      */
     public function setProject($project)
     {
         $this->_project = $project;
+
         return $this;
     }
 
@@ -332,7 +340,7 @@ class JiraCollector extends BaseCollector
      */
     public function getAssignee()
     {
-        if($this->_assignee === null) {
+        if ($this->_assignee === null) {
             $this->_assignee = $this->getUsername();
         }
 
@@ -341,11 +349,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $assignee
+     *
      * @return $this
      */
     public function setAssignee($assignee)
     {
         $this->_assignee = $assignee;
+
         return $this;
     }
 
@@ -359,23 +369,27 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $level
-     * @param int $id
+     * @param int    $id
+     *
      * @return $this
      */
     public function addPriority($level, $id)
     {
         $level = strtolower($level);
         $this->_priorities[$level] = $id;
+
         return $this;
     }
 
     /**
      * @param array $priorities
+     *
      * @return $this
      */
     public function setPriorities($priorities)
     {
         $this->_priorities = $priorities;
+
         return $this;
     }
 
@@ -389,21 +403,25 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $label
+     *
      * @return $this
      */
     public function addLabel($label)
     {
         $this->_labels[] = $label;
+
         return $this;
     }
 
     /**
      * @param array $labels
+     *
      * @return $this
      */
     public function setLabels($labels)
     {
         $this->_labels = $labels;
+
         return $this;
     }
 
@@ -417,15 +435,17 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param int $counterFieldId
+     *
      * @return $this
      */
     public function setCounterFieldId($counterFieldId)
     {
-        if($this->_entryPoint === null) {
+        if ($this->_entryPoint === null) {
             throw new RuntimeException('Counter field ID has been not defined');
         }
 
         $this->_counterFieldId = $counterFieldId;
+
         return $this;
     }
 
@@ -439,15 +459,17 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param int $hashFieldId
+     *
      * @return $this
      */
     public function setHashFieldId($hashFieldId)
     {
-        if($this->_entryPoint === null) {
+        if ($this->_entryPoint === null) {
             throw new RuntimeException('Hash field ID has been not defined');
         }
 
         $this->_hashFieldId = $hashFieldId;
+
         return $this;
     }
 
@@ -461,27 +483,31 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return $this
      */
     public function addField($name, $value)
     {
         $this->_fields[$name] = $value;
+
         return $this;
     }
 
     /**
      * @param array $fields
+     *
      * @return $this
      */
     public function setFields($fields)
     {
         $this->_fields = $fields;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUseCounter()
     {
@@ -489,7 +515,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param boolean $useCounter
+     * @param bool $useCounter
      */
     public function setUseCounter($useCounter)
     {
@@ -497,7 +523,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUseHash()
     {
@@ -505,17 +531,19 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param boolean $useHash
+     * @param bool $useHash
+     *
      * @return $this
      */
     public function setUseHash($useHash)
     {
-        $this->_useHash = (bool)$useHash;
+        $this->_useHash = (bool) $useHash;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUseReopen()
     {
@@ -523,12 +551,14 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param boolean $useReopen
+     * @param bool $useReopen
+     *
      * @return $this
      */
     public function setUseReopen($useReopen)
     {
-        $this->_useReopen = (bool)$useReopen;
+        $this->_useReopen = (bool) $useReopen;
+
         return $this;
     }
 
@@ -542,6 +572,7 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param int $defaultType
+     *
      * @return $this
      */
     public function setDefaultType($defaultType)
@@ -559,11 +590,13 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param int $defaultPriority
+     *
      * @return $this
      */
     public function setDefaultPriority($defaultPriority)
     {
         $this->_defaultPriority = $defaultPriority;
+
         return $this;
     }
 
@@ -577,36 +610,41 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $level
-     * @param int $type
+     * @param int    $type
+     *
      * @return $this
      */
     public function addType($level, $type)
     {
         $this->_types[$level] = $type;
+
         return $this;
     }
 
     /**
      * @param array $types
+     *
      * @return $this
      */
     public function setTypes($types)
     {
         $this->_types = $types;
+
         return $this;
     }
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param int $level
-     * @param array $context
+     * @param int                   $level
+     * @param array                 $context
+     *
      * @return string
      */
     protected function _getJiraSummary($exc, $level, array $context = array())
     {
-        $message = substr($exc->getMessage(), 0, 200) . ' (code: ' . $exc->getCode() . ')';
-        if(!($exc instanceof ContextErrorException)) {
-            $message = get_class($exc) . ': ' . $message;
+        $message = substr($exc->getMessage(), 0, 200).' (code: '.$exc->getCode().')';
+        if (!($exc instanceof ContextErrorException)) {
+            $message = get_class($exc).': '.$message;
         }
 
         return substr($message, 0, 255);
@@ -614,14 +652,15 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param int $level
-     * @param array $context
+     * @param int                   $level
+     * @param array                 $context
+     *
      * @return string
      */
     protected function _getJiraDescription($exc, $level, array $context = array())
     {
         return substr(
-            $exc->getMessage() . ' (code: ' . $exc->getCode() . ')' . PHP_EOL . PHP_EOL .
+            $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
             $exc->getTraceAsString(),
             0, 4000
         );
@@ -629,20 +668,21 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param int $level
-     * @param array $context
+     * @param int                   $level
+     * @param array                 $context
+     *
      * @return string
      */
     protected function _getJiraHash($exc, $level, array $context = array())
     {
         $hashParams = array();
-        foreach($this->_getJiraHashParams($exc, $level, $context) as $paramName) {
-            if(isset($context[$paramName])) {
+        foreach ($this->_getJiraHashParams($exc, $level, $context) as $paramName) {
+            if (isset($context[$paramName])) {
                 $hashParams[$paramName] = $context[$paramName];
             }
         }
 
-        if(count($hashParams) > 0) {
+        if (count($hashParams) > 0) {
             ksort($hashParams);
             $hash = md5(serialize($hashParams));
         } else {
@@ -654,8 +694,9 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param int $level
-     * @param array $context
+     * @param int                   $level
+     * @param array                 $context
+     *
      * @return array
      */
     protected function _getJiraHashParams($exc, $level, array $context = array())
@@ -665,63 +706,64 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param string $level
-     * @param array $context
-     * @param string|null $hash
+     * @param string                $level
+     * @param array                 $context
+     * @param string|null           $hash
+     *
      * @return \stdClass
      */
     private function _apiCreateIssue($exc, $level, array $context = array(), $hash = null)
     {
         $data = array(
             'project' => array(
-                'key' => $this->getProject()
+                'key' => $this->getProject(),
             ),
             'summary' => $this->_getJiraSummary($exc, $level, $context),
             'description' => $this->_getJiraDescription($exc, $level, $context),
             'assignee' => array(
-                'name' => $this->getAssignee()
+                'name' => $this->getAssignee(),
             ),
-            'labels' => $this->getLabels()
+            'labels' => $this->getLabels(),
         );
 
-        if($this->isUseCounter()) {
-            $data['customfield_' . $this->getCounterFieldId()] = 1;
+        if ($this->isUseCounter()) {
+            $data['customfield_'.$this->getCounterFieldId()] = 1;
         }
-        if($this->isUseHash() && $hash !== null) {
-            $data['customfield_' . $this->getHashFieldId()] = $hash;
+        if ($this->isUseHash() && $hash !== null) {
+            $data['customfield_'.$this->getHashFieldId()] = $hash;
         }
 
         $priority = null;
         $priorities = $this->getPriorities();
-        if(isset($priorities[$level])) {
+        if (isset($priorities[$level])) {
             $priority = $priorities[$level];
         } else {
             $priority = $this->getDefaultPriority();
         }
-        if($priority !== null) {
+        if ($priority !== null) {
             $data['priority'] = array(
-                'id' => (string)$priority
+                'id' => (string) $priority,
             );
         }
 
         $type = null;
         $types = $this->getTypes();
-        if(isset($types[$level])) {
+        if (isset($types[$level])) {
             $type = $types[$level];
         } else {
             $type = $this->getDefaultType();
         }
-        if($type !== null) {
+        if ($type !== null) {
             $data['issuetype'] = array(
-                'id' => $type
+                'id' => $type,
             );
         }
 
         $data = array_merge($data, $this->getFields());
         $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint() . '/rest/api/2/issue';
+        $uri = $this->getEntryPoint().'/rest/api/2/issue';
 
-        $request = $client->createRequest('POST', $uri, array('Content-type' => 'application/json'), json_encode(array("fields" => $data)));
+        $request = $client->createRequest('POST', $uri, array('Content-type' => 'application/json'), json_encode(array('fields' => $data)));
         $response = $client->send($request, $this->_getAuthParams());
 
         return $this->_apiHandleResponse($request, $response);
@@ -729,18 +771,19 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param string $hash
+     *
      * @return \stdClass
      */
     private function _apiGetIssueByHash($hash)
     {
         $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint() . '/rest/api/2/search?jql=hash ~ ' . $hash;
+        $uri = $this->getEntryPoint().'/rest/api/2/search?jql=hash ~ '.$hash;
         $request = $client->createRequest('GET', $uri, array('Content-type' => 'application/json'));
         $response = $client->send($request, $this->_getAuthParams());
 
         $result = $this->_apiHandleResponse($request, $response);
-        if($result['total'] == 0) {
-            return null;
+        if ($result['total'] == 0) {
+            return;
         }
 
         return $result['issues'][0];
@@ -749,17 +792,18 @@ class JiraCollector extends BaseCollector
     /**
      * @param int $issueId
      * @param int $counter
+     *
      * @return \stdClass
      */
     private function _apiUpdateCounterForIssue($issueId, $counter)
     {
         $data = array();
-        $data['customfield_' . $this->getCounterFieldId()] = $counter;
+        $data['customfield_'.$this->getCounterFieldId()] = $counter;
 
         $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint() . '/rest/api/2/issue/' . $issueId;
+        $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId;
 
-        $request = $client->createRequest('PUT', $uri, array('Content-type' => 'application/json'), json_encode(array("fields" => $data)));
+        $request = $client->createRequest('PUT', $uri, array('Content-type' => 'application/json'), json_encode(array('fields' => $data)));
         $response = $client->send($request, $this->_getAuthParams());
 
         return $this->_apiHandleResponse($request, $response);
@@ -773,47 +817,48 @@ class JiraCollector extends BaseCollector
         return array(
             'auth' => array(
                 $this->getUsername(),
-                $this->getPassword()
-            )
+                $this->getPassword(),
+            ),
         );
     }
 
     /**
-     * @param RequestInterface $request
+     * @param RequestInterface  $request
      * @param ResponseInterface $response
+     *
      * @return \stdClass
      */
     private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response)
     {
         $result = json_decode($response->getBody(), true);
-        if($result === false) {
-            throw new RuntimeException('Unable decode response from URL ' . $request->getUri() . '; method: ' . $request->getMethod());
+        if ($result === false) {
+            throw new RuntimeException('Unable decode response from URL '.$request->getUri().'; method: '.$request->getMethod());
         }
 
-        if(isset($result['errorMessages']) || isset($result['errors'])) {
+        if (isset($result['errorMessages']) || isset($result['errors'])) {
             $errorMessagesArr = array();
-            if(isset($result['errorMessages'])) {
+            if (isset($result['errorMessages'])) {
                 foreach ($result['errorMessages'] as $field => $error) {
-                    if(is_array($error)) {
+                    if (is_array($error)) {
                         $error = implode('; ', $error);
                     }
 
-                    $errorMessagesArr[] = $field . ' - ' . $error;
+                    $errorMessagesArr[] = $field.' - '.$error;
                 }
             }
 
             $errorArr = array();
-            if(isset($result['errors'])) {
+            if (isset($result['errors'])) {
                 foreach ($result['errors'] as $field => $error) {
-                    if(is_array($error)) {
+                    if (is_array($error)) {
                         $error = implode('; ', $error);
                     }
 
-                    $errorArr[] = $field . ' - ' . $error;
+                    $errorArr[] = $field.' - '.$error;
                 }
             }
 
-            throw new RuntimeException('The error occurred while processing data; error messages: "' . implode('; ', $errorMessagesArr) . '"; errors: "' . implode('; ', $errorArr));
+            throw new RuntimeException('The error occurred while processing data; error messages: "'.implode('; ', $errorMessagesArr).'"; errors: "'.implode('; ', $errorArr));
         }
 
         return $result;

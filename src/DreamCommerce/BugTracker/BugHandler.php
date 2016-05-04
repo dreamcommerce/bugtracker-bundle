@@ -3,8 +3,6 @@
 namespace DreamCommerce\BugTracker;
 
 use DreamCommerce\BugTracker\Collector\CollectorInterface;
-use DreamCommerce\BugTracker\Exception\ContextInterface;
-use DreamCommerce\BugTracker\Exception\RuntimeException;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;
@@ -24,11 +22,6 @@ class BugHandler extends ErrorHandler
     private static $_collector;
 
     /**
-     * @var array
-     */
-    private static $_logLevels;
-
-    /**
      * Enables the debug tools.
      *
      * This method registers an error handler and an exception handler.
@@ -36,8 +29,8 @@ class BugHandler extends ErrorHandler
      * If the Symfony ClassLoader component is available, a special
      * class loader is also registered.
      *
-     * @param int $errorReportingLevel The level of error reporting you want
-     * @param bool $displayErrors Whether to display errors (for development) or just log them (for production)
+     * @param int  $errorReportingLevel The level of error reporting you want
+     * @param bool $displayErrors       Whether to display errors (for development) or just log them (for production)
      */
     public static function enable($errorReportingLevel = E_ALL, $displayErrors = true)
     {
@@ -70,59 +63,6 @@ class BugHandler extends ErrorHandler
     }
 
     /**
-     * @param \Exception|\Throwable $exc
-     * @return array
-     */
-    public static function getContext($exc)
-    {
-        if(!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: ' . gettype($exc) . ')');
-        }
-
-        if(!($exc instanceof \Exception) && !($exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception or \Throwable; got: ' . get_class($exc) . ')');
-        }
-
-        $context = array();
-        if($exc instanceof ContextInterface) {
-            $context = $exc->getContext();
-        }
-
-        return array_merge(
-            $context,
-            array(
-                'message' => $exc->getMessage(),
-                'code' => $exc->getCode(),
-                'line' => $exc->getLine(),
-                'file' => $exc->getFile()
-            )
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public static function getLogLevelPriorities()
-    {
-        if(static::$_logLevels === null) {
-            static::$_logLevels = array_flip(
-                array(
-                    LogLevel::DEBUG,
-                    LogLevel::INFO,
-                    LogLevel::NOTICE,
-                    LogLevel::WARNING,
-                    LogLevel::ERROR,
-                    LogLevel::CRITICAL,
-                    LogLevel::ALERT,
-                    LogLevel::EMERGENCY
-                )
-            );
-        }
-
-        return static::$_logLevels;
-    }
-
-    /**
      * @return CollectorInterface|null
      */
     public static function getCollector()
@@ -139,31 +79,11 @@ class BugHandler extends ErrorHandler
     }
 
     /**
-     * @param string $level
-     * @return int
-     */
-    public static function getLogLevelPriority($level)
-    {
-        if(is_string($level)) {
-            $level = strtolower($level);
-            $prioLevels = static::getLogLevelPriorities();
-            if (!isset($prioLevels[$level])) {
-                throw new RuntimeException('Unknown log level "' . $level . '"');
-            }
-            $level = $prioLevels[$level];
-        } else {
-            throw new RuntimeException('Unsupported type of variable (expected: string; got: ' . gettype($level) . ')');
-        }
-
-        return (int)$level;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function handleException($exception, array $error = null)
     {
-        if(static::$_collector === null) {
+        if (static::$_collector === null) {
             parent::handleException($exception, $error);
         } else {
             static::$_collector->handle($exception, LogLevel::ERROR);
@@ -178,6 +98,9 @@ class BugHandler extends ErrorHandler
         try {
             parent::handleError($type, $message, $file, $line, $context, $backtrace);
         } catch (\Exception $ex) {
+            $this->handleException($ex);
+            throw $ex;
+        } catch (\Throwable $ex) {
             $this->handleException($ex);
             throw $ex;
         }

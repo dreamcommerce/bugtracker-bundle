@@ -7,5 +7,5 @@ interface ContextInterface
     /**
      * @return array
      */
-    public function getContext();
+    public function getExceptionContext();
 }
