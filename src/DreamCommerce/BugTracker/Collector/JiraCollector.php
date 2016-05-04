@@ -126,10 +126,26 @@ class JiraCollector extends BaseCollector
             $result = $this->_apiGetIssueByHash($hash);
             if ($result === null) {
                 $this->_apiCreateIssue($exc, $level, $context, $hash);
-            } elseif ($this->isUseCounter()) {
-                $counterField = 'customfield_'.$this->getCounterFieldId();
-                if ($result['fields'][$counterField] < $this->getMaxCounter()) {
-                    $this->_apiUpdateCounterForIssue($result['id'], ++$result['fields'][$counterField]);
+            } else {
+                if ($this->isUseCounter()) {
+                    $counterField = 'customfield_'.$this->getCounterFieldId();
+                    if ($result['fields'][$counterField] < $this->getMaxCounter()) {
+                        $this->_apiUpdateCounterForIssue($result['id'], ++$result['fields'][$counterField]);
+                    }
+                }
+
+                if ($this->isUseReopen()) {
+                    $statuses = $this->_apiGetStatusesForIssue($result['id']);
+                    $currentStatus = null;
+                    foreach ($statuses['transitions'] as $transition) {
+                        if ($transition['to']['id'] == $result['fields']['status']['id']) {
+                            $currentStatus = $transition['id'];
+                            break;
+                        }
+                    }
+                    if ($currentStatus !== null && !in_array($currentStatus, $this->getInProgressStatuses())) {
+                        $this->_apiUpdateStatusForIssue($result['id'], $this->getReopenStatus());
+                    }
                 }
             }
         } else {
@@ -797,13 +813,56 @@ class JiraCollector extends BaseCollector
      */
     private function _apiUpdateCounterForIssue($issueId, $counter)
     {
-        $data = array();
-        $data['customfield_'.$this->getCounterFieldId()] = $counter;
+        $counterField = 'customfield_'.$this->getCounterFieldId();
+        $data = array(
+            'fields' => array(
+                $counterField => $counter,
+            ),
+        );
 
         $client = $this->getHttpClient();
         $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId;
 
-        $request = $client->createRequest('PUT', $uri, array('Content-type' => 'application/json'), json_encode(array('fields' => $data)));
+        $request = $client->createRequest('PUT', $uri, array('Content-type' => 'application/json'), json_encode($data));
+        $response = $client->send($request, $this->_getAuthParams());
+
+        return $this->_apiHandleResponse($request, $response);
+    }
+
+    /**
+     * @param int $issueId
+     *
+     * @return \stdClass
+     */
+    private function _apiGetStatusesForIssue($issueId)
+    {
+        $client = $this->getHttpClient();
+        $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId.'/transitions';
+
+        $request = $client->createRequest('GET', $uri, array('Content-type' => 'application/json'));
+        $response = $client->send($request, $this->_getAuthParams());
+
+        return $this->_apiHandleResponse($request, $response);
+    }
+
+    /**
+     * @param int $issueId
+     * @param int $status
+     *
+     * @return \stdClass
+     */
+    private function _apiUpdateStatusForIssue($issueId, $status)
+    {
+        $data = array(
+            'transition' => array(
+                'id' => $status,
+            ),
+        );
+
+        $client = $this->getHttpClient();
+        $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId.'/transitions';
+
+        $request = $client->createRequest('POST', $uri, array('Content-type' => 'application/json'), json_encode($data));
         $response = $client->send($request, $this->_getAuthParams());
 
         return $this->_apiHandleResponse($request, $response);
