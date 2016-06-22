@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class DreamCommerceBugTrackerExtension extends Extension
 {
+    const ALIAS = 'dream_commerce_bug_tracker';
+
     /**
      * {@inheritdoc}
      */

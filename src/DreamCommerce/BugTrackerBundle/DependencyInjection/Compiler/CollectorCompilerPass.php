@@ -2,6 +2,7 @@
 
 namespace DreamCommerce\BugTrackerBundle\DependencyInjection\Compiler;
 
+use DreamCommerce\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -14,16 +15,17 @@ class CollectorCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->has('dream_commerce_bugtracker.collector_chain')) {
+        if (!$container->has(DreamCommerceBugTrackerExtension::ALIAS . '.collector_queue')) {
             return;
         }
 
+        $container->setAlias('bughandler', DreamCommerceBugTrackerExtension::ALIAS . '.collector_queue');
         $definition = $container->findDefinition(
-            'dream_commerce_bugtracker.collector_chain'
+            DreamCommerceBugTrackerExtension::ALIAS . '.collector_queue'
         );
 
         $taggedServices = $container->findTaggedServiceIds(
-            'dream_commerce_bugtracker.collector'
+            DreamCommerceBugTrackerExtension::ALIAS . '.collector'
         );
         foreach ($taggedServices as $id => $attributes) {
             $level = LogLevel::WARNING;
