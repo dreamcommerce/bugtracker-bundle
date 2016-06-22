@@ -2,6 +2,6 @@
 
 namespace DreamCommerce\BugTrackerBundle\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException
+class RuntimeException extends \RuntimeException
 {
 }
