@@ -1,6 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Exception;
+namespace DreamCommerce\BugTrackerBundle\Exception;
 
 interface ContextInterface
 {

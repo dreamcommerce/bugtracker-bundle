@@ -2,17 +2,15 @@
 
 require_once '../vendor/autoload.php';
 
-use DreamCommerce\BugTracker\BugHandler;
-use DreamCommerce\BugTracker\Collector\Psr3Collector;
+use DreamCommerce\BugTrackerBundle\BugHandler;
+use DreamCommerce\BugTrackerBundle\Collector\Psr3Collector;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 $logger = new Logger('test');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/logs/php_error.log', Logger::WARNING));
 
-$collector = new Psr3Collector(array(
-    'logger' => $logger
-));
+$collector = new Psr3Collector($logger);
 
 BugHandler::enable(E_ALL, false);
 BugHandler::setCollector($collector);

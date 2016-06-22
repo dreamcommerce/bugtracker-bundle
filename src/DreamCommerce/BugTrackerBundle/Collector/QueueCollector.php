@@ -1,8 +1,8 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Collector;
+namespace DreamCommerce\BugTrackerBundle\Collector;
 
-use DreamCommerce\BugTracker\Exception\RuntimeException;
+use DreamCommerce\BugTrackerBundle\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 class QueueCollector extends BaseCollector
@@ -90,7 +90,7 @@ class QueueCollector extends BaseCollector
                     $result[] = $data;
                 }
             } else {
-                throw new RuntimeException('Unsupported type of variable');
+                throw new InvalidArgumentException('Unsupported type of variable');
             }
         }
 

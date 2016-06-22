@@ -1,6 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Http\Client;
+namespace DreamCommerce\BugTrackerBundle\Http\Client;
 
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use GuzzleHttp\Psr7;
@@ -8,7 +8,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\RequestInterface;
 
-class GuzzleWrapper implements ClientInterface
+class GuzzleClient implements ClientInterface
 {
     /**
      * @var GuzzleClientInterface

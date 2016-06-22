@@ -1,8 +1,8 @@
 <?php
 
-namespace DreamCommerce\BugTracker;
+namespace DreamCommerce\BugTrackerBundle;
 
-use DreamCommerce\BugTracker\Collector\CollectorInterface;
+use DreamCommerce\BugTrackerBundle\Collector\CollectorInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;
@@ -22,13 +22,6 @@ class BugHandler extends ErrorHandler
     private static $_collector;
 
     /**
-     * Enables the debug tools.
-     *
-     * This method registers an error handler and an exception handler.
-     *
-     * If the Symfony ClassLoader component is available, a special
-     * class loader is also registered.
-     *
      * @param int  $errorReportingLevel The level of error reporting you want
      * @param bool $displayErrors       Whether to display errors (for development) or just log them (for production)
      */

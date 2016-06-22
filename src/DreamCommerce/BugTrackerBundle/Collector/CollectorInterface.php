@@ -1,13 +1,13 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Collector;
+namespace DreamCommerce\BugTrackerBundle\Collector;
 
 use Psr\Log\LogLevel;
 
 interface CollectorInterface
 {
     /**
-     * @param \Error|\Exception $exc
+     * @param \Exception|\Throwable $exc
      * @param string            $level
      * @param array             $context
      *
@@ -16,7 +16,7 @@ interface CollectorInterface
     public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array());
 
     /**
-     * @param \Error|\Exception $exc
+     * @param \Exception|\Throwable $exc
      * @param string            $level
      * @param array             $context
      *

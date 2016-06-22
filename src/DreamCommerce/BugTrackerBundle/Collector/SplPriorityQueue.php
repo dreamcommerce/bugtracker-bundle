@@ -1,8 +1,8 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Collector;
+namespace DreamCommerce\BugTrackerBundle\Collector;
 
-use DreamCommerce\BugTracker\Exception\RuntimeException;
+use DreamCommerce\BugTrackerBundle\Exception\InvalidArgumentException;
 
 class SplPriorityQueue extends \SplPriorityQueue
 {
@@ -12,10 +12,10 @@ class SplPriorityQueue extends \SplPriorityQueue
     {
         if (is_object($item)) {
             if (!($item instanceof CollectorInterface)) {
-                throw new RuntimeException('Cannot delete the item from the queue. Invalid type of object [ expected: DreamCommerce\BugTracker\Collector\CollectorInterface; got: '.get_class($item).' ]');
+                throw new InvalidArgumentException('Cannot delete the item from the queue. Invalid type of object [ expected: DreamCommerce\BugTrackerBundle\Collector\CollectorInterface; got: '.get_class($item).' ]');
             }
         } elseif (!is_string($item)) {
-            throw new RuntimeException('Cannot delete the item from the queue');
+            throw new InvalidArgumentException('Cannot delete the item from the queue');
         }
 
         $this->setExtractFlags(self::EXTR_BOTH);

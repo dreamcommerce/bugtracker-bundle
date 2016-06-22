@@ -1,36 +1,33 @@
 {
-  "name": "dreamcommerce/bugtracker",
+  "name": "dreamcommerce/bugtracker-bundle",
   "type": "library",
-  "description": "Bugtracker",
+  "description": "DreamCommerce Bugtracker",
   "license": "MIT",
   "require": {
     "php": ">=5.5.9",
     "psr/log": "1.0.0",
     "psr/http-message": "1.0",
-    "symfony/debug": "^3.0",
-    "symfony/polyfill-php70": "^1.0"
+    "symfony/polyfill-php70": "^1.0",
+    "symfony/debug": "^2.8"
   },
   "require-dev": {
+    "symfony/symfony": "^2.8",
     "monolog/monolog": "^1.19",
     "guzzlehttp/guzzle": "^6.2.0",
     "phpunit/phpunit": "^4.8"
   },
   "suggest": {
+    "symfony/symfony": "Great PHP framework !",
     "monolog/monolog": "Allows more advanced logging of the application flow",
     "guzzlehttp/guzzle": "Guzzle is a PHP HTTP client library"
   },
   "autoload": {
     "psr-4": {
-      "DreamCommerce\\BugTracker\\": "src/DreamCommerce/BugTracker"
+      "DreamCommerce\\BugTrackerBundle\\": ""
     }
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "autoload-dev": {
-    "psr-4": {
-      "DreamCommerceTest\\BugTracker\\": "test/DreamCommerce/BugTracker"
-    }
-  },
   "scripts": {
     "check": [
       "@cs-check",

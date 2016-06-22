@@ -1,6 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Collector;
+namespace DreamCommerce\BugTrackerBundle\Collector;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -16,6 +16,14 @@ class Psr3Collector extends BaseCollector
      * @var bool
      */
     protected $_formatException = true;
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->_logger = $logger;
+    }
 
     /**
      * {@inheritdoc}

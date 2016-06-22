@@ -1,9 +1,9 @@
 <?php
 
-namespace DreamCommerce\BugTracker\Collector;
+namespace DreamCommerce\BugTrackerBundle\Collector;
 
-use DreamCommerce\BugTracker\Exception\ContextInterface;
-use DreamCommerce\BugTracker\Exception\RuntimeException;
+use DreamCommerce\BugTrackerBundle\Exception\ContextInterface;
+use DreamCommerce\BugTrackerBundle\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 abstract class BaseCollector implements CollectorInterface
@@ -47,11 +47,11 @@ abstract class BaseCollector implements CollectorInterface
     public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
     {
         if (!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
+            throw new InvalidArgumentException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
         }
 
         if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
+            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
         }
 
         if ($this->isLocked()) {
@@ -68,7 +68,7 @@ abstract class BaseCollector implements CollectorInterface
                     return false;
                 }
             } else {
-                throw new RuntimeException('Unsupported type of exception condition');
+                throw new InvalidArgumentException('Unsupported type of exception condition');
             }
         }
 
@@ -83,7 +83,7 @@ abstract class BaseCollector implements CollectorInterface
                         return true;
                     }
                 } else {
-                    throw new RuntimeException('Unsupported type of exception condition');
+                    throw new InvalidArgumentException('Unsupported type of exception condition');
                 }
             }
 
@@ -101,11 +101,11 @@ abstract class BaseCollector implements CollectorInterface
     public function handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
         if (!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
+            throw new InvalidArgumentException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
         }
 
         if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
+            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
         }
 
         $context = array_merge($context, $this->getContext($exc));
@@ -268,11 +268,11 @@ abstract class BaseCollector implements CollectorInterface
     public function getContext($exc)
     {
         if (!is_object($exc)) {
-            throw new RuntimeException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
+            throw new InvalidArgumentException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
         }
 
         if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
-            throw new RuntimeException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
+            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
         }
 
         $context = array();
@@ -325,11 +325,11 @@ abstract class BaseCollector implements CollectorInterface
             $level = strtolower($level);
             $prioLevels = $this->getLogLevelPriorities();
             if (!isset($prioLevels[$level])) {
-                throw new RuntimeException('Unknown log level "'.$level.'"');
+                throw new InvalidArgumentException('Unknown log level "'.$level.'"');
             }
             $level = $prioLevels[$level];
         } else {
-            throw new RuntimeException('Unsupported type of variable (expected: string; got: '.gettype($level).')');
+            throw new InvalidArgumentException('Unsupported type of variable (expected: string; got: '.gettype($level).')');
         }
 
         return (int) $level;
