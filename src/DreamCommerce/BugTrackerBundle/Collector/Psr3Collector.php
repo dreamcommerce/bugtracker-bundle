@@ -19,10 +19,12 @@ class Psr3Collector extends BaseCollector
 
     /**
      * @param LoggerInterface $logger
+     * @param array $options
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, array $options = array())
     {
         $this->_logger = $logger;
+        parent::__construct($options);
     }
 
     /**

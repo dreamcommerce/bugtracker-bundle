@@ -123,7 +123,7 @@ class JiraCollector extends BaseCollector
     public function __construct(ClientInterface $httpClient, array $options = array())
     {
         $this->_httpClient = $httpClient;
-        $this->setOptions($options);
+        parent::__construct($options);
     }
 
     /**
