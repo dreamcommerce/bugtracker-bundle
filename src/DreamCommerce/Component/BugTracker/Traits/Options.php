@@ -1,6 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\Traits;
+namespace DreamCommerce\Component\BugTracker\Traits;
 
 trait Options
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\Collector;
+namespace DreamCommerce\Component\BugTracker\Collector;
 
 use Psr\Log\LogLevel;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\Collector;
+namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\BugTrackerBundle\Exception\InvalidArgumentException;
+use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 class QueueCollector extends BaseCollector

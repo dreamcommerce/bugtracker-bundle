@@ -1,8 +1,8 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\DependencyInjection;
+namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection;
 
-use DreamCommerce\BugTrackerBundle\DependencyInjection\Compiler\CollectorCompilerPass;
+use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;

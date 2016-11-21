@@ -2,9 +2,9 @@
 
 require_once '../vendor/autoload.php';
 
-use DreamCommerce\BugTrackerBundle\Collector\Psr3Collector;
-use DreamCommerce\BugTrackerBundle\Collector\QueueCollector;
-use DreamCommerce\BugTrackerBundle\Exception\ContextInterface;
+use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
+use DreamCommerce\Component\BugTracker\Collector\QueueCollector;
+use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 

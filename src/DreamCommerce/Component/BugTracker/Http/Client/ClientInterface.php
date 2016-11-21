@@ -1,6 +1,6 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\Http\Client;
+namespace DreamCommerce\Component\BugTracker\Http\Client;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;

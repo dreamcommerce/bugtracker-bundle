@@ -1,9 +1,9 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\Collector;
+namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\BugTrackerBundle\Exception\RuntimeException;
-use DreamCommerce\BugTrackerBundle\Http\Client\ClientInterface;
+use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
+use DreamCommerce\Component\BugTracker\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LogLevel;
@@ -740,12 +740,15 @@ class JiraCollector extends BaseCollector
      */
     private function _apiCreateIssue($exc, $level, array $context = array(), $hash = null)
     {
+        $summary = preg_replace('/\s+/', ' ', $this->_repairString($this->_getJiraSummary($exc, $level, $context)));
+        $description = $this->_repairString($this->_getJiraDescription($exc, $level, $context));
+
         $data = array(
             'project' => array(
                 'key' => $this->getProject(),
             ),
-            'summary' => $this->_getJiraSummary($exc, $level, $context),
-            'description' => $this->_getJiraDescription($exc, $level, $context),
+            'summary' => $summary,
+            'description' => $description,
             'assignee' => array(
                 'name' => $this->getAssignee(),
             ),
@@ -931,5 +934,14 @@ class JiraCollector extends BaseCollector
         }
 
         return $result;
+    }
+
+    private function _repairString($string)
+    {
+        $s = trim($string);
+        $s = iconv("UTF-8", "UTF-8//IGNORE", $s);
+        $s = preg_replace('/(?>\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $s);
+
+        return $s;
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\Collector;
+namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\BugTrackerBundle\Exception\ContextInterface;
-use DreamCommerce\BugTrackerBundle\Exception\InvalidArgumentException;
-use DreamCommerce\BugTrackerBundle\Traits\Options;
+use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
+use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+use DreamCommerce\Component\BugTracker\Traits\Options;
 use Psr\Log\LogLevel;
 
 abstract class BaseCollector implements CollectorInterface

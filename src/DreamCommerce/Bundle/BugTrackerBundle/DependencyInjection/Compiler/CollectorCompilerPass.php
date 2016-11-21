@@ -1,8 +1,8 @@
 <?php
 
-namespace DreamCommerce\BugTrackerBundle\DependencyInjection\Compiler;
+namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
-use DreamCommerce\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
+use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

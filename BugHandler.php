@@ -2,7 +2,7 @@
 
 namespace DreamCommerce\BugTrackerBundle;
 
-use DreamCommerce\BugTrackerBundle\Collector\CollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;

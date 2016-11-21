@@ -2,7 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
-use DreamCommerce\BugTrackerBundle\Collector\JiraCollector;
+use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
 use DreamCommerce\BugTrackerBundle\Http\Client\GuzzleClient;
 use GuzzleHttp\Client;
 use Psr\Log\LogLevel;

@@ -23,7 +23,8 @@
   },
   "autoload": {
     "psr-4": {
-      "DreamCommerce\\BugTrackerBundle\\": "src/DreamCommerce/BugTrackerBundle"
+      "DreamCommerce\\Bundle\\BugTrackerBundle\\": "src/DreamCommerce/Bundle/BugTrackerBundle",
+      "DreamCommerce\\Component\\BugTracker\\": "src/DreamCommerce/Component/BugTracker"
     }
   },
   "minimum-stability": "dev",
