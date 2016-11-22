@@ -36,12 +36,12 @@ class CollectorCompilerPass implements CompilerPassInterface
             $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);
 
-            if($collector['type'] == BugHandler::COLLECTOR_TYPE_BASE) {
+            if ($collector['type'] == BugHandler::COLLECTOR_TYPE_BASE) {
                 Assert::oneOf(BaseCollectorInterface::class, $interfaces);
-            } elseif($collector['type'] == BugHandler::COLLECTOR_TYPE_PSR3) {
+            } elseif ($collector['type'] == BugHandler::COLLECTOR_TYPE_PSR3) {
                 Assert::oneOf(Psr3CollectorInterface::class, $interfaces);
                 $collectorDefinition->addArgument($container->getDefinition('logger'));
-            } elseif($collector['type'] == BugHandler::COLLECTOR_TYPE_JIRA) {
+            } elseif ($collector['type'] == BugHandler::COLLECTOR_TYPE_JIRA) {
                 Assert::oneOf(JiraCollectorInterface::class, $interfaces);
                 $collectorDefinition->addArgument($container->getDefinition(DreamCommerceBugTrackerExtension::ALIAS.'.http_client'));
             }

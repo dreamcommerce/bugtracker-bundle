@@ -119,7 +119,7 @@ class BugHandler extends ErrorHandler
             static::COLLECTOR_TYPE_BASE,
             static::COLLECTOR_TYPE_PSR3,
             static::COLLECTOR_TYPE_JIRA,
-            static::COLLECTOR_TYPE_CUSTOM
+            static::COLLECTOR_TYPE_CUSTOM,
         );
     }
 

@@ -31,11 +31,11 @@ class DreamCommerceBugTrackerExtension extends Extension
 
         $useHttpServices = false;
 
-        foreach($config['collectors'] as $name => $collectorConfig) {
-            if(isset($collectorConfig['options'])) {
+        foreach ($config['collectors'] as $name => $collectorConfig) {
+            if (isset($collectorConfig['options'])) {
                 $partialConfiguration = null;
 
-                switch($collectorConfig['type']) {
+                switch ($collectorConfig['type']) {
                     case BugHandler::COLLECTOR_TYPE_BASE:
                         $partialConfiguration = $baseConfiguration;
                         break;
@@ -51,7 +51,7 @@ class DreamCommerceBugTrackerExtension extends Extension
                 }
 
                 $partialConfig = $collectorConfig['options'];
-                if(isset($config['configuration'][$collectorConfig['type']])) {
+                if (isset($config['configuration'][$collectorConfig['type']])) {
                     $partialConfig = array_merge($config['configuration'][$collectorConfig['type']], $partialConfig);
                 }
 
@@ -64,7 +64,7 @@ class DreamCommerceBugTrackerExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
         $loader->load('base.xml');
 
-        if($useHttpServices) {
+        if ($useHttpServices) {
             $loader->load('http.xml');
         }
 
