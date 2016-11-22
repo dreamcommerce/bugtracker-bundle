@@ -3,6 +3,7 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
+use DreamCommerce\Component\BugTracker\Collector\BaseCollector;
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
 use Psr\Log\LogLevel;
@@ -27,27 +28,36 @@ class CollectorCompilerPass implements CompilerPassInterface
 
         $additionalConfig = $container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.configuration');
 
-        foreach ($container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.handlers') as $handler) {
-            $interfaces = \class_implements($handler['class']);
+        foreach ($container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.handlers') as $collector) {
+            $interfaces = \class_implements($collector['class']);
             Assert::oneOf(CollectorInterface::class, $interfaces);
 
             $id = DreamCommerceBugTrackerExtension::ALIAS.'.handler'.self::$collectorNumber;
 
-            $collectorDefinition = new Definition($handler['class']);
-            $collectorDefinition->addArgument($handler['options']);
-
+            $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);
 
+            if (isset($additionalConfig['default'])) {
+                $classes = \class_parents($collector['class']);
+                if (in_array(BaseCollector::class, $classes)) {
+                    $collectorDefinition->addMethodCall('setOptions', $additionalConfig['default']);
+                }
+            }
+
             if (isset($additionalConfig['jira'])) {
-                $classes = \class_parents($handler['class']);
+                $classes = \class_parents($collector['class']);
                 if (in_array(JiraCollector::class, $classes)) {
                     $collectorDefinition->addMethodCall('setOptions', $additionalConfig['jira']);
                 }
             }
+            
+            if(isset($collector['options']) && !empty($collector['options'])) {
+                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['options']);
+            }
 
             $definition->addMethodCall(
                 'registerCollector',
-                array(new Reference($id), $handler['level'], $handler['priority'])
+                array(new Reference($id), $collector['level'], $collector['priority'])
             );
 
             ++self::$collectorNumber;

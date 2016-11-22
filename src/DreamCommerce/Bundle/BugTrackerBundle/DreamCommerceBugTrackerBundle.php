@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class DreamCommerceBundleBugTrackerBundle extends Bundle
+class DreamCommerceBugTrackerBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {

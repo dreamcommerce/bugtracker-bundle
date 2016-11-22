@@ -18,10 +18,19 @@ class DreamCommerceBugTrackerExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter($this->getAlias().'.collectors', $config['collectors']);
+        $container->setParameter($this->getAlias().'.configuration', $config['configuration']);
+
         $container->addCompilerPass(new CollectorCompilerPass());
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+    }
+
+    public function getAlias()
+    {
+        return self::ALIAS;
     }
 }
