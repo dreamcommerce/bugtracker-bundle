@@ -1,13 +1,13 @@
 <?php
 
-namespace DreamCommerce\Bundle/BugTrackerBundle;
+namespace DreamCommerce\Bundle\BugTrackerBundle;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class DreamCommerceBundle/BugTrackerBundle extends Bundle
+class DreamCommerceBundleBugTrackerBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
