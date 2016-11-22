@@ -48,7 +48,7 @@ class CollectorCompilerPass implements CompilerPassInterface
             }
 
             if (isset($collector['options']) && !empty($collector['options'])) {
-                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['options']);
+                $collectorDefinition->addMethodCall('setOptions', $collector['options']);
             }
 
             if (in_array(Psr3Collector::class, $classes)) {
