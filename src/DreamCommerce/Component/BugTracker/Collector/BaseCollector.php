@@ -7,14 +7,9 @@ use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Traits\Options;
 use Psr\Log\LogLevel;
 
-abstract class BaseCollector implements CollectorInterface
+abstract class BaseCollector implements BaseCollectorInterface
 {
     use Options;
-
-    /**
-     * @var array
-     */
-    private $_logLevels;
 
     /**
      * @var bool
@@ -245,50 +240,6 @@ abstract class BaseCollector implements CollectorInterface
                 'file' => $exc->getFile(),
             )
         );
-    }
-
-    /**
-     * @return array
-     */
-    public function getLogLevelPriorities()
-    {
-        if ($this->_logLevels === null) {
-            $this->_logLevels = array_flip(
-                array(
-                    LogLevel::DEBUG,
-                    LogLevel::INFO,
-                    LogLevel::NOTICE,
-                    LogLevel::WARNING,
-                    LogLevel::ERROR,
-                    LogLevel::CRITICAL,
-                    LogLevel::ALERT,
-                    LogLevel::EMERGENCY,
-                )
-            );
-        }
-
-        return $this->_logLevels;
-    }
-
-    /**
-     * @param string $level
-     *
-     * @return int
-     */
-    public function getLogLevelPriority($level)
-    {
-        if (is_string($level)) {
-            $level = strtolower($level);
-            $prioLevels = $this->getLogLevelPriorities();
-            if (!isset($prioLevels[$level])) {
-                throw new InvalidArgumentException('Unknown log level "'.$level.'"');
-            }
-            $level = $prioLevels[$level];
-        } else {
-            throw new InvalidArgumentException('Unsupported type of variable (expected: string; got: '.gettype($level).')');
-        }
-
-        return (int) $level;
     }
 
     /**

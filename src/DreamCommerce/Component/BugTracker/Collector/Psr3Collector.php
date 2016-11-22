@@ -5,7 +5,7 @@ namespace DreamCommerce\Component\BugTracker\Collector;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class Psr3Collector extends BaseCollector
+class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
 {
     /**
      * @var LoggerInterface
@@ -45,7 +45,7 @@ class Psr3Collector extends BaseCollector
     }
 
     /**
-     * @return LoggerInterface
+     * {@inheritdoc}
      */
     public function getLogger()
     {
@@ -53,9 +53,7 @@ class Psr3Collector extends BaseCollector
     }
 
     /**
-     * @param LoggerInterface $logger
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setLogger(LoggerInterface $logger)
     {
@@ -65,7 +63,7 @@ class Psr3Collector extends BaseCollector
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isFormatException()
     {
@@ -73,9 +71,7 @@ class Psr3Collector extends BaseCollector
     }
 
     /**
-     * @param bool $formatException
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setFormatException($formatException)
     {

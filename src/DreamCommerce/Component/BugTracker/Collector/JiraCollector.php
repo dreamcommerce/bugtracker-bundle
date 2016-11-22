@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\Exception\ContextErrorException;
 
-class JiraCollector extends BaseCollector
+class JiraCollector extends BaseCollector implements JiraCollectorInterface
 {
     /**
      * @var ClientInterface
@@ -166,7 +166,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return ClientInterface
+     * {@inheritdoc}
      */
     public function getHttpClient()
     {
@@ -174,9 +174,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param ClientInterface $httpClient
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setHttpClient(ClientInterface $httpClient)
     {
@@ -186,7 +184,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getEntryPoint()
     {
@@ -198,9 +196,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $entryPoint
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setEntryPoint($entryPoint)
     {
@@ -210,7 +206,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getUsername()
     {
@@ -222,9 +218,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $username
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setUsername($username)
     {
@@ -234,7 +228,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getPassword()
     {
@@ -246,9 +240,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $password
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setPassword($password)
     {
@@ -258,7 +250,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getMaxCounter()
     {
@@ -266,9 +258,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param int $maxCounter
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setMaxCounter($maxCounter)
     {
@@ -278,7 +268,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getOpenStatus()
     {
@@ -286,9 +276,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $openStatus
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setOpenStatus($openStatus)
     {
@@ -298,7 +286,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getInProgressStatuses()
     {
@@ -306,9 +294,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param array $inProgressStatuses
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setInProgressStatuses($inProgressStatuses)
     {
@@ -318,7 +304,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getReopenStatus()
     {
@@ -326,9 +312,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $reopenStatus
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setReopenStatus($reopenStatus)
     {
@@ -338,7 +322,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getProject()
     {
@@ -350,9 +334,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $project
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setProject($project)
     {
@@ -362,7 +344,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getAssignee()
     {
@@ -374,9 +356,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $assignee
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setAssignee($assignee)
     {
@@ -386,7 +366,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getPriorities()
     {
@@ -394,10 +374,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $level
-     * @param int    $id
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function addPriority($level, $id)
     {
@@ -408,9 +385,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param array $priorities
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setPriorities($priorities)
     {
@@ -420,7 +395,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getLabels()
     {
@@ -428,9 +403,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $label
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function addLabel($label)
     {
@@ -440,9 +413,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param array $labels
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setLabels($labels)
     {
@@ -452,7 +423,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getCounterFieldId()
     {
@@ -460,9 +431,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param int $counterFieldId
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setCounterFieldId($counterFieldId)
     {
@@ -476,7 +445,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getHashFieldId()
     {
@@ -484,9 +453,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param int $hashFieldId
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setHashFieldId($hashFieldId)
     {
@@ -500,7 +467,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getFields()
     {
@@ -508,10 +475,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $name
-     * @param mixed  $value
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function addField($name, $value)
     {
@@ -521,9 +485,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param array $fields
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setFields($fields)
     {
@@ -533,7 +495,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isUseCounter()
     {
@@ -541,7 +503,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param bool $useCounter
+     * {@inheritdoc}
      */
     public function setUseCounter($useCounter)
     {
@@ -549,7 +511,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isUseHash()
     {
@@ -557,9 +519,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param bool $useHash
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setUseHash($useHash)
     {
@@ -569,7 +529,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isUseReopen()
     {
@@ -577,9 +537,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param bool $useReopen
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setUseReopen($useReopen)
     {
@@ -589,7 +547,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getDefaultType()
     {
@@ -597,9 +555,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param int $defaultType
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setDefaultType($defaultType)
     {
@@ -607,7 +563,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getDefaultPriority()
     {
@@ -615,9 +571,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param int $defaultPriority
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setDefaultPriority($defaultPriority)
     {
@@ -627,7 +581,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getTypes()
     {
@@ -635,10 +589,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param string $level
-     * @param int    $type
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function addType($level, $type)
     {
@@ -648,9 +599,7 @@ class JiraCollector extends BaseCollector
     }
 
     /**
-     * @param array $types
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setTypes($types)
     {

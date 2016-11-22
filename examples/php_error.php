@@ -2,7 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
-use DreamCommerce\BugTrackerBundle\BugHandler;
+use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;

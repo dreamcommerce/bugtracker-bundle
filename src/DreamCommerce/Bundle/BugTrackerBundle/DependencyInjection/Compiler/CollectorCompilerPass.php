@@ -3,10 +3,12 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
-use DreamCommerce\Component\BugTracker\Collector\BaseCollector;
+use DreamCommerce\Component\BugTracker\BugHandler;
+use DreamCommerce\Component\BugTracker\Collector\BaseCollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
-use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
-use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
+use DreamCommerce\Component\BugTracker\Collector\JiraCollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\Psr3CollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\QueueCollectorInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -25,8 +27,6 @@ class CollectorCompilerPass implements CompilerPassInterface
             DreamCommerceBugTrackerExtension::ALIAS.'.collector_queue'
         );
 
-        $additionalConfig = $container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.configuration');
-
         foreach ($container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.collectors') as $name => $collector) {
             $interfaces = \class_implements($collector['class']);
             Assert::oneOf(CollectorInterface::class, $interfaces);
@@ -36,24 +36,13 @@ class CollectorCompilerPass implements CompilerPassInterface
             $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);
 
-            $classes = \class_parents($collector['class']);
-            $classes[] = $collector['class'];
-
-            if (isset($additionalConfig['default']) && in_array(BaseCollector::class, $classes)) {
-                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['default']);
-            } elseif (isset($additionalConfig['jira']) && in_array(JiraCollector::class, $classes)) {
-                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['jira']);
-            } elseif (isset($additionalConfig['psr3']) && in_array(Psr3Collector::class, $classes)) {
-                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['psr3']);
-            }
-
-            if (isset($collector['options']) && !empty($collector['options'])) {
-                $collectorDefinition->addMethodCall('setOptions', $collector['options']);
-            }
-
-            if (in_array(Psr3Collector::class, $classes)) {
+            if($collector['type'] == BugHandler::COLLECTOR_TYPE_BASE) {
+                Assert::oneOf(BaseCollectorInterface::class, $interfaces);
+            } elseif($collector['type'] == BugHandler::COLLECTOR_TYPE_PSR3) {
+                Assert::oneOf(Psr3CollectorInterface::class, $interfaces);
                 $collectorDefinition->addArgument($container->getDefinition('logger'));
-            } elseif (in_array(JiraCollector::class, $classes)) {
+            } elseif($collector['type'] == BugHandler::COLLECTOR_TYPE_JIRA) {
+                Assert::oneOf(JiraCollectorInterface::class, $interfaces);
                 $collectorDefinition->addArgument($container->getDefinition(DreamCommerceBugTrackerExtension::ALIAS.'.http_client'));
             }
 
@@ -61,18 +50,27 @@ class CollectorCompilerPass implements CompilerPassInterface
                 'registerCollector',
                 array(new Reference($id), $collector['level'], $collector['priority'])
             );
+
+            unset($collector['level']);
+            unset($collector['priority']);
+            unset($collector['class']);
+
+            $collectorDefinition->addArgument($collector);
         }
 
         $taggedServices = $container->findTaggedServiceIds(
             DreamCommerceBugTrackerExtension::ALIAS.'.collector'
         );
+        $supportedLevels = BugHandler::getSupportedLogLevels();
+
         foreach ($taggedServices as $id => $attributes) {
             $level = LogLevel::WARNING;
             if (isset($attributes['level'])) {
-                $level = (int) $attributes['level'];
+                $level = (string) $attributes['level'];
+                Assert::oneOf($level, $supportedLevels);
             }
 
-            $priority = 0;
+            $priority = QueueCollectorInterface::PRIORITY_NORMAL;
             if (isset($attributes['priority'])) {
                 $priority = (int) $attributes['priority'];
             }
