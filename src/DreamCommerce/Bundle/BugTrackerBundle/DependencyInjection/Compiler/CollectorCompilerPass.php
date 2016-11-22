@@ -6,6 +6,7 @@ use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTr
 use DreamCommerce\Component\BugTracker\Collector\BaseCollector;
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
+use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -15,8 +16,6 @@ use Webmozart\Assert\Assert;
 
 class CollectorCompilerPass implements CompilerPassInterface
 {
-    private static $collectorNumber = 0;
-
     /**
      * @param ContainerBuilder $container
      */
@@ -28,39 +27,40 @@ class CollectorCompilerPass implements CompilerPassInterface
 
         $additionalConfig = $container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.configuration');
 
-        foreach ($container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.handlers') as $collector) {
+        foreach ($container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.collectors') as $name => $collector) {
             $interfaces = \class_implements($collector['class']);
             Assert::oneOf(CollectorInterface::class, $interfaces);
 
-            $id = DreamCommerceBugTrackerExtension::ALIAS.'.handler'.self::$collectorNumber;
+            $id = DreamCommerceBugTrackerExtension::ALIAS.'.collector.'.$name;
 
             $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);
 
-            if (isset($additionalConfig['default'])) {
-                $classes = \class_parents($collector['class']);
-                if (in_array(BaseCollector::class, $classes)) {
-                    $collectorDefinition->addMethodCall('setOptions', $additionalConfig['default']);
-                }
+            $classes = \class_parents($collector['class']);
+            $classes[] = $collector['class'];
+
+            if (isset($additionalConfig['default']) && in_array(BaseCollector::class, $classes)) {
+                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['default']);
+            } elseif (isset($additionalConfig['jira']) && in_array(JiraCollector::class, $classes)) {
+                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['jira']);
+            } elseif (isset($additionalConfig['psr3']) && in_array(Psr3Collector::class, $classes)) {
+                $collectorDefinition->addMethodCall('setOptions', $additionalConfig['psr3']);
             }
 
-            if (isset($additionalConfig['jira'])) {
-                $classes = \class_parents($collector['class']);
-                if (in_array(JiraCollector::class, $classes)) {
-                    $collectorDefinition->addMethodCall('setOptions', $additionalConfig['jira']);
-                }
-            }
-            
-            if(isset($collector['options']) && !empty($collector['options'])) {
+            if (isset($collector['options']) && !empty($collector['options'])) {
                 $collectorDefinition->addMethodCall('setOptions', $additionalConfig['options']);
+            }
+
+            if (in_array(Psr3Collector::class, $classes)) {
+                $collectorDefinition->addArgument($container->getDefinition('logger'));
+            } elseif (in_array(JiraCollector::class, $classes)) {
+                $collectorDefinition->addArgument($container->getDefinition(DreamCommerceBugTrackerExtension::ALIAS.'.http_client'));
             }
 
             $definition->addMethodCall(
                 'registerCollector',
                 array(new Reference($id), $collector['level'], $collector['priority'])
             );
-
-            ++self::$collectorNumber;
         }
 
         $taggedServices = $container->findTaggedServiceIds(

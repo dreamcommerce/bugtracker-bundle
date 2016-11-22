@@ -7,10 +7,6 @@ use Psr\Log\LogLevel;
 
 class QueueCollector extends BaseCollector implements QueueCollectorInterface
 {
-    const PRIORITY_LOW = -100;
-    const PRIORITY_NORMAL = 0;
-    const PRIORITY_HIGH = 100;
-
     /**
      * @var int
      */

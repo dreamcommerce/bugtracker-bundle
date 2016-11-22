@@ -17,12 +17,6 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('dream_commerce_bug_tracker');
 
-        $supportedPriorities = array(
-            QueueCollectorInterface::PRIORITY_LOW,
-            QueueCollectorInterface::PRIORITY_NORMAL,
-            QueueCollectorInterface::PRIORITY_HIGH,
-        );
-
         $supportedLevels = array(
             LogLevel::DEBUG,
             LogLevel::INFO,
@@ -35,11 +29,13 @@ class Configuration implements ConfigurationInterface
         );
 
         $rootNode
-            ->fixXmlConfig('handler')
+            ->fixXmlConfig('collector')
             ->children()
                 ->arrayNode('configuration')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->arrayNode('default')
+                            ->fixXmlConfig('exception')
                             ->fixXmlConfig('ignore_exception')
                             ->addDefaultsIfNotSet()
                             ->children()
@@ -53,11 +49,18 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
+                        ->arrayNode('psr3')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('logger')->defaultValue('@logger')->cannotBeEmpty()->end()
+                            ->end()
+                        ->end()
                         ->arrayNode('jira')
                             ->fixXmlConfig('label')
                             ->fixXmlConfig('in_progress_status')
                             ->addDefaultsIfNotSet()
                             ->children()
+                                ->scalarNode('http_client')->defaultValue('@dream_commerce.http_client')->cannotBeEmpty()->end()
                                 ->scalarNode('entry_point')->cannotBeEmpty()->end()
                                 ->scalarNode('username')->cannotBeEmpty()->end()
                                 ->scalarNode('password')->cannotBeEmpty()->end()
@@ -82,16 +85,14 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('collectors')
+                    ->useAttributeAsKey('name')
+                    ->requiresAtLeastOneElement()
                     ->fixXmlConfig('option')
                     ->prototype('array')
                         ->children()
                             ->scalarNode('class')->cannotBeEmpty()->end()
-                            ->scalarNode('priority')
+                            ->integerNode('priority')
                                 ->defaultValue(QueueCollectorInterface::PRIORITY_NORMAL)
-                                ->validate()
-                                    ->ifNotInArray($supportedPriorities)
-                                    ->thenInvalid('The priority %s is not supported. Please choose one of '.json_encode($supportedPriorities))
-                                ->end()
                             ->end()
                             ->scalarNode('level')
                                 ->defaultValue(LogLevel::WARNING)
@@ -100,7 +101,10 @@ class Configuration implements ConfigurationInterface
                                     ->thenInvalid('The level %s is not supported. Please choose one of '.json_encode($supportedLevels))
                                 ->end()
                             ->end()
-                            ->variableNode('options')->end()
+                            ->arrayNode('options')
+                                ->useAttributeAsKey('key')
+                                ->prototype('scalar')->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
