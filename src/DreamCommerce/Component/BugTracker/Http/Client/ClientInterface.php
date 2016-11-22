@@ -10,7 +10,7 @@ interface ClientInterface
 {
     /**
      * @param \Psr\Http\Message\RequestInterface $request
-     * @param array                              $options - Vendor-specific options, don't rely on for interop.
+     * @param array                              $options - Vendor-specific options, don't rely on for interop
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -31,11 +31,11 @@ interface ClientInterface
     public function request($method, $uri, array $options = array());
 
     /**
-     * @param null|string                     $method          HTTP method for the request.
-     * @param null|string|UriInterface        $uri             URI for the request.
-     * @param array                           $headers         Headers for the message.
-     * @param string|resource|StreamInterface $body            Message body.
-     * @param string                          $protocolVersion HTTP protocol version.
+     * @param null|string                     $method          HTTP method for the request
+     * @param null|string|UriInterface        $uri             URI for the request
+     * @param array                           $headers         Headers for the message
+     * @param string|resource|StreamInterface $body            Message body
+     * @param string                          $protocolVersion HTTP protocol version
      *
      * @return \Psr\Http\Message\RequestInterface
      */
@@ -43,7 +43,7 @@ interface ClientInterface
     /**
      * @param string $uri - If uri is provided the result of parse_url() is set as parts for UriInterface
      *
-     * @throws \InvalidArgumentException When passed $uri is not a string or not parsable uri.
+     * @throws \InvalidArgumentException When passed $uri is not a string or not parsable uri
      *
      * @return \Psr\Http\Message\UriInterface
      */
@@ -51,7 +51,7 @@ interface ClientInterface
     /**
      * @param mixed $data
      *
-     * @throws \InvalidArgumentException When passed data cannot be converted to a stream.
+     * @throws \InvalidArgumentException When passed data cannot be converted to a stream
      *
      * @return \Psr\Http\Message\StreamInterface
      */

@@ -8,8 +8,8 @@ interface CollectorInterface
 {
     /**
      * @param \Exception|\Throwable $exc
-     * @param string            $level
-     * @param array             $context
+     * @param string                $level
+     * @param array                 $context
      *
      * @return bool
      */
@@ -17,8 +17,8 @@ interface CollectorInterface
 
     /**
      * @param \Exception|\Throwable $exc
-     * @param string            $level
-     * @param array             $context
+     * @param string                $level
+     * @param array                 $context
      *
      * @return bool
      */

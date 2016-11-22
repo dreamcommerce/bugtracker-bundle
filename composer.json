@@ -35,8 +35,8 @@
       "@test"
     ],
     "upload-coverage": "coveralls -v",
-    "cs-check": "php-cs-fixer --version && php-cs-fixer fix -v --diff --dry-run",
-    "cs-fix": "php-cs-fixer fix -v",
+    "cs-check": "php-cs-fixer --version && php-cs-fixer fix -v --diff --dry-run src",
+    "cs-fix": "php-cs-fixer fix -v src",
     "test": "phpunit",
     "test-coverage": "phpunit --coverage-clover clover.xml"
   },

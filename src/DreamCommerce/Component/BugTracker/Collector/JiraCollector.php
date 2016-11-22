@@ -118,7 +118,7 @@ class JiraCollector extends BaseCollector
 
     /**
      * @param ClientInterface $httpClient
-     * @param array $options
+     * @param array           $options
      */
     public function __construct(ClientInterface $httpClient, array $options = array())
     {
@@ -939,7 +939,7 @@ class JiraCollector extends BaseCollector
     private function _repairString($string)
     {
         $s = trim($string);
-        $s = iconv("UTF-8", "UTF-8//IGNORE", $s);
+        $s = iconv('UTF-8', 'UTF-8//IGNORE', $s);
         $s = preg_replace('/(?>\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $s);
 
         return $s;

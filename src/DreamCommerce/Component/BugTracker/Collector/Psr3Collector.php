@@ -19,7 +19,7 @@ class Psr3Collector extends BaseCollector
 
     /**
      * @param LoggerInterface $logger
-     * @param array $options
+     * @param array           $options
      */
     public function __construct(LoggerInterface $logger, array $options = array())
     {

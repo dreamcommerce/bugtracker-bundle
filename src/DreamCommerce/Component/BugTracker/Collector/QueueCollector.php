@@ -5,7 +5,7 @@ namespace DreamCommerce\Component\BugTracker\Collector;
 use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
-class QueueCollector extends BaseCollector
+class QueueCollector extends BaseCollector implements QueueCollectorInterface
 {
     const PRIORITY_LOW = -100;
     const PRIORITY_NORMAL = 0;
@@ -22,9 +22,7 @@ class QueueCollector extends BaseCollector
     private $_collectorQueue;
 
     /**
-     * @param CollectorInterface $collector
-     * @param string             $level
-     * @param int                $priority
+     * {@inheritdoc}
      */
     public function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0)
     {
@@ -45,9 +43,7 @@ class QueueCollector extends BaseCollector
     }
 
     /**
-     * @param string|CollectorInterface $collector
-     *
-     * @throws \Exception
+     * {@inheritdoc}
      */
     public function unregisterCollector($collector)
     {
@@ -59,7 +55,7 @@ class QueueCollector extends BaseCollector
     }
 
     /**
-     * Remove all collectors from bugtracker.
+     * {@inheritdoc}
      */
     public function unregisterAllCollectors()
     {
@@ -67,11 +63,7 @@ class QueueCollector extends BaseCollector
     }
 
     /**
-     * @param string|CollectorInterface|null $collector
-     *
-     * @return array
-     *
-     * @throws \Exception
+     * {@inheritdoc}
      */
     public function getCollectors($collector = null)
     {

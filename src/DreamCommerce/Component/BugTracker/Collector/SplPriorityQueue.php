@@ -3,6 +3,7 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+use Webmozart\Assert\Assert;
 
 class SplPriorityQueue extends \SplPriorityQueue
 {
@@ -11,9 +12,7 @@ class SplPriorityQueue extends \SplPriorityQueue
     public function remove($item)
     {
         if (is_object($item)) {
-            if (!($item instanceof CollectorInterface)) {
-                throw new InvalidArgumentException('Cannot delete the item from the queue. Invalid type of object [ expected: DreamCommerce\Component\BugTracker\Collector\CollectorInterface; got: '.get_class($item).' ]');
-            }
+            Assert::isInstanceOf($item, CollectorInterface::class);
         } elseif (!is_string($item)) {
             throw new InvalidArgumentException('Cannot delete the item from the queue');
         }
