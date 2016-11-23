@@ -33,3 +33,13 @@
              level: error
              priority: -100
 ```
+
+Example code:
+------------
+```php
+        try {
+            throw new \RuntimeException();
+        } catch(\Exception $exc) {
+            $this->get('bug_tracker')->handle($exc, LogLevel::ERROR, array('a' => 1, 'b' => 2, 'c' => 3, 'd' => new \stdClass()));
+        }
+```
