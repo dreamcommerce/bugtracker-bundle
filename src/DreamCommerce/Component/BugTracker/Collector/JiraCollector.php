@@ -11,6 +11,8 @@ use Symfony\Component\Debug\Exception\ContextErrorException;
 
 class JiraCollector extends BaseCollector implements JiraCollectorInterface
 {
+    const SEPARATOR = "-----------------------------------------------------------\r\n";
+
     /**
      * @var ClientInterface
      */
@@ -634,11 +636,21 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      */
     protected function _getJiraDescription($exc, $level, array $context = array())
     {
-        return substr(
-            $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
-            $exc->getTraceAsString(),
-            0, 4000
-        );
+        $str = $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
+            $exc->getFile() . ':' . $exc->getLine() . PHP_EOL .
+            static::SEPARATOR;
+
+        if(!empty($context)) {
+            $str .=
+                "Parameters:" . PHP_EOL . PHP_EOL .
+                $this->_prepareContext($context) . PHP_EOL .
+                static::SEPARATOR;
+        }
+
+        $str .= "Stack trace:" . PHP_EOL . PHP_EOL;
+        $str .= $exc->getTraceAsString();
+
+        return $str;
     }
 
     /**
@@ -697,7 +709,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
                 'key' => $this->getProject(),
             ),
             'summary' => $summary,
-            'description' => $description,
+            'description' => substr($description, 0, 4000),
             'assignee' => array(
                 'name' => $this->getAssignee(),
             ),
@@ -885,12 +897,32 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         return $result;
     }
 
-    private function _repairString($string)
+    protected function _repairString($string)
     {
         $s = trim($string);
         $s = iconv('UTF-8', 'UTF-8//IGNORE', $s);
         $s = preg_replace('/(?>\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $s);
 
         return $s;
+    }
+
+    protected function _prepareContext(array $array, $prefix = "\t")
+    {
+        $result = '';
+
+        foreach($array as $key => $value) {
+            $result .= $key . ': ';
+            if(is_object($value)){
+                $value = '<' . get_class($value) . '>';
+            }
+            if(is_array($value)){
+                $result .= PHP_EOL . static::_prepareContext($value, $prefix . "\t");
+            } else {
+                $result .= $value;
+            }
+            $result .= PHP_EOL;
+        }
+
+        return $result;
     }
 }

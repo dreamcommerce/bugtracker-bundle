@@ -21,7 +21,7 @@ interface BaseCollectorInterface extends CollectorInterface
      *
      * @return $this
      */
-    public function setIgnoreExceptions($ignoreExceptions);
+    public function setIgnoreExceptions(array $ignoreExceptions = array());
 
     /**
      * @return array
@@ -40,7 +40,7 @@ interface BaseCollectorInterface extends CollectorInterface
      *
      * @return $this
      */
-    public function setExceptions($exceptions);
+    public function setExceptions(array $exceptions = array());
 
     /**
      * @return bool

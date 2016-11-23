@@ -12,13 +12,14 @@ trait Options
     public function setOptions(array $options = array())
     {
         foreach ($options as $option => $value) {
-            $camelCase = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $option))));
-            $funcName = 'set'.ucfirst($option);
+            $option = ucfirst($option);
+            $funcName = 'set'.$option;
             if (method_exists($this, $funcName)) {
                 call_user_func(array($this, $funcName), $value);
                 continue;
             }
 
+            $camelCase = str_replace(' ', '', ucwords(str_replace('_', ' ', $option)));
             $funcName = 'set'.$camelCase;
             if (method_exists($this, $funcName)) {
                 call_user_func(array($this, $funcName), $value);

@@ -154,11 +154,11 @@ class BugHandler extends ErrorHandler
      *
      * @return int
      */
-    public function getLogLevelPriority($level)
+    public static function getLogLevelPriority($level)
     {
         if (is_string($level)) {
             $level = strtolower($level);
-            $prioLevels = $this->getLogLevelPriorities();
+            $prioLevels = self::getLogLevelPriorities();
             if (!isset($prioLevels[$level])) {
                 throw new InvalidArgumentException('Unknown log level "'.$level.'"');
             }

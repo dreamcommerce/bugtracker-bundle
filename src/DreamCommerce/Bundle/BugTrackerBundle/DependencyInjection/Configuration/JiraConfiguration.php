@@ -31,7 +31,7 @@ final class JiraConfiguration implements ConfigurationInterface
             ->fixXmlConfig('in_progress_status')
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('http_client')->defaultValue('dream_commerce.http_client')->cannotBeEmpty()->end()
+                ->scalarNode('http_client')->defaultValue('dream_commerce_bug_tracker.http_client')->cannotBeEmpty()->end()
                 ->scalarNode('entry_point')->cannotBeEmpty()->end()
                 ->scalarNode('username')->cannotBeEmpty()->end()
                 ->scalarNode('password')->cannotBeEmpty()->end()

@@ -61,7 +61,9 @@ abstract class BaseCollector implements BaseCollectorInterface
                 if ($ignoredException === $exc) {
                     return false;
                 }
-            } elseif (is_string($ignoredException)) {
+                $ignoredException = get_class($ignoredException);
+            }
+            if (is_string($ignoredException)) {
                 if ($exc instanceof $ignoredException) {
                     return false;
                 }
@@ -76,7 +78,9 @@ abstract class BaseCollector implements BaseCollectorInterface
                     if ($includeException === $exc) {
                         return true;
                     }
-                } elseif (is_string($includeException)) {
+                    $includeException = get_class($includeException);
+                }
+                if (is_string($includeException)) {
                     if ($exc instanceof $includeException) {
                         return true;
                     }
@@ -148,7 +152,7 @@ abstract class BaseCollector implements BaseCollectorInterface
      *
      * @return $this
      */
-    public function setIgnoreExceptions($ignoreExceptions)
+    public function setIgnoreExceptions(array $ignoreExceptions = array())
     {
         $this->_ignoreExceptions = $ignoreExceptions;
 
@@ -180,7 +184,7 @@ abstract class BaseCollector implements BaseCollectorInterface
      *
      * @return $this
      */
-    public function setExceptions($exceptions)
+    public function setExceptions(array $exceptions = array())
     {
         $this->_exceptions = $exceptions;
 

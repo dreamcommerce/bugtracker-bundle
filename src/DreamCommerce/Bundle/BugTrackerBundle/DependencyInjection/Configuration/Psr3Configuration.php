@@ -29,7 +29,7 @@ final class Psr3Configuration implements ConfigurationInterface
         $node
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('logger')->defaultValue('logger')->cannotBeEmpty()->end()
+                ->scalarNode('logger')->defaultValue('monolog.logger')->cannotBeEmpty()->end()
             ->end();
     }
 }

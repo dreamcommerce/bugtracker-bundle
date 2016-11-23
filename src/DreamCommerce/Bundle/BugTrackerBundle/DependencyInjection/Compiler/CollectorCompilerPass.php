@@ -40,10 +40,28 @@ class CollectorCompilerPass implements CompilerPassInterface
                 Assert::oneOf(BaseCollectorInterface::class, $interfaces);
             } elseif ($collector['type'] == BugHandler::COLLECTOR_TYPE_PSR3) {
                 Assert::oneOf(Psr3CollectorInterface::class, $interfaces);
-                $collectorDefinition->addArgument($container->getDefinition('logger'));
+
+                $serviceName = 'logger';
+                if(isset($collector['logger'])) {
+                    if(!empty($collector['logger'])) {
+                        $serviceName = ltrim($collector['logger'], '@');
+                    }
+                    unset($collector['logger']);
+                }
+
+                $collectorDefinition->addArgument($container->getDefinition($serviceName));
             } elseif ($collector['type'] == BugHandler::COLLECTOR_TYPE_JIRA) {
                 Assert::oneOf(JiraCollectorInterface::class, $interfaces);
-                $collectorDefinition->addArgument($container->getDefinition(DreamCommerceBugTrackerExtension::ALIAS.'.http_client'));
+
+                $serviceName = DreamCommerceBugTrackerExtension::ALIAS.'.http_client';
+                if(isset($collector['http_client'])) {
+                    if(!empty($collector['http_client'])) {
+                        $serviceName = ltrim($collector['http_client'], '@');
+                    }
+                    unset($collector['http_client']);
+                }
+
+                $collectorDefinition->addArgument($container->getDefinition($serviceName));
             }
 
             $definition->addMethodCall(
