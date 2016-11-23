@@ -42,8 +42,8 @@ class CollectorCompilerPass implements CompilerPassInterface
                 Assert::oneOf(Psr3CollectorInterface::class, $interfaces);
 
                 $serviceName = 'logger';
-                if(isset($collector['logger'])) {
-                    if(!empty($collector['logger'])) {
+                if (isset($collector['logger'])) {
+                    if (!empty($collector['logger'])) {
                         $serviceName = ltrim($collector['logger'], '@');
                     }
                     unset($collector['logger']);
@@ -54,8 +54,8 @@ class CollectorCompilerPass implements CompilerPassInterface
                 Assert::oneOf(JiraCollectorInterface::class, $interfaces);
 
                 $serviceName = DreamCommerceBugTrackerExtension::ALIAS.'.http_client';
-                if(isset($collector['http_client'])) {
-                    if(!empty($collector['http_client'])) {
+                if (isset($collector['http_client'])) {
+                    if (!empty($collector['http_client'])) {
                         $serviceName = ltrim($collector['http_client'], '@');
                     }
                     unset($collector['http_client']);

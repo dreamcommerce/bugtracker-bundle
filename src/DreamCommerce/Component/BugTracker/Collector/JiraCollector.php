@@ -637,17 +637,17 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     protected function _getJiraDescription($exc, $level, array $context = array())
     {
         $str = $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
-            $exc->getFile() . ':' . $exc->getLine() . PHP_EOL .
+            $exc->getFile().':'.$exc->getLine().PHP_EOL.
             static::SEPARATOR;
 
-        if(!empty($context)) {
+        if (!empty($context)) {
             $str .=
-                "Parameters:" . PHP_EOL . PHP_EOL .
-                $this->_prepareContext($context) . PHP_EOL .
+                'Parameters:'.PHP_EOL.PHP_EOL.
+                $this->_prepareContext($context).PHP_EOL.
                 static::SEPARATOR;
         }
 
-        $str .= "Stack trace:" . PHP_EOL . PHP_EOL;
+        $str .= 'Stack trace:'.PHP_EOL.PHP_EOL;
         $str .= $exc->getTraceAsString();
 
         return $str;
@@ -910,13 +910,13 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     {
         $result = '';
 
-        foreach($array as $key => $value) {
-            $result .= $key . ': ';
-            if(is_object($value)){
-                $value = '<' . get_class($value) . '>';
+        foreach ($array as $key => $value) {
+            $result .= $key.': ';
+            if (is_object($value)) {
+                $value = '<'.get_class($value).'>';
             }
-            if(is_array($value)){
-                $result .= PHP_EOL . static::_prepareContext($value, $prefix . "\t");
+            if (is_array($value)) {
+                $result .= PHP_EOL.static::_prepareContext($value, $prefix."\t");
             } else {
                 $result .= $value;
             }
