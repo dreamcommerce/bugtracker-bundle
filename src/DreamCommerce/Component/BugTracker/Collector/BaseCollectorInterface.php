@@ -2,7 +2,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-interface BaseCollectorInterface extends CollectorInterface
+interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 {
     /**
      * @return array

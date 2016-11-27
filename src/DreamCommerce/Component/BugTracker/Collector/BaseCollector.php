@@ -4,8 +4,10 @@ namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
 use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 use DreamCommerce\Component\BugTracker\Traits\Options;
 use Psr\Log\LogLevel;
+use Webmozart\Assert\Assert;
 
 abstract class BaseCollector implements BaseCollectorInterface
 {
@@ -14,12 +16,12 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * @var bool
      */
-    protected $_isLocked = false;
+    protected $_locked = false;
 
     /**
      * @var bool
      */
-    protected $_isCollected = false;
+    protected $_collected = false;
 
     /**
      * @var array
@@ -30,6 +32,16 @@ abstract class BaseCollector implements BaseCollectorInterface
      * @var array
      */
     protected $_ignoreExceptions = array();
+
+    /**
+     * @var bool
+     */
+    protected $_useToken = false;
+    
+    /**
+     * @var TokenGeneratorInterface|null
+     */
+    protected $_tokenGenerator;
 
     /**
      * @param array $options
@@ -124,11 +136,23 @@ abstract class BaseCollector implements BaseCollectorInterface
      */
     public function isCollected()
     {
-        return (bool) $this->_isCollected;
+        return (bool) $this->_collected;
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
+     */
+    public function setIsCollected($isCollected)
+    {
+        Assert::boolean($isCollected);
+
+        $this->_collected = $isCollected;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getIgnoreExceptions()
     {
@@ -136,9 +160,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @param \Error|\Exception|string $exc
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function addIgnoreException($exc)
     {
@@ -148,9 +170,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @param array $ignoreExceptions
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setIgnoreExceptions(array $ignoreExceptions = array())
     {
@@ -160,7 +180,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getExceptions()
     {
@@ -168,9 +188,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @param \Error|\Exception|string $exc
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function addException($exc)
     {
@@ -180,9 +198,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @param array $exceptions
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setExceptions(array $exceptions = array())
     {
@@ -192,33 +208,73 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isLocked()
     {
-        return (bool) $this->_isLocked;
+        return (bool) $this->_locked;
     }
 
     /**
-     * @return $this
+     * {@inheritdoc}
      */
     public function lock()
     {
-        $this->_isLocked = true;
+        $this->_locked = true;
+
+        return $this;
     }
 
     /**
-     * @return $this
+     * {@inheritdoc}
      */
     public function unlock()
     {
-        $this->_isLocked = false;
+        $this->_locked = false;
+
+        return $this;
     }
 
     /**
-     * @param \Exception|\Throwable $exc
-     *
-     * @return array
+     * {@inheritdoc}
+     */
+    public function getTokenGenerator()
+    {
+        return $this->_tokenGenerator;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTokenGenerator(TokenGeneratorInterface $tokenGenerator = null)
+    {
+        $this->_tokenGenerator = $tokenGenerator;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isUseToken()
+    {
+        return $this->_useToken;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUseToken($useToken)
+    {
+        Assert::boolean($useToken);
+
+        $this->_useToken = $useToken;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getContext($exc)
     {

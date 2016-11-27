@@ -15,6 +15,8 @@ class BugHandler extends ErrorHandler
     const COLLECTOR_TYPE_BASE = 'base';
     const COLLECTOR_TYPE_PSR3 = 'psr3';
     const COLLECTOR_TYPE_JIRA = 'jira';
+    const COLLECTOR_TYPE_DOCTRINE = 'doctrine';
+    const COLLECTOR_TYPE_SWIFTMAILER = 'swiftmailer';
     const COLLECTOR_TYPE_CUSTOM = 'custom';
 
     /**
@@ -119,6 +121,8 @@ class BugHandler extends ErrorHandler
             static::COLLECTOR_TYPE_BASE,
             static::COLLECTOR_TYPE_PSR3,
             static::COLLECTOR_TYPE_JIRA,
+            static::COLLECTOR_TYPE_DOCTRINE,
+            static::COLLECTOR_TYPE_SWIFTMAILER,
             static::COLLECTOR_TYPE_CUSTOM,
         );
     }

@@ -4,14 +4,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="dream_commerce_bug_tracker.collector.class">DreamCommerce\Component\BugTracker\Collector\SymfonyQueueCollector</parameter>
+        <parameter key="dream_commerce_bug_tracker.symfony_handler.class">DreamCommerce\Component\BugTracker\Handler\SymfonyHandler</parameter>
+        <parameter key="dream_commerce_bug_tracker.collector.class">DreamCommerce\Component\BugTracker\Collector\QueueCollector</parameter>
+        <parameter key="dream_commerce_bug_tracker.token_generator.class">DreamCommerce\Component\BugTracker\Generator\ContextTokenGenerator</parameter>
     </parameters>
 
     <services>
-        <service id="dream_commerce_bug_tracker.collector_queue" class="%dream_commerce_bug_tracker.collector.class%">
+        <service id="dream_commerce_bug_tracker.symfony_handler" class="%dream_commerce_bug_tracker.symfony_handler.class%" public="false">
+            <argument type="service" id="dream_commerce_bug_tracker.collector_queue" />
             <tag name="kernel.event_listener" event="kernel.exception" method="handleKernelException" />
             <tag name="kernel.event_listener" event="console.exception"  method="handleConsoleException" />
         </service>
+        <service id="dream_commerce_bug_tracker.collector_queue" class="%dream_commerce_bug_tracker.collector.class%" />
+        <service id="dream_commerce_bug_tracker.token_generator" class="%dream_commerce_bug_tracker.token_generator.class%" />
 
         <service id="bug_tracker" alias="dream_commerce_bug_tracker.collector_queue" />
     </services>

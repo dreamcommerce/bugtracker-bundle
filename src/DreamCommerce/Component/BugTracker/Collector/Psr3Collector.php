@@ -18,30 +18,28 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
     protected $_formatException = true;
 
     /**
-     * @param LoggerInterface $logger
-     * @param array           $options
-     */
-    public function __construct(LoggerInterface $logger, array $options = array())
-    {
-        $this->_logger = $logger;
-        parent::__construct($options);
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if ($this->_formatException) {
-            $exc = "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
+        $token = null;
+        if($this->isUseToken()) {
+            $token = $this->getTokenGenerator()->generate($exc, $level, $context);
         }
-        unset($context['message']);
-        unset($context['code']);
-        unset($context['file']);
-        unset($context['line']);
+
+        if ($this->_formatException) {
+            $exc = '';
+            if($this->isUseToken()) {
+                $exc .= '[ ' . $token . ' ] ';
+            }
+            $exc .= "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
+        } elseif($this->isUseToken()) {
+            $context['token'] = $token;
+        }
 
         $this->_logger->log($level, $exc, $context);
-        $this->_isCollected = true;
+
+        $this->setIsCollected(true);
     }
 
     /**

@@ -11,12 +11,12 @@ $loggerFirst = new Logger('test');
 $loggerFirst->pushHandler(new StreamHandler(__DIR__ . '/logs/queue_first.log', Logger::WARNING));
 
 $queue = new QueueCollector();
-$queue->registerCollector(new Psr3Collector($loggerFirst));
+$queue->registerCollector(new Psr3Collector(array('logger' => $loggerFirst)));
 
 $loggerSecond = new Logger('test 2');
 $loggerSecond->pushHandler(new StreamHandler(__DIR__ . '/logs/queue_second.log', Logger::WARNING));
 
-$queue->registerCollector(new Psr3Collector($loggerSecond));
+$queue->registerCollector(new Psr3Collector(array('logger' => $loggerSecond)));
 
 try {
     throw new \Exception('test');

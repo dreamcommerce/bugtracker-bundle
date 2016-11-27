@@ -6,7 +6,7 @@
   "require": {
     "php": ">=5.5.9",
     "psr/log": "^1.0",
-    "psr/http-message": "1.0",
+    "psr/http-message": "^1.0",
     "symfony/polyfill-php70": "^1.0",
     "symfony/debug": "~2.7|~3.0",
     "webmozart/assert": "^1.1.0"
@@ -14,8 +14,10 @@
   "require-dev": {
     "symfony/symfony": "~2.7|~3.0",
     "monolog/monolog": "^1.19",
-    "guzzlehttp/guzzle": "^6.2.0",
-    "phpunit/phpunit": "^4.8"
+    "guzzlehttp/guzzle": "^6.2",
+    "phpunit/phpunit": "^4.8",
+    "swiftmailer/swiftmailer": "^5.4",
+    "doctrine/orm": "^2.5"
   },
   "suggest": {
     "symfony/symfony": "Great PHP framework !",
@@ -35,16 +37,20 @@
       "@cs-check",
       "@test"
     ],
-    "upload-coverage": "coveralls -v",
     "cs-check": "php-cs-fixer --version && php-cs-fixer fix -v --diff --dry-run src",
     "cs-fix": "php-cs-fixer fix -v src",
-    "test": "phpunit",
-    "test-coverage": "phpunit --coverage-clover clover.xml"
+    "test": "phpunit"
   },
   "authors": [
     {
       "name": "Michał Korus",
-      "email": "michal.korus@shoper.pl"
+      "email": "michal.korus@dreamcommerce.com"
     }
-  ]
+  ],
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev",
+      "dev-develop": "1.1-dev"
+    }
+  }
 }

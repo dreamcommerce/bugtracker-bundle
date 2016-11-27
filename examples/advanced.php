@@ -52,12 +52,12 @@ $queue = new QueueCollector();
 $logger = new Logger('test');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/logs/first_advanced.log'));
 
-$queue->registerCollector(new FirstCollector($logger));
+$queue->registerCollector(new FirstCollector(array('logger' => $logger)));
 
 $logger2 = new Logger('test');
 $logger2->pushHandler(new StreamHandler(__DIR__ . '/logs/second_advanced.log'));
 
-$queue->registerCollector(new SecondCollector($logger2));
+$queue->registerCollector(new SecondCollector(array('logger' => $logger2)));
 
 try {
     throw new TestException('test');

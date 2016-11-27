@@ -9,7 +9,7 @@ use Monolog\Handler\StreamHandler;
 $logger = new Logger('test');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/logs/simple.log', Logger::WARNING));
 
-$collector = new Psr3Collector($logger);
+$collector = new Psr3Collector(array('logger' => $logger));
 
 try {
     throw new \Exception('test');

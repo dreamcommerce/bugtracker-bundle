@@ -28,6 +28,8 @@ final class BaseConfiguration implements ConfigurationInterface
             ->fixXmlConfig('ignore_exception')
             ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('token_generator')->defaultValue('dream_commerce_bug_tracker.token_generator')->end()
+                ->booleanNode('use_token')->defaultFalse()->end()
                 ->arrayNode('exceptions')
                     ->treatNullLike(array())
                     ->prototype('scalar')->end()

@@ -2,62 +2,22 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Connector\JiraConnectorInterface;
 use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
-use DreamCommerce\Component\BugTracker\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
+use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\Exception\ContextErrorException;
+use Webmozart\Assert\Assert;
 
 class JiraCollector extends BaseCollector implements JiraCollectorInterface
 {
     const SEPARATOR = "-----------------------------------------------------------\r\n";
 
     /**
-     * @var ClientInterface
-     */
-    protected $_httpClient;
-
-    /**
-     * @var string
-     */
-    protected $_entryPoint;
-
-    /**
-     * @var string
-     */
-    protected $_username;
-
-    /**
-     * @var string
-     */
-    protected $_password;
-
-    /**
-     * @var int
-     */
-    protected $_maxCounter = PHP_INT_MAX;
-
-    /**
-     * @var string
-     */
-    protected $_openStatus;
-
-    /**
-     * @var array
-     */
-    protected $_inProgressStatuses = array();
-
-    /**
-     * @var string
-     */
-    protected $_reopenStatus;
-
-    /**
      * @var string
      */
     protected $_project;
-
     /**
      * @var string
      */
@@ -89,21 +49,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     protected $_labels = array();
 
     /**
-     * @var bool
-     */
-    protected $_useCounter = true;
-
-    /**
-     * @var bool
-     */
-    protected $_useHash = true;
-
-    /**
-     * @var bool
-     */
-    protected $_useReopen = true;
-
-    /**
      * @var int
      */
     protected $_counterFieldId;
@@ -111,7 +56,17 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * @var int
      */
-    protected $_hashFieldId;
+    protected $_counterMaxValue = PHP_INT_MAX;
+
+    /**
+     * @var int
+     */
+    protected $_tokenFieldId;
+
+    /**
+     * @var string
+     */
+    protected $_tokenFieldName;
 
     /**
      * @var array
@@ -119,13 +74,86 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     protected $_fields = array();
 
     /**
-     * @param ClientInterface $httpClient
-     * @param array           $options
+     * @var string
      */
-    public function __construct(ClientInterface $httpClient, array $options = array())
+    protected $_openStatus;
+
+    /**
+     * @var array
+     */
+    protected $_inProgressStatuses = array();
+
+    /**
+     * @var string
+     */
+    protected $_reopenStatus;
+
+    /**
+     * @var bool
+     */
+    protected $_useCounter = true;
+
+    /**
+     * @var bool
+     */
+    protected $_useReopen = true;
+
+    /**
+     * @var JiraConnectorInterface
+     */
+    protected $_connector;
+
+    /**
+     * @var Credentials
+     */
+    protected $_credentials;
+
+    /**
+     * @param array $options
+     */
+    public function __construct(array $options = array())
     {
-        $this->_httpClient = $httpClient;
+        $this->_credentials = new Credentials();
+        $this->setOptions($options, $this->_credentials);
+
         parent::__construct($options);
+    }
+
+    /**
+     * @return Credentials
+     */
+    public function getCredentials()
+    {
+        return $this->_credentials;
+    }
+
+    /**
+     * @param Credentials $credentials
+     * @return $this
+     */
+    public function setCredentials($credentials)
+    {
+        $this->_credentials = $credentials;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnector()
+    {
+        return $this->_connector;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConnector(JiraConnectorInterface $connector)
+    {
+        $this->_connector = $connector;
+
+        return $this;
     }
 
     /**
@@ -133,21 +161,32 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      */
     protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
-        if ($this->isUseHash()) {
-            $hash = $this->_getJiraHash($exc, $level, $context);
-            $result = $this->_apiGetIssueByHash($hash);
+        $connector = $this->getConnector();
+        $credentials = $this->getCredentials();
+
+        if ($this->isUseToken()) {
+            $token = $this->getTokenGenerator()->generate($exc, $level, $context);
+            $result = $connector->findIssuesByField($credentials, $this->getTokenFieldName(), $token);
             if ($result === null) {
-                $this->_apiCreateIssue($exc, $level, $context, $hash);
+                $issue = new Issue();
+                $this->_fillModel($issue, $exc, $level, $context);
+                $connector->createIssue($credentials, $issue);
             } else {
                 if ($this->isUseCounter()) {
                     $counterField = 'customfield_'.$this->getCounterFieldId();
-                    if ($result['fields'][$counterField] < $this->getMaxCounter()) {
-                        $this->_apiUpdateCounterForIssue($result['id'], ++$result['fields'][$counterField]);
+                    if ($result['fields'][$counterField] < $this->getCounterMaxValue()) {
+                        $connector->updateIssueFields(
+                            $credentials,
+                            $result['id'],
+                            array(
+                                $counterField => ++$result['fields'][$counterField]
+                            )
+                        );
                     }
                 }
 
                 if ($this->isUseReopen()) {
-                    $statuses = $this->_apiGetStatusesForIssue($result['id']);
+                    $statuses = $connector->getIssueTransitions($credentials, $result['id']);
                     $currentStatus = null;
                     foreach ($statuses['transitions'] as $transition) {
                         if ($transition['to']['id'] == $result['fields']['status']['id']) {
@@ -156,117 +195,73 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
                         }
                     }
                     if ($currentStatus !== null && !in_array($currentStatus, $this->getInProgressStatuses())) {
-                        $this->_apiUpdateStatusForIssue($result['id'], $this->getReopenStatus());
+                        $connector->updateIssueTransition($credentials, $result['id'], $this->getReopenStatus());
                     }
                 }
             }
         } else {
-            $this->_apiCreateIssue($exc, $level, $context);
+            $issue = new Issue();
+            $this->_fillModel($issue, $exc, $level, $context);
+            $connector->createIssue($credentials, $issue);
         }
 
-        $this->_isCollected = true;
+        $this->setIsCollected(true);
     }
 
     /**
-     * {@inheritdoc}
+     * @param Issue $issue
+     * @param \Exception|\Throwable $exc
+     * @param int                   $level
+     * @param array                 $context
+     *
+     * @return string
      */
-    public function getHttpClient()
+    protected function _fillModel(Issue $issue, $exc, $level, array $context = array())
     {
-        return $this->_httpClient;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setHttpClient(ClientInterface $httpClient)
-    {
-        $this->_httpClient = $httpClient;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEntryPoint()
-    {
-        if ($this->_entryPoint === null) {
-            throw new RuntimeException('Entry point has been not defined');
+        $message = substr($exc->getMessage(), 0, 200).' (code: '.$exc->getCode().')';
+        if (!($exc instanceof ContextErrorException)) {
+            $message = get_class($exc).': '.$message;
         }
 
-        return $this->_entryPoint;
-    }
+        $description = $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
+            $exc->getFile().':'.$exc->getLine().PHP_EOL.
+            static::SEPARATOR;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setEntryPoint($entryPoint)
-    {
-        $this->_entryPoint = $entryPoint;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUsername()
-    {
-        if ($this->_username === null) {
-            throw new RuntimeException('Username has been not defined');
+        if (!empty($context)) {
+            $description .=
+                'Parameters:'.PHP_EOL.PHP_EOL.
+                $this->_prepareContext($context).PHP_EOL.
+                static::SEPARATOR;
         }
 
-        return $this->_username;
-    }
+        $description .= 'Stack trace:'.PHP_EOL.PHP_EOL;
+        $description .= $exc->getTraceAsString();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUsername($username)
-    {
-        $this->_username = $username;
+        $issue->setSummary($message);
+        $issue->setDescription($description);
 
-        return $this;
-    }
+        $issue->setAssignee($this->getAssignee());
+        $issue->setLabels($this->getLabels());
+        $issue->setFields($this->getFields());
+        $issue->setProject($this->getProject());
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPassword()
-    {
-        if ($this->_password === null) {
-            throw new RuntimeException('Password has been not defined');
+        $priority = null;
+        $priorities = $this->getPriorities();
+        if (isset($priorities[$level])) {
+            $priority = $priorities[$level];
+        } else {
+            $priority = $this->getDefaultPriority();
         }
+        $issue->setPriority($priority);
 
-        return $this->_password;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPassword($password)
-    {
-        $this->_password = $password;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMaxCounter()
-    {
-        return $this->_maxCounter;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMaxCounter($maxCounter)
-    {
-        $this->_maxCounter = $maxCounter;
-
-        return $this;
+        $type = null;
+        $types = $this->getTypes();
+        if (isset($types[$level])) {
+            $type = $types[$level];
+        } else {
+            $type = $this->getDefaultType();
+        }
+        $issue->setType($type);
     }
 
     /**
@@ -323,49 +318,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getProject()
-    {
-        if ($this->_entryPoint === null) {
-            throw new RuntimeException('Project has been not defined');
-        }
-
-        return $this->_project;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setProject($project)
-    {
-        $this->_project = $project;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAssignee()
-    {
-        if ($this->_assignee === null) {
-            $this->_assignee = $this->getUsername();
-        }
-
-        return $this->_assignee;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setAssignee($assignee)
-    {
-        $this->_assignee = $assignee;
-
-        return $this;
-    }
 
     /**
      * {@inheritdoc}
@@ -417,7 +369,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setLabels($labels)
+    public function setLabels(array $labels = array())
     {
         $this->_labels = $labels;
 
@@ -429,6 +381,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      */
     public function getCounterFieldId()
     {
+        if ($this->_counterFieldId === null) {
+            throw new RuntimeException('Counter field ID has been not defined');
+        }
+
         return $this->_counterFieldId;
     }
 
@@ -437,10 +393,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      */
     public function setCounterFieldId($counterFieldId)
     {
-        if ($this->_entryPoint === null) {
-            throw new RuntimeException('Counter field ID has been not defined');
-        }
-
         $this->_counterFieldId = $counterFieldId;
 
         return $this;
@@ -449,21 +401,43 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getHashFieldId()
+    public function getTokenFieldId()
     {
-        return $this->_hashFieldId;
+        if ($this->_tokenFieldId === null) {
+            throw new RuntimeException('Token field ID has been not defined');
+        }
+
+        return $this->_tokenFieldId;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHashFieldId($hashFieldId)
+    public function setTokenFieldId($tokenFieldId)
     {
-        if ($this->_entryPoint === null) {
-            throw new RuntimeException('Hash field ID has been not defined');
+        $this->_tokenFieldId = $tokenFieldId;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTokenFieldName()
+    {
+        if ($this->_tokenFieldName === null) {
+            throw new RuntimeException('Token field name has been not defined');
         }
 
-        $this->_hashFieldId = $hashFieldId;
+        return $this->_tokenFieldName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTokenFieldName($tokenFieldName)
+    {
+        $this->_tokenFieldName = $tokenFieldName;
 
         return $this;
     }
@@ -510,24 +484,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function setUseCounter($useCounter)
     {
         $this->_useCounter = $useCounter;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isUseHash()
-    {
-        return $this->_useHash;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUseHash($useHash)
-    {
-        $this->_useHash = (bool) $useHash;
-
-        return $this;
     }
 
     /**
@@ -603,7 +559,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setTypes($types)
+    public function setTypes(array $types = array())
     {
         $this->_types = $types;
 
@@ -611,299 +567,62 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     }
 
     /**
-     * @param \Exception|\Throwable $exc
-     * @param int                   $level
-     * @param array                 $context
-     *
+     * @return int
+     */
+    public function getCounterMaxValue()
+    {
+        return $this->_counterMaxValue;
+    }
+
+    /**
+     * @param int $counterMaxValue
+     * @return $this
+     */
+    public function setCounterMaxValue($counterMaxValue)
+    {
+        Assert::integer($counterMaxValue);
+
+        $this->_counterMaxValue = $counterMaxValue;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    protected function _getJiraSummary($exc, $level, array $context = array())
+    public function getProject()
     {
-        $message = substr($exc->getMessage(), 0, 200).' (code: '.$exc->getCode().')';
-        if (!($exc instanceof ContextErrorException)) {
-            $message = get_class($exc).': '.$message;
-        }
-
-        return substr($message, 0, 255);
+        return $this->_project;
     }
 
     /**
-     * @param \Exception|\Throwable $exc
-     * @param int                   $level
-     * @param array                 $context
-     *
+     * @param string $project
+     * @return $this
+     */
+    public function setProject($project)
+    {
+        $this->_project = $project;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    protected function _getJiraDescription($exc, $level, array $context = array())
+    public function getAssignee()
     {
-        $str = $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
-            $exc->getFile().':'.$exc->getLine().PHP_EOL.
-            static::SEPARATOR;
-
-        if (!empty($context)) {
-            $str .=
-                'Parameters:'.PHP_EOL.PHP_EOL.
-                $this->_prepareContext($context).PHP_EOL.
-                static::SEPARATOR;
-        }
-
-        $str .= 'Stack trace:'.PHP_EOL.PHP_EOL;
-        $str .= $exc->getTraceAsString();
-
-        return $str;
+        return $this->_assignee;
     }
 
     /**
-     * @param \Exception|\Throwable $exc
-     * @param int                   $level
-     * @param array                 $context
-     *
-     * @return string
+     * @param string $assignee
+     * @return $this
      */
-    protected function _getJiraHash($exc, $level, array $context = array())
+    public function setAssignee($assignee)
     {
-        $hashParams = array();
-        foreach ($this->_getJiraHashParams($exc, $level, $context) as $paramName) {
-            if (isset($context[$paramName])) {
-                $hashParams[$paramName] = $context[$paramName];
-            }
-        }
+        $this->_assignee = $assignee;
 
-        if (count($hashParams) > 0) {
-            ksort($hashParams);
-            $hash = md5(serialize($hashParams));
-        } else {
-            $hash = md5(uniqid(rand(), true));
-        }
-
-        return $hash;
-    }
-
-    /**
-     * @param \Exception|\Throwable $exc
-     * @param int                   $level
-     * @param array                 $context
-     *
-     * @return array
-     */
-    protected function _getJiraHashParams($exc, $level, array $context = array())
-    {
-        return array('message', 'code', 'line', 'file');
-    }
-
-    /**
-     * @param \Exception|\Throwable $exc
-     * @param string                $level
-     * @param array                 $context
-     * @param string|null           $hash
-     *
-     * @return \stdClass
-     */
-    private function _apiCreateIssue($exc, $level, array $context = array(), $hash = null)
-    {
-        $summary = preg_replace('/\s+/', ' ', $this->_repairString($this->_getJiraSummary($exc, $level, $context)));
-        $description = $this->_repairString($this->_getJiraDescription($exc, $level, $context));
-
-        $data = array(
-            'project' => array(
-                'key' => $this->getProject(),
-            ),
-            'summary' => $summary,
-            'description' => substr($description, 0, 4000),
-            'assignee' => array(
-                'name' => $this->getAssignee(),
-            ),
-            'labels' => $this->getLabels(),
-        );
-
-        if ($this->isUseCounter()) {
-            $data['customfield_'.$this->getCounterFieldId()] = 1;
-        }
-        if ($this->isUseHash() && $hash !== null) {
-            $data['customfield_'.$this->getHashFieldId()] = $hash;
-        }
-
-        $priority = null;
-        $priorities = $this->getPriorities();
-        if (isset($priorities[$level])) {
-            $priority = $priorities[$level];
-        } else {
-            $priority = $this->getDefaultPriority();
-        }
-        if ($priority !== null) {
-            $data['priority'] = array(
-                'id' => (string) $priority,
-            );
-        }
-
-        $type = null;
-        $types = $this->getTypes();
-        if (isset($types[$level])) {
-            $type = $types[$level];
-        } else {
-            $type = $this->getDefaultType();
-        }
-        if ($type !== null) {
-            $data['issuetype'] = array(
-                'id' => $type,
-            );
-        }
-
-        $data = array_merge($data, $this->getFields());
-        $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint().'/rest/api/2/issue';
-
-        $request = $client->createRequest('POST', $uri, array('Content-type' => 'application/json'), json_encode(array('fields' => $data)));
-        $response = $client->send($request, $this->_getAuthParams());
-
-        return $this->_apiHandleResponse($request, $response);
-    }
-
-    /**
-     * @param string $hash
-     *
-     * @return \stdClass
-     */
-    private function _apiGetIssueByHash($hash)
-    {
-        $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint().'/rest/api/2/search?jql=hash ~ '.$hash;
-        $request = $client->createRequest('GET', $uri, array('Content-type' => 'application/json'));
-        $response = $client->send($request, $this->_getAuthParams());
-
-        $result = $this->_apiHandleResponse($request, $response);
-        if ($result['total'] == 0) {
-            return;
-        }
-
-        return $result['issues'][0];
-    }
-
-    /**
-     * @param int $issueId
-     * @param int $counter
-     *
-     * @return \stdClass
-     */
-    private function _apiUpdateCounterForIssue($issueId, $counter)
-    {
-        $counterField = 'customfield_'.$this->getCounterFieldId();
-        $data = array(
-            'fields' => array(
-                $counterField => $counter,
-            ),
-        );
-
-        $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId;
-
-        $request = $client->createRequest('PUT', $uri, array('Content-type' => 'application/json'), json_encode($data));
-        $response = $client->send($request, $this->_getAuthParams());
-
-        return $this->_apiHandleResponse($request, $response);
-    }
-
-    /**
-     * @param int $issueId
-     *
-     * @return \stdClass
-     */
-    private function _apiGetStatusesForIssue($issueId)
-    {
-        $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId.'/transitions';
-
-        $request = $client->createRequest('GET', $uri, array('Content-type' => 'application/json'));
-        $response = $client->send($request, $this->_getAuthParams());
-
-        return $this->_apiHandleResponse($request, $response);
-    }
-
-    /**
-     * @param int $issueId
-     * @param int $status
-     *
-     * @return \stdClass
-     */
-    private function _apiUpdateStatusForIssue($issueId, $status)
-    {
-        $data = array(
-            'transition' => array(
-                'id' => $status,
-            ),
-        );
-
-        $client = $this->getHttpClient();
-        $uri = $this->getEntryPoint().'/rest/api/2/issue/'.$issueId.'/transitions';
-
-        $request = $client->createRequest('POST', $uri, array('Content-type' => 'application/json'), json_encode($data));
-        $response = $client->send($request, $this->_getAuthParams());
-
-        return $this->_apiHandleResponse($request, $response);
-    }
-
-    /**
-     * @return array
-     */
-    private function _getAuthParams()
-    {
-        return array(
-            'auth' => array(
-                $this->getUsername(),
-                $this->getPassword(),
-            ),
-        );
-    }
-
-    /**
-     * @param RequestInterface  $request
-     * @param ResponseInterface $response
-     *
-     * @return \stdClass
-     */
-    private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response)
-    {
-        $result = json_decode($response->getBody(), true);
-        if ($result === false) {
-            throw new RuntimeException('Unable decode response from URL '.$request->getUri().'; method: '.$request->getMethod());
-        }
-
-        if (isset($result['errorMessages']) || isset($result['errors'])) {
-            $errorMessagesArr = array();
-            if (isset($result['errorMessages'])) {
-                foreach ($result['errorMessages'] as $field => $error) {
-                    if (is_array($error)) {
-                        $error = implode('; ', $error);
-                    }
-
-                    $errorMessagesArr[] = $field.' - '.$error;
-                }
-            }
-
-            $errorArr = array();
-            if (isset($result['errors'])) {
-                foreach ($result['errors'] as $field => $error) {
-                    if (is_array($error)) {
-                        $error = implode('; ', $error);
-                    }
-
-                    $errorArr[] = $field.' - '.$error;
-                }
-            }
-
-            throw new RuntimeException('The error occurred while processing data; error messages: "'.implode('; ', $errorMessagesArr).'"; errors: "'.implode('; ', $errorArr));
-        }
-
-        return $result;
-    }
-
-    protected function _repairString($string)
-    {
-        $s = trim($string);
-        $s = iconv('UTF-8', 'UTF-8//IGNORE', $s);
-        $s = preg_replace('/(?>\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $s);
-
-        return $s;
+        return $this;
     }
 
     protected function _prepareContext(array $array, $prefix = "\t")

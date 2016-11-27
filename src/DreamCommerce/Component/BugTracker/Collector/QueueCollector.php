@@ -94,7 +94,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
         if ($this->_collectorQueue === null) {
             $this->_collectorQueue = new SplPriorityQueue();
         }
-        $this->_isCollected = false;
+        $this->setIsCollected(false);
 
         if (count($this->_collectorQueue) === 0) {
             return false;
@@ -114,8 +114,8 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
                 }
 
                 $result = $collector->handle($exc, $level, $context);
-                if ($this->_isCollected === false && $collector->isCollected()) {
-                    $this->_isCollected = true;
+                if (!$this->isCollected() && $collector->isCollected()) {
+                    $this->setIsCollected(true);
                 }
                 if ($result === true) {
                     break;

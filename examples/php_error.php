@@ -10,7 +10,7 @@ use Monolog\Handler\StreamHandler;
 $logger = new Logger('test');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/logs/php_error.log', Logger::WARNING));
 
-$collector = new Psr3Collector($logger);
+$collector = new Psr3Collector(array('logger' => $logger));
 
 BugHandler::enable(E_ALL, false);
 BugHandler::setCollector($collector);

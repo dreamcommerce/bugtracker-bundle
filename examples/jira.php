@@ -3,12 +3,16 @@
 require_once '../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
-use DreamCommerce\BugTrackerBundle\Http\Client\GuzzleClient;
+use DreamCommerce\Component\BugTracker\Http\Client\GuzzleClient;
+use DreamCommerce\Component\BugTracker\Connector\JiraConnector;
 use GuzzleHttp\Client;
 use Psr\Log\LogLevel;
 
-$httpClient = new GuzzleClient(new Client());
+$client = new Client();
+$httpClient = new GuzzleClient($client);
+
 $options = array(
+    'connector' => new JiraConnector($httpClient),
     'entry_point' => 'https://jira.example.com',
     'username' => '...',
     'password' => '...',
@@ -29,7 +33,7 @@ $options = array(
     )
 );
 
-$collector = new JiraCollector($httpClient, $options);
+$collector = new JiraCollector($options);
 
 try {
     throw new \Exception('test');

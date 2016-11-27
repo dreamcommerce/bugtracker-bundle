@@ -4,6 +4,7 @@ namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorCompilerPass;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\BaseConfiguration;
+use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\DoctrineConfiguration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\GlobalConfiguration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\JiraConfiguration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Psr3Configuration;
@@ -13,9 +14,11 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-class DreamCommerceBugTrackerExtension extends Extension
+final class DreamCommerceBugTrackerExtension extends Extension
 {
     const ALIAS = 'dream_commerce_bug_tracker';
+
+    private $additionalConfigLoaded = array();
 
     /**
      * {@inheritdoc}
@@ -28,8 +31,10 @@ class DreamCommerceBugTrackerExtension extends Extension
         $baseConfiguration = new BaseConfiguration();
         $jiraConfiguration = new JiraConfiguration();
         $psr3Configuration = new Psr3Configuration();
+        $doctrineConfiguration = new DoctrineConfiguration();
 
-        $useHttpServices = false;
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
+        $loader->load('base.xml');
 
         foreach ($config['collectors'] as $name => $collectorConfig) {
             if (isset($collectorConfig['options'])) {
@@ -44,7 +49,12 @@ class DreamCommerceBugTrackerExtension extends Extension
                         break;
                     case BugHandler::COLLECTOR_TYPE_JIRA:
                         $partialConfiguration = $jiraConfiguration;
-                        $useHttpServices = true;
+                        break;
+                    case BugHandler::COLLECTOR_TYPE_DOCTRINE:
+                        $partialConfiguration = $doctrineConfiguration;
+                        break;
+                    case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
+                        // TODO
                         break;
                     default:
                         continue;
@@ -59,13 +69,8 @@ class DreamCommerceBugTrackerExtension extends Extension
                 unset($collectorConfig['options']);
                 $config['collectors'][$name] = array_merge($collectorConfig, $partialConfig);
             }
-        }
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
-        $loader->load('base.xml');
-
-        if ($useHttpServices) {
-            $loader->load('http.xml');
+            $this->loadAdditionalConfiguration($container, $collectorConfig['type']);
         }
 
         $container->setParameter($this->getAlias().'.collectors', $config['collectors']);
@@ -75,5 +80,20 @@ class DreamCommerceBugTrackerExtension extends Extension
     public function getAlias()
     {
         return self::ALIAS;
+    }
+
+    private function loadAdditionalConfiguration(ContainerBuilder $container, $type)
+    {
+        if(!in_array($type, $this->additionalConfigLoaded)) {
+            $dirName = __DIR__ . '/../Resources/config/services';
+            $fileName = basename($type) . '.xml';
+
+            if(file_exists($dirName . '/' . $fileName)) {
+                $loader = new Loader\XmlFileLoader($container, new FileLocator($dirName));
+                $loader->load($fileName);
+            }
+
+            $this->additionalConfigLoaded[] = $type;
+        }
     }
 }

@@ -2,11 +2,12 @@
 
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration;
 
+use DreamCommerce\Component\BugTracker\Model\Error;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-final class Psr3Configuration implements ConfigurationInterface
+final class DoctrineConfiguration implements ConfigurationInterface
 {
     /**
      * {@inheritdoc}
@@ -14,7 +15,7 @@ final class Psr3Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('psr3');
+        $rootNode = $treeBuilder->root('doctrine');
 
         $baseConfiguration = new BaseConfiguration();
         $baseConfiguration->injectPartialNode($rootNode);
@@ -29,8 +30,8 @@ final class Psr3Configuration implements ConfigurationInterface
         $node
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('logger')->defaultValue('monolog.logger')->cannotBeEmpty()->end()
-                ->booleanNode('format_exception')->defaultFalse()->cannotBeEmpty()->end()
+                ->scalarNode('entity_manager')->defaultValue('doctrine.entity_manager')->cannotBeEmpty()->end()
+                ->scalarNode('model')->defaultValue(Error::class)->cannotBeEmpty()->end()
             ->end();
     }
 }

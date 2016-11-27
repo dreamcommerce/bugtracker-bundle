@@ -2,6 +2,7 @@
 
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration;
 
+use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -29,28 +30,54 @@ final class JiraConfiguration implements ConfigurationInterface
         $node
             ->fixXmlConfig('label')
             ->fixXmlConfig('in_progress_status')
+            ->fixXmlConfig('types')
+            ->fixXmlConfig('priorities')
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('http_client')->defaultValue('dream_commerce_bug_tracker.http_client')->cannotBeEmpty()->end()
+                ->scalarNode('connector')->defaultValue('dream_commerce_bug_tracker.jira_connector')->cannotBeEmpty()->end()
                 ->scalarNode('entry_point')->cannotBeEmpty()->end()
                 ->scalarNode('username')->cannotBeEmpty()->end()
                 ->scalarNode('password')->cannotBeEmpty()->end()
                 ->scalarNode('project')->cannotBeEmpty()->end()
-                ->scalarNode('counter_field_id')->defaultValue('10300')->cannotBeEmpty()->end()
-                ->scalarNode('hash_field_id')->defaultValue('12400')->cannotBeEmpty()->end()
+                ->booleanNode('use_counter')->defaultTrue()->end()
+                ->integerNode('counter_field_id')->defaultValue(10300)->cannotBeEmpty()->end()
+                ->integerNode('counter_max_value')->defaultValue(1000)->cannotBeEmpty()->end()
+                ->integerNode('token_field_id')->defaultValue(12400)->cannotBeEmpty()->end()
+                ->scalarNode('token_field_name')->defaultValue('hash')->cannotBeEmpty()->end()
                 ->scalarNode('assignee')->cannotBeEmpty()->end()
                 ->arrayNode('in_progress_statuses')
                     ->treatNullLike(array())
-                    ->prototype('scalar')->end()
-                    ->defaultValue(array('11', '21', '31', '51'))
+                    ->prototype('integer')->end()
+                    ->defaultValue(array(11, 21, 31, 51))
                 ->end()
-                ->scalarNode('reopen_status')->defaultValue('51')->cannotBeEmpty()->end()
-                ->scalarNode('default_type')->defaultValue('1')->cannotBeEmpty()->end()
+                ->integerNode('reopen_status')->defaultValue(51)->cannotBeEmpty()->end()
+                ->booleanNode('use_reopen')->defaultTrue()->end()
+                ->integerNode('default_type')->defaultValue(1)->cannotBeEmpty()->end()
+                ->arrayNode('types')
+                    ->treatNullLike(array(
+                        LogLevel::EMERGENCY => 3 // emergency
+                    ))
+                    ->useAttributeAsKey('name')
+                    ->prototype('integer')->end()
+                ->end()
+                ->integerNode('default_priority')->defaultValue(2)->end()
+                ->arrayNode('priorities')
+                    ->treatNullLike(array(
+                        LogLevel::WARNING => 1, // minor
+                        LogLevel::ERROR => 2, // normal
+                        LogLevel::ALERT => 3, // major
+                        LogLevel::CRITICAL => 4, // critical
+                        LogLevel::EMERGENCY => 5 // blocker
+                    ))
+                    ->useAttributeAsKey('name')
+                    ->prototype('integer')->end()
+                ->end()
                 ->arrayNode('labels')
                     ->treatNullLike(array())
                     ->prototype('scalar')->end()
                     ->defaultValue(array('app'))
                 ->end()
+                ->arrayNode('fields')->end()
             ->end();
     }
 }
