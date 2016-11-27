@@ -27,7 +27,7 @@ final class JiraConnector implements JiraConnectorInterface
      */
     public function getHttpClient()
     {
-        if($this->_httpClient === null) {
+        if ($this->_httpClient === null) {
             throw new RuntimeException('HTTP client has been not defined');
         }
 
@@ -36,6 +36,7 @@ final class JiraConnector implements JiraConnectorInterface
 
     /**
      * @param ClientInterface $httpClient
+     *
      * @return $this
      */
     public function setHttpClient(ClientInterface $httpClient)
@@ -55,22 +56,22 @@ final class JiraConnector implements JiraConnectorInterface
 
         $data = array(
             'project' => array(
-                'key' => $issue->getProject()
+                'key' => $issue->getProject(),
             ),
             'summary' => substr($summary, 0, 255),
             'description' => substr($description, 0, 4000),
             'assignee' => array(
-                'name' => $issue->getAssignee()
-            )
+                'name' => $issue->getAssignee(),
+            ),
         );
 
         $labels = $issue->getLabels();
-        if(!empty($labels)) {
+        if (!empty($labels)) {
             $data['labels'] = $labels;
         }
 
         $fields = $issue->getFields();
-        foreach($fields as $k => $v) {
+        foreach ($fields as $k => $v) {
             $data['customfield_'.$k] = $v;
         }
 
@@ -123,7 +124,7 @@ final class JiraConnector implements JiraConnectorInterface
         Assert::integer($issueId);
 
         $data = array(
-            'fields' => $fields
+            'fields' => $fields,
         );
 
         $client = $this->getHttpClient();
@@ -176,6 +177,7 @@ final class JiraConnector implements JiraConnectorInterface
 
     /**
      * @param Credentials $credentials
+     *
      * @return array
      */
     private function _getAuthParams(Credentials $credentials)

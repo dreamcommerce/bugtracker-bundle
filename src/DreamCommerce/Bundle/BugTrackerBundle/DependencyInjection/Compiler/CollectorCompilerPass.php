@@ -37,7 +37,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
             $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);
 
-            switch($collector['type']) {
+            switch ($collector['type']) {
                 case BugHandler::COLLECTOR_TYPE_BASE:
                     Assert::oneOf(BaseCollectorInterface::class, $interfaces);
                     break;

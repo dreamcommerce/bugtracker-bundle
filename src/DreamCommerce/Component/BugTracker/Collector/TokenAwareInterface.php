@@ -13,17 +13,19 @@ interface TokenAwareInterface
 
     /**
      * @param TokenGeneratorInterface|null $tokenGenerator
+     *
      * @return $this
      */
     public function setTokenGenerator(TokenGeneratorInterface $tokenGenerator = null);
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUseToken();
 
     /**
-     * @param boolean $useToken
+     * @param bool $useToken
+     *
      * @return $this;
      */
     public function setUseToken($useToken);

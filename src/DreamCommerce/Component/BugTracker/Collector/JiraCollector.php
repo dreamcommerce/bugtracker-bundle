@@ -129,6 +129,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
     /**
      * @param Credentials $credentials
+     *
      * @return $this
      */
     public function setCredentials($credentials)
@@ -179,7 +180,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
                             $credentials,
                             $result['id'],
                             array(
-                                $counterField => ++$result['fields'][$counterField]
+                                $counterField => ++$result['fields'][$counterField],
                             )
                         );
                     }
@@ -209,7 +210,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     }
 
     /**
-     * @param Issue $issue
+     * @param Issue                 $issue
      * @param \Exception|\Throwable $exc
      * @param int                   $level
      * @param array                 $context
@@ -317,7 +318,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
         return $this;
     }
-
 
     /**
      * {@inheritdoc}
@@ -576,6 +576,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
     /**
      * @param int $counterMaxValue
+     *
      * @return $this
      */
     public function setCounterMaxValue($counterMaxValue)
@@ -597,6 +598,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
     /**
      * @param string $project
+     *
      * @return $this
      */
     public function setProject($project)
@@ -616,6 +618,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
     /**
      * @param string $assignee
+     *
      * @return $this
      */
     public function setAssignee($assignee)

@@ -7,7 +7,7 @@ use Webmozart\Assert\Assert;
 trait Options
 {
     /**
-     * @param array $options
+     * @param array       $options
      * @param object|null $object
      *
      * @return $this
@@ -16,7 +16,7 @@ trait Options
     {
         Assert::nullOrObject($object);
 
-        if($object === null) {
+        if ($object === null) {
             $object = $this;
         }
 

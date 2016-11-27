@@ -40,12 +40,12 @@ final class Issue
     private $_fields = array();
 
     /**
-     * @var integer
+     * @var int
      */
     private $_priority;
 
     /**
-     * @var integer
+     * @var int
      */
     private $_type;
 
@@ -59,6 +59,7 @@ final class Issue
 
     /**
      * @param string $summary
+     *
      * @return $this
      */
     public function setSummary($summary)
@@ -78,6 +79,7 @@ final class Issue
 
     /**
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription($description)
@@ -97,6 +99,7 @@ final class Issue
 
     /**
      * @param string $project
+     *
      * @return $this
      */
     public function setProject($project)
@@ -116,6 +119,7 @@ final class Issue
 
     /**
      * @param string $assignee
+     *
      * @return $this
      */
     public function setAssignee($assignee)
@@ -135,6 +139,7 @@ final class Issue
 
     /**
      * @param array $labels
+     *
      * @return $this
      */
     public function setLabels(array $labels = array())
@@ -146,13 +151,14 @@ final class Issue
 
     /**
      * @param string $label
+     *
      * @return $this
      */
     public function addLabel($label)
     {
         Assert::string($label);
 
-        if(!in_array($label, $this->_labels)) {
+        if (!in_array($label, $this->_labels)) {
             $this->_labels[] = $label;
         }
 
@@ -169,6 +175,7 @@ final class Issue
 
     /**
      * @param array $fields
+     *
      * @return $this
      */
     public function setFields($fields)
@@ -188,6 +195,7 @@ final class Issue
 
     /**
      * @param int $priority
+     *
      * @return $this
      */
     public function setPriority($priority)
@@ -207,6 +215,7 @@ final class Issue
 
     /**
      * @param int $type
+     *
      * @return $this
      */
     public function setType($type)

@@ -5,7 +5,7 @@ namespace DreamCommerce\Component\BugTracker\Model;
 class Error implements ErrorInterface
 {
     /**
-     * @var integer
+     * @var int
      */
     protected $_id;
 
@@ -20,12 +20,12 @@ class Error implements ErrorInterface
     protected $_message;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $_code;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $_line;
 
@@ -40,7 +40,7 @@ class Error implements ErrorInterface
     protected $_trace;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $_level;
 

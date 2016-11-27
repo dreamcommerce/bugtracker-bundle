@@ -55,7 +55,7 @@ final class JiraConfiguration implements ConfigurationInterface
                 ->integerNode('default_type')->defaultValue(1)->cannotBeEmpty()->end()
                 ->arrayNode('types')
                     ->treatNullLike(array(
-                        LogLevel::EMERGENCY => 3 // emergency
+                        LogLevel::EMERGENCY => 3, // emergency
                     ))
                     ->useAttributeAsKey('name')
                     ->prototype('integer')->end()
@@ -67,7 +67,7 @@ final class JiraConfiguration implements ConfigurationInterface
                         LogLevel::ERROR => 2, // normal
                         LogLevel::ALERT => 3, // major
                         LogLevel::CRITICAL => 4, // critical
-                        LogLevel::EMERGENCY => 5 // blocker
+                        LogLevel::EMERGENCY => 5, // blocker
                     ))
                     ->useAttributeAsKey('name')
                     ->prototype('integer')->end()

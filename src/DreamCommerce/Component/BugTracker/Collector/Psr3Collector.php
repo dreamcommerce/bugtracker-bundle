@@ -23,17 +23,17 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
     protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
     {
         $token = null;
-        if($this->isUseToken()) {
+        if ($this->isUseToken()) {
             $token = $this->getTokenGenerator()->generate($exc, $level, $context);
         }
 
         if ($this->_formatException) {
             $exc = '';
-            if($this->isUseToken()) {
-                $exc .= '[ ' . $token . ' ] ';
+            if ($this->isUseToken()) {
+                $exc .= '[ '.$token.' ] ';
             }
             $exc .= "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
-        } elseif($this->isUseToken()) {
+        } elseif ($this->isUseToken()) {
             $context['token'] = $token;
         }
 

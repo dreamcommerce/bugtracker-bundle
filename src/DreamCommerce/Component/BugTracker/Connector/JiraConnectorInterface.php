@@ -9,15 +9,16 @@ interface JiraConnectorInterface
 {
     /**
      * @param Credentials $credentials
-     * @param Issue $issue
+     * @param Issue       $issue
+     *
      * @return \stdClass
      */
     public function createIssue(Credentials $credentials, Issue $issue);
 
     /**
      * @param Credentials $credentials
-     * @param string $fieldName
-     * @param string $fieldValue
+     * @param string      $fieldName
+     * @param string      $fieldValue
      *
      * @return array
      */
@@ -25,8 +26,8 @@ interface JiraConnectorInterface
 
     /**
      * @param Credentials $credentials
-     * @param integer $issueId
-     * @param array $fields
+     * @param int         $issueId
+     * @param array       $fields
      *
      * @return \stdClass
      */
@@ -34,7 +35,7 @@ interface JiraConnectorInterface
 
     /**
      * @param Credentials $credentials
-     * @param integer $issueId
+     * @param int         $issueId
      *
      * @return \stdClass
      */
@@ -42,8 +43,8 @@ interface JiraConnectorInterface
 
     /**
      * @param Credentials $credentials
-     * @param integer $issueId
-     * @param integer $transition
+     * @param int         $issueId
+     * @param int         $transition
      *
      * @return \stdClass
      */

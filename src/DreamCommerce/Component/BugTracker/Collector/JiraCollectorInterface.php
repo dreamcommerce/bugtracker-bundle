@@ -13,6 +13,7 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param JiraConnectorInterface $connector
+     *
      * @return $this
      */
     public function setConnector(JiraConnectorInterface $connector);

@@ -47,6 +47,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
 
     /**
      * @param array $tokenParams
+     *
      * @return $this
      */
     public function setTokenParams(array $tokenParams = array())
@@ -60,13 +61,14 @@ class ContextTokenGenerator implements TokenGeneratorInterface
 
     /**
      * @param $tokenParam
+     *
      * @return $this
      */
     public function addTokenParam($tokenParam)
     {
         Assert::string($tokenParam);
 
-        if(!in_array($tokenParam, $this->_tokenParams)) {
+        if (!in_array($tokenParam, $this->_tokenParams)) {
             $this->_tokenParams[] = $tokenParam;
         }
 

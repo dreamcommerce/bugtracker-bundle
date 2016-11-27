@@ -37,7 +37,7 @@ abstract class BaseCollector implements BaseCollectorInterface
      * @var bool
      */
     protected $_useToken = false;
-    
+
     /**
      * @var TokenGeneratorInterface|null
      */

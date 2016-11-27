@@ -13,6 +13,7 @@ interface DoctrineCollectorInterface extends CollectorInterface
 
     /**
      * @param EntityManagerInterface|null $entityManager
+     *
      * @return $this
      */
     public function setEntityManager(EntityManagerInterface $entityManager = null);
@@ -24,6 +25,7 @@ interface DoctrineCollectorInterface extends CollectorInterface
 
     /**
      * @param string|null $model
+     *
      * @return $this
      */
     public function setModel($model);

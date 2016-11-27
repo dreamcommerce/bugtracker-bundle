@@ -26,7 +26,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     {
         $model = $this->getModel();
         /** @var ErrorInterface $entity */
-        $entity = new $model;
+        $entity = new $model();
         $this->_fillModel($entity, $exc, $level, $context);
 
         $entityManager = $this->getEntityManager();
@@ -34,10 +34,10 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     }
 
     /**
-     * @param ErrorInterface $entity
+     * @param ErrorInterface    $entity
      * @param \Error|\Exception $exc
-     * @param string $level
-     * @param array $context
+     * @param string            $level
+     * @param array             $context
      */
     protected function _fillModel(ErrorInterface $entity, $exc, $level = LogLevel::WARNING, array $context = array())
     {
@@ -49,7 +49,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
             ->setContext($context)
             ->setLevel($level);
 
-        if($this->isUseToken()) {
+        if ($this->isUseToken()) {
             $token = $this->getTokenGenerator()->generate($exc, $level, $context);
             $entity->setToken($token);
         }

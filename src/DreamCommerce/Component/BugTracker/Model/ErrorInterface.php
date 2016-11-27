@@ -16,6 +16,7 @@ interface ErrorInterface
 
     /**
      * @param null|string $token
+     *
      * @return $this
      */
     public function setToken($token = null);
@@ -27,6 +28,7 @@ interface ErrorInterface
 
     /**
      * @param string $message
+     *
      * @return $this
      */
     public function setMessage($message);
@@ -38,6 +40,7 @@ interface ErrorInterface
 
     /**
      * @param int $code
+     *
      * @return $this
      */
     public function setCode($code);
@@ -49,6 +52,7 @@ interface ErrorInterface
 
     /**
      * @param int $line
+     *
      * @return $this
      */
     public function setLine($line);
@@ -60,6 +64,7 @@ interface ErrorInterface
 
     /**
      * @param string $file
+     *
      * @return $this
      */
     public function setFile($file);
@@ -71,6 +76,7 @@ interface ErrorInterface
 
     /**
      * @param array $trace
+     *
      * @return $this
      */
     public function setTrace(array $trace = array());
@@ -82,6 +88,7 @@ interface ErrorInterface
 
     /**
      * @param int $level
+     *
      * @return $this
      */
     public function setLevel($level);
@@ -93,6 +100,7 @@ interface ErrorInterface
 
     /**
      * @param array $context
+     *
      * @return $this
      */
     public function setContext(array $context = array());

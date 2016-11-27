@@ -84,11 +84,11 @@ final class DreamCommerceBugTrackerExtension extends Extension
 
     private function loadAdditionalConfiguration(ContainerBuilder $container, $type)
     {
-        if(!in_array($type, $this->additionalConfigLoaded)) {
-            $dirName = __DIR__ . '/../Resources/config/services';
-            $fileName = basename($type) . '.xml';
+        if (!in_array($type, $this->additionalConfigLoaded)) {
+            $dirName = __DIR__.'/../Resources/config/services';
+            $fileName = basename($type).'.xml';
 
-            if(file_exists($dirName . '/' . $fileName)) {
+            if (file_exists($dirName.'/'.$fileName)) {
                 $loader = new Loader\XmlFileLoader($container, new FileLocator($dirName));
                 $loader->load($fileName);
             }
