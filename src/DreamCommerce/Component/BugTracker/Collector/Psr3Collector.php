@@ -2,6 +2,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Assert;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -73,7 +74,9 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
      */
     public function setFormatException($formatException)
     {
-        $this->_formatException = (bool) $formatException;
+        Assert::boolean($formatException);
+
+        $this->_formatException = $formatException;
 
         return $this;
     }

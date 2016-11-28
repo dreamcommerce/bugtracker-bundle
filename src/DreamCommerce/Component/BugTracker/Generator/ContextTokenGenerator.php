@@ -2,8 +2,9 @@
 
 namespace DreamCommerce\Component\BugTracker\Generator;
 
+use DreamCommerce\Component\BugTracker\Assert;
+use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
-use Webmozart\Assert\Assert;
 
 class ContextTokenGenerator implements TokenGeneratorInterface
 {
@@ -47,7 +48,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
 
     /**
      * @param array $tokenParams
-     *
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function setTokenParams(array $tokenParams = array())
@@ -60,13 +61,13 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     }
 
     /**
-     * @param $tokenParam
-     *
+     * @param string $tokenParam
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function addTokenParam($tokenParam)
     {
-        Assert::string($tokenParam);
+        Assert::stringNotEmpty($tokenParam);
 
         if (!in_array($tokenParam, $this->_tokenParams)) {
             $this->_tokenParams[] = $tokenParam;

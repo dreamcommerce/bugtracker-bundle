@@ -18,15 +18,40 @@ final class SymfonyHandler
         $this->_collector = $collector;
     }
 
+    /**
+     * @return CollectorInterface
+     */
+    public function getCollector()
+    {
+        return $this->_collector;
+    }
+
+    /**
+     * @param CollectorInterface $collector
+     * @return $this
+     */
+    public function setCollector(CollectorInterface $collector)
+    {
+        $this->_collector = $collector;
+
+        return $this;
+    }
+
+    /**
+     * @param ConsoleExceptionEvent $event
+     */
     public function handleConsoleException(ConsoleExceptionEvent $event)
     {
         $exception = $event->getException();
-        $this->_collector->handle($exception);
+        $this->getCollector()->handle($exception);
     }
 
+    /**
+     * @param GetResponseForExceptionEvent $event
+     */
     public function handleKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        $this->_collector->handle($exception);
+        $this->getCollector()->handle($exception);
     }
 }

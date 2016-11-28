@@ -3,9 +3,10 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use Doctrine\ORM\EntityManagerInterface;
+use DreamCommerce\Component\BugTracker\Assert;
+use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use Psr\Log\LogLevel;
-use Webmozart\Assert\Assert;
 
 class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterface
 {
@@ -35,7 +36,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
 
     /**
      * @param ErrorInterface    $entity
-     * @param \Error|\Exception $exc
+     * @param \Throwable|\Exception $exc
      * @param string            $level
      * @param array             $context
      */
@@ -60,13 +61,17 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
      */
     public function getEntityManager()
     {
+        if ($this->_entityManager === null) {
+            throw new NotDefinedException(__CLASS__ . '::_entityManager');
+        }
+
         return $this->_entityManager;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setEntityManager(EntityManagerInterface $entityManager = null)
+    public function setEntityManager(EntityManagerInterface $entityManager)
     {
         $this->_entityManager = $entityManager;
 
@@ -78,6 +83,10 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
      */
     public function getModel()
     {
+        if ($this->_model === null) {
+            throw new NotDefinedException(__CLASS__ . '::_model');
+        }
+
         return $this->_model;
     }
 
@@ -86,7 +95,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
      */
     public function setModel($model)
     {
-        Assert::nullOrImplementsInterface($model, ErrorInterface::class);
+        Assert::implementsInterface($model, ErrorInterface::class);
 
         $this->_model = $model;
 

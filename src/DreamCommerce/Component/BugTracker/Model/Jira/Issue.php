@@ -2,8 +2,10 @@
 
 namespace DreamCommerce\Component\BugTracker\Model\Jira;
 
+use DreamCommerce\Component\BugTracker\Assert;
+use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Traits\Options;
-use Webmozart\Assert\Assert;
 
 final class Issue
 {
@@ -50,80 +52,116 @@ final class Issue
     private $_type;
 
     /**
+     * @param array $options
+     */
+    public function __construct($options = array())
+    {
+        $this->setOptions($options);
+    }
+
+    /**
+     * @throws NotDefinedException
      * @return string
      */
     public function getSummary()
     {
+        if($this->_summary === null) {
+            throw new NotDefinedException(__CLASS__ . '::_summary');
+        }
+
         return $this->_summary;
     }
 
     /**
      * @param string $summary
-     *
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function setSummary($summary)
     {
+        Assert::stringNotEmpty($summary);
+
         $this->_summary = $summary;
 
         return $this;
     }
 
     /**
+     * @throws NotDefinedException
      * @return string
      */
     public function getDescription()
     {
+        if($this->_description === null) {
+            throw new NotDefinedException(__CLASS__ . '::_description');
+        }
+
         return $this->_description;
     }
 
     /**
      * @param string $description
-     *
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function setDescription($description)
     {
+        Assert::stringNotEmpty($description);
+
         $this->_description = $description;
 
         return $this;
     }
 
     /**
+     * @throws NotDefinedException
      * @return string
      */
     public function getProject()
     {
+        if($this->_project === null) {
+            throw new NotDefinedException(__CLASS__ . '::_project');
+        }
+
         return $this->_project;
     }
 
     /**
      * @param string $project
-     *
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function setProject($project)
     {
+        Assert::stringNotEmpty($project);
+
         $this->_project = $project;
 
         return $this;
     }
 
     /**
+     * @throws NotDefinedException
      * @return string
      */
     public function getAssignee()
     {
+        if($this->_assignee === null) {
+            throw new NotDefinedException(__CLASS__ . '::_assignee');
+        }
+
         return $this->_assignee;
     }
 
     /**
      * @param string $assignee
-     *
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function setAssignee($assignee)
     {
+        Assert::stringNotEmpty($assignee);
+
         $this->_assignee = $assignee;
 
         return $this;
@@ -151,12 +189,12 @@ final class Issue
 
     /**
      * @param string $label
-     *
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function addLabel($label)
     {
-        Assert::string($label);
+        Assert::stringNotEmpty($label);
 
         if (!in_array($label, $this->_labels)) {
             $this->_labels[] = $label;
@@ -178,7 +216,7 @@ final class Issue
      *
      * @return $this
      */
-    public function setFields($fields)
+    public function setFields(array $fields = array())
     {
         $this->_fields = $fields;
 
@@ -186,7 +224,7 @@ final class Issue
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getPriority()
     {
@@ -194,19 +232,21 @@ final class Issue
     }
 
     /**
-     * @param int $priority
-     *
+     * @param int|null $priority
+     * @throws InvalidArgumentException
      * @return $this
      */
-    public function setPriority($priority)
+    public function setPriority($priority = null)
     {
+        Assert::nullOrIntegerish($priority);
+
         $this->_priority = $priority;
 
         return $this;
     }
 
     /**
-     * @return int
+     * @return string|null
      */
     public function getType()
     {
@@ -214,12 +254,14 @@ final class Issue
     }
 
     /**
-     * @param int $type
-     *
+     * @param string|null $type
+     * @throws InvalidArgumentException
      * @return $this
      */
-    public function setType($type)
+    public function setType($type = null)
     {
+        Assert::nullOrString($type);
+
         $this->_type = $type;
 
         return $this;

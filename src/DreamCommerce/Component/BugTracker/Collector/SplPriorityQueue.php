@@ -2,8 +2,8 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
-use Webmozart\Assert\Assert;
 
 class SplPriorityQueue extends \SplPriorityQueue
 {

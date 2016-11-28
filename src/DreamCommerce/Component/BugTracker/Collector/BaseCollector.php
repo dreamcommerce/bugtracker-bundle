@@ -2,12 +2,14 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Assert;
+use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
 use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 use DreamCommerce\Component\BugTracker\Traits\Options;
 use Psr\Log\LogLevel;
-use Webmozart\Assert\Assert;
 
 abstract class BaseCollector implements BaseCollectorInterface
 {
@@ -16,32 +18,32 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * @var bool
      */
-    protected $_locked = false;
+    private $_locked = false;
 
     /**
      * @var bool
      */
-    protected $_collected = false;
+    private $_collected = false;
 
     /**
      * @var array
      */
-    protected $_exceptions = array();
+    private $_exceptions = array();
 
     /**
      * @var array
      */
-    protected $_ignoreExceptions = array();
+    private $_ignoreExceptions = array();
 
     /**
      * @var bool
      */
-    protected $_useToken = false;
+    private $_useToken = false;
 
     /**
      * @var TokenGeneratorInterface|null
      */
-    protected $_tokenGenerator;
+    private $_tokenGenerator;
 
     /**
      * @param array $options
@@ -54,81 +56,78 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
+    public function hasSupportException($exception, $level = LogLevel::WARNING, array $context = array())
     {
-        if (!is_object($exc)) {
-            throw new InvalidArgumentException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
-        }
+        Assert::object($exception);
+        Assert::isInstanceOneOf($exception, array(\Exception::class, '\Throwable'));
 
-        if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
-            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
-        }
+        Assert::string($level);
+        $level = strtolower($level);
+        Assert::oneOf($level, BugHandler::getSupportedLogLevels());
 
         if ($this->isLocked()) {
             return false;
         }
 
-        foreach ($this->_ignoreExceptions as $ignoredException) {
+        foreach ($this->getIgnoreExceptions() as $ignoredException) {
             if (is_object($ignoredException)) {
-                if ($ignoredException === $exc) {
+                if ($ignoredException === $exception) {
                     return false;
                 }
                 $ignoredException = get_class($ignoredException);
             }
-            if (is_string($ignoredException)) {
-                if ($exc instanceof $ignoredException) {
-                    return false;
-                }
-            } else {
-                throw new InvalidArgumentException('Unsupported type of exception condition');
+
+            Assert::string($ignoredException);
+
+            if ($exception instanceof $ignoredException) {
+                return false;
             }
         }
 
-        if (is_array($this->_exceptions) && count($this->_exceptions) > 0) {
-            foreach ($this->_exceptions as $includeException) {
+        $exceptions = $this->getExceptions();
+        if (is_array($exceptions) && count($exceptions) > 0) {
+            foreach ($exceptions as $includeException) {
                 if (is_object($includeException)) {
-                    if ($includeException === $exc) {
+                    if ($includeException === $exception) {
                         return true;
                     }
                     $includeException = get_class($includeException);
                 }
-                if (is_string($includeException)) {
-                    if ($exc instanceof $includeException) {
-                        return true;
-                    }
-                } else {
-                    throw new InvalidArgumentException('Unsupported type of exception condition');
+
+                Assert::string($includeException);
+
+                if ($exception instanceof $includeException) {
+                    return true;
                 }
             }
 
             return false;
         }
 
-        $context = array_merge($context, $this->getContext($exc));
+        $context = array_merge($context, $this->getContext($exception));
 
-        return $this->_hasSupportException($exc, $level, $context);
+        return $this->_hasSupportException($exception, $level, $context);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function handle($exc, $level = LogLevel::WARNING, array $context = array())
+    public function handle($exception, $level = LogLevel::WARNING, array $context = array())
     {
-        if (!is_object($exc)) {
-            throw new InvalidArgumentException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
-        }
+        Assert::object($exception);
+        Assert::isInstanceOneOf($exception, array(\Exception::class, '\Throwable'));
 
-        if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
-            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
-        }
+        Assert::string($level);
+        $level = strtolower($level);
+        Assert::oneOf($level, BugHandler::getSupportedLogLevels());
 
-        $context = array_merge($context, $this->getContext($exc));
+        $context = array_merge($context, $this->getContext($exception));
 
-        if (!$this->hasSupportException($exc, $level, $context)) {
+        if (!$this->hasSupportException($exception, $level, $context)) {
             return false;
         }
 
-        return $this->_handle($exc, $level, $context);
+        return $this->_handle($exception, $level, $context);
     }
 
     /**
@@ -136,7 +135,7 @@ abstract class BaseCollector implements BaseCollectorInterface
      */
     public function isCollected()
     {
-        return (bool) $this->_collected;
+        return $this->_collected;
     }
 
     /**
@@ -146,7 +145,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     {
         Assert::boolean($isCollected);
 
-        $this->_collected = $isCollected;
+        $this->_collected = (bool) $isCollected;
 
         return $this;
     }
@@ -162,9 +161,13 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addIgnoreException($exc)
+    public function addIgnoreException($exception)
     {
-        $this->_ignoreExceptions[] = $exc;
+        if (!is_string($exception) && (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable))) {
+            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
+        }
+
+        $this->_ignoreExceptions[] = $exception;
 
         return $this;
     }
@@ -190,9 +193,13 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addException($exc)
+    public function addException($exception)
     {
-        $this->_exceptions[] = $exc;
+        if (!is_string($exception) && (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable))) {
+            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
+        }
+
+        $this->_exceptions[] = $exception;
 
         return $this;
     }
@@ -240,13 +247,17 @@ abstract class BaseCollector implements BaseCollectorInterface
      */
     public function getTokenGenerator()
     {
+        if ($this->_tokenGenerator === null) {
+            throw new NotDefinedException(__CLASS__ . '::_tokenGenerator');
+        }
+
         return $this->_tokenGenerator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setTokenGenerator(TokenGeneratorInterface $tokenGenerator = null)
+    public function setTokenGenerator(TokenGeneratorInterface $tokenGenerator)
     {
         $this->_tokenGenerator = $tokenGenerator;
 
@@ -276,50 +287,37 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getContext($exc)
+    public function getContext($exception)
     {
-        if (!is_object($exc)) {
-            throw new InvalidArgumentException('Unsupported type of variable (expected: object; got: '.gettype($exc).')');
-        }
-
-        if (!($exc instanceof \Exception) && !(interface_exists('\Throwable') && $exc instanceof \Throwable)) {
-            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable; got: '.get_class($exc).')');
-        }
+        Assert::object($exception);
+        Assert::isInstanceOneOf($exception, array(\Exception::class, '\Throwable'));
 
         $context = array();
-        if ($exc instanceof ContextInterface) {
-            $context = $exc->getExceptionContext();
+        if ($exception instanceof ContextInterface) {
+            $context = $exception->getExceptionContext();
         }
 
-        return array_merge(
-            $context,
-            array(
-                'message' => $exc->getMessage(),
-                'code' => $exc->getCode(),
-                'line' => $exc->getLine(),
-                'file' => $exc->getFile(),
-            )
-        );
+        return $context;
     }
 
     /**
-     * @param \Error|\Exception $exc
+     * @param \Throwable|\Exception $exception
      * @param string            $level
      * @param array             $context
      *
      * @return bool
      */
-    protected function _hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _hasSupportException($exception, $level = LogLevel::WARNING, array $context = array())
     {
         return true;
     }
 
     /**
-     * @param \Error|\Exception $exc
+     * @param \Throwable|\Exception $exception
      * @param string            $level
      * @param array             $context
      *
      * @return bool
      */
-    abstract protected function _handle($exc, $level = LogLevel::WARNING, array $context = array());
+    abstract protected function _handle($exception, $level = LogLevel::WARNING, array $context = array());
 }

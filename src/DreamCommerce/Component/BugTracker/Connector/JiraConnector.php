@@ -2,13 +2,13 @@
 
 namespace DreamCommerce\Component\BugTracker\Connector;
 
+use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
 use DreamCommerce\Component\BugTracker\Http\Client\ClientInterface;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Webmozart\Assert\Assert;
 
 final class JiraConnector implements JiraConnectorInterface
 {
@@ -121,7 +121,8 @@ final class JiraConnector implements JiraConnectorInterface
      */
     public function updateIssueFields(Credentials $credentials, $issueId, array $fields = array())
     {
-        Assert::integer($issueId);
+        Assert::integerish($issueId);
+        $issueId = (int) $issueId;
 
         $data = array(
             'fields' => $fields,
@@ -141,7 +142,8 @@ final class JiraConnector implements JiraConnectorInterface
      */
     public function getIssueTransitions(Credentials $credentials, $issueId)
     {
-        Assert::integer($issueId);
+        Assert::integerish($issueId);
+        $issueId = (int) $issueId;
 
         $client = $this->getHttpClient();
         $uri = $credentials->getEntryPoint().'/rest/api/2/issue/'.$issueId.'/transitions';
@@ -157,8 +159,11 @@ final class JiraConnector implements JiraConnectorInterface
      */
     public function updateIssueTransition(Credentials $credentials, $issueId, $transition)
     {
-        Assert::integer($issueId);
-        Assert::integer($transition);
+        Assert::integerish($issueId);
+        Assert::integerish($transition);
+
+        $issueId = (int) $issueId;
+        $transition = (int) $transition;
 
         $data = array(
             'transition' => array(

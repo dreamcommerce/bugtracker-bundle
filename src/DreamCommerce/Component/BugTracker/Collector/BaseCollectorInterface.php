@@ -2,6 +2,8 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+
 interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 {
     /**
@@ -10,14 +12,16 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     public function getIgnoreExceptions();
 
     /**
-     * @param \Error|\Exception|string $exc
+     * @param \Throwable|\Exception|string $exception
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addIgnoreException($exc);
+    public function addIgnoreException($exception);
 
     /**
      * @param array $ignoreExceptions
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -29,14 +33,16 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     public function getExceptions();
 
     /**
-     * @param \Error|\Exception|string $exc
+     * @param \Throwable|\Exception|string $exception
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addException($exc);
+    public function addException($exception);
 
     /**
      * @param array $exceptions
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -58,9 +64,10 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     public function unlock();
 
     /**
-     * @param \Exception|\Throwable $exc
+     * @param \Exception|\Throwable $exception
+     * @throws InvalidArgumentException
      *
      * @return array
      */
-    public function getContext($exc);
+    public function getContext($exception);
 }

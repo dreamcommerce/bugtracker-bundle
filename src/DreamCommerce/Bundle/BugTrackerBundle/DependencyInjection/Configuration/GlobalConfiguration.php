@@ -34,6 +34,10 @@ final class GlobalConfiguration implements ConfigurationInterface
         $psr3Node = new ArrayNodeDefinition('psr3');
         $psr3Configuration->injectPartialNode($psr3Node);
 
+        $doctrineConfiguration = new DoctrineConfiguration();
+        $doctrineNode = new ArrayNodeDefinition('doctrine');
+        $doctrineConfiguration->injectPartialNode($doctrineNode);
+
         $rootNode
             ->fixXmlConfig('collector')
             ->children()
@@ -43,6 +47,7 @@ final class GlobalConfiguration implements ConfigurationInterface
                         ->append($baseNode)
                         ->append($psr3Node)
                         ->append($jiraNode)
+                        ->append($doctrineNode)
                     ->end()
                 ->end()
                 ->arrayNode('collectors')

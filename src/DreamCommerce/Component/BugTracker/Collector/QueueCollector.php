@@ -2,6 +2,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
@@ -23,6 +24,13 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
      */
     public function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0)
     {
+        Assert::string($level);
+        $level = strtolower($level);
+        Assert::oneOf($level, BugHandler::getSupportedLogLevels());
+        Assert::integerish($priority);
+
+        $priority = (int) $priority;
+
         if ($this->_collectorQueue === null) {
             $this->_collectorQueue = new SplPriorityQueue();
         }

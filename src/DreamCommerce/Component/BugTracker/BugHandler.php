@@ -127,6 +127,9 @@ class BugHandler extends ErrorHandler
         );
     }
 
+    /**
+     * @return array
+     */
     public static function getSupportedLogLevels()
     {
         return array(
@@ -155,22 +158,17 @@ class BugHandler extends ErrorHandler
 
     /**
      * @param string $level
-     *
+     * @throws InvalidArgumentException
      * @return int
      */
     public static function getLogLevelPriority($level)
     {
-        if (is_string($level)) {
-            $level = strtolower($level);
-            $prioLevels = self::getLogLevelPriorities();
-            if (!isset($prioLevels[$level])) {
-                throw new InvalidArgumentException('Unknown log level "'.$level.'"');
-            }
-            $level = $prioLevels[$level];
-        } else {
-            throw new InvalidArgumentException('Unsupported type of variable (expected: string; got: '.gettype($level).')');
-        }
+        Assert::string($level);
 
-        return (int) $level;
+        $level = strtolower($level);
+        $prioLevels = self::getLogLevelPriorities();
+        Assert::oneOf($level, $prioLevels);
+
+        return (int) $prioLevels[$level];
     }
 }

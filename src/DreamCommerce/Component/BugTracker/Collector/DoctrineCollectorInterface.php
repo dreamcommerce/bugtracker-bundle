@@ -3,28 +3,31 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use Doctrine\ORM\EntityManagerInterface;
+use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 
 interface DoctrineCollectorInterface extends CollectorInterface
 {
     /**
-     * @return EntityManagerInterface|null
+     * @throws NotDefinedException
+     * @return EntityManagerInterface
      */
     public function getEntityManager();
 
     /**
-     * @param EntityManagerInterface|null $entityManager
+     * @param EntityManagerInterface $entityManager
      *
      * @return $this
      */
-    public function setEntityManager(EntityManagerInterface $entityManager = null);
+    public function setEntityManager(EntityManagerInterface $entityManager);
 
     /**
-     * @return string|null
+     * @throws NotDefinedException
+     * @return string
      */
     public function getModel();
 
     /**
-     * @param string|null $model
+     * @param string $model
      *
      * @return $this
      */
