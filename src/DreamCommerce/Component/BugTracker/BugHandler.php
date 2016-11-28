@@ -158,7 +158,9 @@ class BugHandler extends ErrorHandler
 
     /**
      * @param string $level
+     *
      * @throws InvalidArgumentException
+     *
      * @return int
      */
     public static function getLogLevelPriority($level)

@@ -17,7 +17,7 @@ class ErrorRepository extends EntityRepository  implements ErrorRepositoryInterf
 
         /** @var ErrorInterface $entity */
         $entity = $this->findOneBy([
-            'token' => $token
+            'token' => $token,
         ]);
 
         return $entity;

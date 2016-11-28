@@ -28,6 +28,7 @@ final class SymfonyHandler
 
     /**
      * @param CollectorInterface $collector
+     *
      * @return $this
      */
     public function setCollector(CollectorInterface $collector)

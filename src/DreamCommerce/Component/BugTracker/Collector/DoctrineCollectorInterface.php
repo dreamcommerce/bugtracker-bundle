@@ -9,6 +9,7 @@ interface DoctrineCollectorInterface extends CollectorInterface
 {
     /**
      * @throws NotDefinedException
+     *
      * @return EntityManagerInterface
      */
     public function getEntityManager();
@@ -22,6 +23,7 @@ interface DoctrineCollectorInterface extends CollectorInterface
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getModel();

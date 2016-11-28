@@ -12,7 +12,7 @@ class Assert extends AssertBase
 {
     public static function isInstanceOneOf($value, array $classes = array(), $message = '')
     {
-        foreach($classes as $class) {
+        foreach ($classes as $class) {
             if ((class_exists($value) || interface_exists($value)) && $value instanceof $class) {
                 return;
             }

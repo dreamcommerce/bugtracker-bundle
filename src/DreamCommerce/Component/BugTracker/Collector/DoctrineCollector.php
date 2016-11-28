@@ -35,10 +35,10 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     }
 
     /**
-     * @param ErrorInterface    $entity
+     * @param ErrorInterface        $entity
      * @param \Throwable|\Exception $exc
-     * @param string            $level
-     * @param array             $context
+     * @param string                $level
+     * @param array                 $context
      */
     protected function _fillModel(ErrorInterface $entity, $exc, $level = LogLevel::WARNING, array $context = array())
     {
@@ -62,7 +62,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     public function getEntityManager()
     {
         if ($this->_entityManager === null) {
-            throw new NotDefinedException(__CLASS__ . '::_entityManager');
+            throw new NotDefinedException(__CLASS__.'::_entityManager');
         }
 
         return $this->_entityManager;
@@ -84,7 +84,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     public function getModel()
     {
         if ($this->_model === null) {
-            throw new NotDefinedException(__CLASS__ . '::_model');
+            throw new NotDefinedException(__CLASS__.'::_model');
         }
 
         return $this->_model;

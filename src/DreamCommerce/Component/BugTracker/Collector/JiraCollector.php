@@ -233,7 +233,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getCredentials()
     {
         if ($this->_credentials === null) {
-            throw new NotDefinedException(__CLASS__ . '::_credentials');
+            throw new NotDefinedException(__CLASS__.'::_credentials');
         }
 
         return $this->_credentials;
@@ -255,7 +255,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getConnector()
     {
         if ($this->_connector === null) {
-            throw new NotDefinedException(__CLASS__ . '::_connector');
+            throw new NotDefinedException(__CLASS__.'::_connector');
         }
 
         return $this->_connector;
@@ -277,7 +277,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getOpenStatus()
     {
         if ($this->_openStatus === null) {
-            throw new NotDefinedException(__CLASS__ . '::_openStatus');
+            throw new NotDefinedException(__CLASS__.'::_openStatus');
         }
 
         return $this->_openStatus;
@@ -310,7 +310,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     {
         Assert::integerish($inProgressStatus);
 
-        if(!in_array($inProgressStatus, $this->_inProgressStatuses)) {
+        if (!in_array($inProgressStatus, $this->_inProgressStatuses)) {
             $this->_inProgressStatuses[] = $inProgressStatus;
         }
 
@@ -333,7 +333,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getReopenStatus()
     {
         if ($this->_reopenStatus === null) {
-            throw new NotDefinedException(__CLASS__ . '::_reopenStatus');
+            throw new NotDefinedException(__CLASS__.'::_reopenStatus');
         }
 
         return $this->_reopenStatus;
@@ -398,7 +398,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     {
         Assert::stringNotEmpty($label);
 
-        if(!in_array($label, $this->_labels)) {
+        if (!in_array($label, $this->_labels)) {
             $this->_labels[] = $label;
         }
 
@@ -421,7 +421,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getCounterFieldId()
     {
         if ($this->_counterFieldId === null) {
-            throw new NotDefinedException(__CLASS__ . '::_counterFieldId');
+            throw new NotDefinedException(__CLASS__.'::_counterFieldId');
         }
 
         return $this->_counterFieldId;
@@ -445,7 +445,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getTokenFieldId()
     {
         if ($this->_tokenFieldId === null) {
-            throw new NotDefinedException(__CLASS__ . '::_tokenFieldId');
+            throw new NotDefinedException(__CLASS__.'::_tokenFieldId');
         }
 
         return $this->_tokenFieldId;
@@ -469,7 +469,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getTokenFieldName()
     {
         if ($this->_tokenFieldName === null) {
-            throw new NotDefinedException(__CLASS__ . '::_tokenFieldName');
+            throw new NotDefinedException(__CLASS__.'::_tokenFieldName');
         }
 
         return $this->_tokenFieldName;
@@ -656,7 +656,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getProject()
     {
         if ($this->_project === null) {
-            throw new NotDefinedException(__CLASS__ . '::_project');
+            throw new NotDefinedException(__CLASS__.'::_project');
         }
 
         return $this->_project;
@@ -680,7 +680,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function getAssignee()
     {
         if ($this->_assignee === null) {
-            throw new NotDefinedException(__CLASS__ . '::_assignee');
+            throw new NotDefinedException(__CLASS__.'::_assignee');
         }
 
         return $this->_assignee;

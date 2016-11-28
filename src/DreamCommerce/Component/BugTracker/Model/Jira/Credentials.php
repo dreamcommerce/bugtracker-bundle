@@ -36,12 +36,13 @@ final class Credentials
 
     /**
      * @return string
+     *
      * @throws NotDefinedException
      */
     public function getEntryPoint()
     {
         if ($this->_entryPoint === null) {
-            throw new NotDefinedException(__CLASS__ . '::_entryPoint');
+            throw new NotDefinedException(__CLASS__.'::_entryPoint');
         }
 
         return $this->_entryPoint;
@@ -49,7 +50,9 @@ final class Credentials
 
     /**
      * @param string $entryPoint
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setEntryPoint($entryPoint)
@@ -63,12 +66,13 @@ final class Credentials
 
     /**
      * @return string
+     *
      * @throws NotDefinedException
      */
     public function getUsername()
     {
         if ($this->_username === null) {
-            throw new NotDefinedException(__CLASS__ . '::_username');
+            throw new NotDefinedException(__CLASS__.'::_username');
         }
 
         return $this->_username;
@@ -76,7 +80,9 @@ final class Credentials
 
     /**
      * @param string $username
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setUsername($username)
@@ -90,12 +96,13 @@ final class Credentials
 
     /**
      * @return string
+     *
      * @throws NotDefinedException
      */
     public function getPassword()
     {
         if ($this->_password === null) {
-            throw new NotDefinedException(__CLASS__ . '::_password');
+            throw new NotDefinedException(__CLASS__.'::_password');
         }
 
         return $this->_password;
@@ -103,7 +110,9 @@ final class Credentials
 
     /**
      * @param string $password
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setPassword($password)

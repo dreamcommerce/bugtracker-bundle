@@ -248,7 +248,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     public function getTokenGenerator()
     {
         if ($this->_tokenGenerator === null) {
-            throw new NotDefinedException(__CLASS__ . '::_tokenGenerator');
+            throw new NotDefinedException(__CLASS__.'::_tokenGenerator');
         }
 
         return $this->_tokenGenerator;
@@ -302,8 +302,8 @@ abstract class BaseCollector implements BaseCollectorInterface
 
     /**
      * @param \Throwable|\Exception $exception
-     * @param string            $level
-     * @param array             $context
+     * @param string                $level
+     * @param array                 $context
      *
      * @return bool
      */
@@ -314,8 +314,8 @@ abstract class BaseCollector implements BaseCollectorInterface
 
     /**
      * @param \Throwable|\Exception $exception
-     * @param string            $level
-     * @param array             $context
+     * @param string                $level
+     * @param array                 $context
      *
      * @return bool
      */

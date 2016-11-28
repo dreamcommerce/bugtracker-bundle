@@ -26,6 +26,7 @@ interface Psr3CollectorInterface extends CollectorInterface
 
     /**
      * @param bool $formatException
+     *
      * @throws InvalidArgumentException
      *
      * @return $this

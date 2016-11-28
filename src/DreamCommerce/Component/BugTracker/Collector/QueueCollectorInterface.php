@@ -15,12 +15,14 @@ interface QueueCollectorInterface
      * @param CollectorInterface $collector
      * @param string             $level
      * @param int                $priority
+     *
      * @throws InvalidArgumentException
      */
     public function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0);
 
     /**
      * @param string|CollectorInterface $collector
+     *
      * @throws InvalidArgumentException
      */
     public function unregisterCollector($collector);
@@ -32,7 +34,9 @@ interface QueueCollectorInterface
 
     /**
      * @param string|CollectorInterface|null $collector
+     *
      * @throws InvalidArgumentException
+     *
      * @return CollectorInterface[]
      */
     public function getCollectors($collector = null);

@@ -11,6 +11,7 @@ interface JiraCollectorInterface extends CollectorInterface
 {
     /**
      * @throws NotDefinedException
+     *
      * @return Credentials
      */
     public function getCredentials();
@@ -24,6 +25,7 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @throws NotDefinedException
+     *
      * @return JiraConnectorInterface
      */
     public function getConnector();
@@ -37,13 +39,16 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getOpenStatus();
 
     /**
      * @param int $openStatus
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setOpenStatus($openStatus);
@@ -55,27 +60,34 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param int $inProgressStatus
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function addInProgressStatus($inProgressStatus);
 
     /**
      * @param array $inProgressStatuses
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setInProgressStatuses(array $inProgressStatuses = array());
 
     /**
      * @throws NotDefinedException
+     *
      * @return int
      */
     public function getReopenStatus();
 
     /**
      * @param int $reopenStatus
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setReopenStatus($reopenStatus);
@@ -88,71 +100,87 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param int $level
      * @param int $id
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function addPriority($level, $id);
 
     /**
      * @param array $priorities
+     *
      * @return $this
      */
     public function setPriorities(array $priorities = array());
 
     /**
      * @throws NotDefinedException
+     *
      * @return array
      */
     public function getLabels();
 
     /**
      * @param string $label
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function addLabel($label);
 
     /**
      * @param array $labels
+     *
      * @return $this
      */
     public function setLabels(array $labels = array());
 
     /**
      * @throws NotDefinedException
+     *
      * @return int
      */
     public function getCounterFieldId();
 
     /**
      * @param int $counterFieldId
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setCounterFieldId($counterFieldId);
 
     /**
      * @throws NotDefinedException
+     *
      * @return int
      */
     public function getTokenFieldId();
 
     /**
      * @param int $tokenFieldId
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setTokenFieldId($tokenFieldId);
 
     /**
      * @throws NotDefinedException
+     *
      * @return int
      */
     public function getTokenFieldName();
 
     /**
      * @throws InvalidArgumentException
+     *
      * @param string $tokenFieldName
+     *
      * @return $this
      */
     public function setTokenFieldName($tokenFieldName);
@@ -164,14 +192,17 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @throws InvalidArgumentException
-     * @param string $name
-     * @param string|integer|float|bool $value
+     *
+     * @param string                $name
+     * @param string|int|float|bool $value
+     *
      * @return $this
      */
     public function addField($name, $value);
 
     /**
      * @param array $fields
+     *
      * @return $this
      */
     public function setFields(array $fields = array());
@@ -183,7 +214,9 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param bool $useCounter
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setUseCounter($useCounter);
@@ -195,7 +228,9 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param bool $useReopen
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setUseReopen($useReopen);
@@ -207,7 +242,9 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param string|null $defaultType
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setDefaultType($defaultType = null);
@@ -219,7 +256,9 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param null|int $defaultPriority
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setDefaultPriority($defaultPriority);
@@ -232,12 +271,14 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param string $level
      * @param string $type
+     *
      * @return $this
      */
     public function addType($level, $type);
 
     /**
      * @param array $types
+     *
      * @return $this
      */
     public function setTypes(array $types = array());
@@ -249,32 +290,39 @@ interface JiraCollectorInterface extends CollectorInterface
 
     /**
      * @param int|null $counterMaxValue
+     *
      * @return $this
      */
     public function setCounterMaxValue($counterMaxValue = null);
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getProject();
 
     /**
      * @param string $project
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setProject($project);
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getAssignee();
 
     /**
      * @param string $assignee
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setAssignee($assignee);

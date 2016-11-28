@@ -9,6 +9,7 @@ interface ErrorRepositoryInterface extends ObjectRepository
 {
     /**
      * @param string $token
+     *
      * @return null|ErrorInterface
      */
     public function findByToken($token);

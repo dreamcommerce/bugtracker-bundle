@@ -10,12 +10,14 @@ interface TokenAwareInterface
 {
     /**
      * @throws NotDefinedException
+     *
      * @return TokenGeneratorInterface
      */
     public function getTokenGenerator();
 
     /**
      * @param TokenGeneratorInterface $tokenGenerator
+     *
      * @return $this
      */
     public function setTokenGenerator(TokenGeneratorInterface $tokenGenerator);
@@ -27,7 +29,9 @@ interface TokenAwareInterface
 
     /**
      * @param bool $useToken
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this;
      */
     public function setUseToken($useToken);

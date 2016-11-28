@@ -11,6 +11,7 @@ interface CollectorInterface
      * @param \Exception|\Throwable $exception
      * @param string                $level
      * @param array                 $context
+     *
      * @throws InvalidArgumentException
      *
      * @return bool
@@ -21,6 +22,7 @@ interface CollectorInterface
      * @param \Exception|\Throwable $exception
      * @param string                $level
      * @param array                 $context
+     *
      * @throws InvalidArgumentException
      *
      * @return bool

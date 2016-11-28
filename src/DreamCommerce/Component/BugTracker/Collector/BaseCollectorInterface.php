@@ -13,6 +13,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 
     /**
      * @param \Throwable|\Exception|string $exception
+     *
      * @throws InvalidArgumentException
      *
      * @return $this
@@ -21,6 +22,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 
     /**
      * @param array $ignoreExceptions
+     *
      * @throws InvalidArgumentException
      *
      * @return $this
@@ -34,6 +36,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 
     /**
      * @param \Throwable|\Exception|string $exception
+     *
      * @throws InvalidArgumentException
      *
      * @return $this
@@ -42,6 +45,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 
     /**
      * @param array $exceptions
+     *
      * @throws InvalidArgumentException
      *
      * @return $this
@@ -65,6 +69,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
 
     /**
      * @param \Exception|\Throwable $exception
+     *
      * @throws InvalidArgumentException
      *
      * @return array

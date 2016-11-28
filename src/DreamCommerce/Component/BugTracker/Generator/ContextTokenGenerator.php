@@ -48,7 +48,9 @@ class ContextTokenGenerator implements TokenGeneratorInterface
 
     /**
      * @param array $tokenParams
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setTokenParams(array $tokenParams = array())
@@ -62,7 +64,9 @@ class ContextTokenGenerator implements TokenGeneratorInterface
 
     /**
      * @param string $tokenParam
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function addTokenParam($tokenParam)

@@ -61,12 +61,13 @@ final class Issue
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getSummary()
     {
-        if($this->_summary === null) {
-            throw new NotDefinedException(__CLASS__ . '::_summary');
+        if ($this->_summary === null) {
+            throw new NotDefinedException(__CLASS__.'::_summary');
         }
 
         return $this->_summary;
@@ -74,7 +75,9 @@ final class Issue
 
     /**
      * @param string $summary
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setSummary($summary)
@@ -88,12 +91,13 @@ final class Issue
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getDescription()
     {
-        if($this->_description === null) {
-            throw new NotDefinedException(__CLASS__ . '::_description');
+        if ($this->_description === null) {
+            throw new NotDefinedException(__CLASS__.'::_description');
         }
 
         return $this->_description;
@@ -101,7 +105,9 @@ final class Issue
 
     /**
      * @param string $description
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setDescription($description)
@@ -115,12 +121,13 @@ final class Issue
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getProject()
     {
-        if($this->_project === null) {
-            throw new NotDefinedException(__CLASS__ . '::_project');
+        if ($this->_project === null) {
+            throw new NotDefinedException(__CLASS__.'::_project');
         }
 
         return $this->_project;
@@ -128,7 +135,9 @@ final class Issue
 
     /**
      * @param string $project
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setProject($project)
@@ -142,12 +151,13 @@ final class Issue
 
     /**
      * @throws NotDefinedException
+     *
      * @return string
      */
     public function getAssignee()
     {
-        if($this->_assignee === null) {
-            throw new NotDefinedException(__CLASS__ . '::_assignee');
+        if ($this->_assignee === null) {
+            throw new NotDefinedException(__CLASS__.'::_assignee');
         }
 
         return $this->_assignee;
@@ -155,7 +165,9 @@ final class Issue
 
     /**
      * @param string $assignee
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setAssignee($assignee)
@@ -189,7 +201,9 @@ final class Issue
 
     /**
      * @param string $label
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function addLabel($label)
@@ -233,7 +247,9 @@ final class Issue
 
     /**
      * @param int|null $priority
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setPriority($priority = null)
@@ -255,7 +271,9 @@ final class Issue
 
     /**
      * @param string|null $type
+     *
      * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setType($type = null)
