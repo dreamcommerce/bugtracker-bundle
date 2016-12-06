@@ -22,6 +22,18 @@ interface ErrorInterface
     public function setToken($token = null);
 
     /**
+     * @return int
+     */
+    public function getCounter();
+
+    /**
+     * @param int $counter
+     *
+     * @return $this
+     */
+    public function setCounter($counter = 0);
+
+    /**
      * @return string
      */
     public function getMessage();
@@ -75,11 +87,11 @@ interface ErrorInterface
     public function getTrace();
 
     /**
-     * @param array $trace
+     * @param string $trace
      *
      * @return $this
      */
-    public function setTrace(array $trace = array());
+    public function setTrace($trace);
 
     /**
      * @return int

@@ -44,20 +44,20 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
         $entity = null;
         $token = null;
 
-        if($this->isUseToken()) {
+        if ($this->isUseToken()) {
             $token = $this->getTokenGenerator()->generate($exc, $level, $context);
             $entity = $repository->findByToken($token);
         }
 
-        if($entity !== null) {
-            if($this->isUseCounter() && $entity->getCounter() < $this->getCounterMaxValue()) {
+        if ($entity !== null) {
+            if ($this->isUseCounter() && $entity->getCounter() < $this->getCounterMaxValue()) {
                 $repository->incrementCounter($entity);
             }
         } else {
             /** @var ErrorInterface $entity */
             $entity = new $model();
             $this->_fillModel($entity, $exc, $level, $context);
-            if($token !== null) {
+            if ($token !== null) {
                 $entity->setToken($token);
             }
         }
@@ -79,7 +79,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
             ->setFile($exc->getFile())
             ->setLine($exc->getLine())
             ->setTrace($exc->getTraceAsString())
-            ->setContext((array)$this->_prepareContext($context))
+            ->setContext((array) $this->_prepareContext($context))
             ->setLevel($level);
     }
 
@@ -168,7 +168,6 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
 
         return $this;
     }
-
 
     protected function _prepareContext(array $array)
     {

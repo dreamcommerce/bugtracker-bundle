@@ -60,5 +60,4 @@ interface DoctrineCollectorInterface extends CollectorInterface
      * @return $this
      */
     public function setCounterMaxValue($counterMaxValue = null);
-
 }

@@ -25,9 +25,8 @@ final class DreamCommerceBugTrackerBundle extends Bundle
     protected function addDoctrinePass(ContainerBuilder $container)
     {
         if (class_exists('\Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass')) {
-
             $mappings = array(
-                realpath(__DIR__ . '/Resources/config/doctrine/model') => 'DreamCommerce\Component\BugTracker\Model'
+                realpath(__DIR__.'/Resources/config/doctrine/model') => 'DreamCommerce\Component\BugTracker\Model',
             );
 
             $container->addCompilerPass(

@@ -33,8 +33,7 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
             if ($this->isUseToken()) {
                 $message .= '[ '.$token.' ] ';
             }
-            $exc = $message . "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
-
+            $exc = $message."exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
         } elseif ($this->isUseToken()) {
             $context['token'] = $token;
         }

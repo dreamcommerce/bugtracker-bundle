@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
 
-class ErrorRepository extends EntityRepository  implements ErrorRepositoryInterface
+class ErrorRepository extends EntityRepository implements ErrorRepositoryInterface
 {
     /**
      * {@inheritdoc}
@@ -21,5 +21,19 @@ class ErrorRepository extends EntityRepository  implements ErrorRepositoryInterf
         ]);
 
         return $entity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function incrementCounter(ErrorInterface $entity)
+    {
+        $em = $this->getEntityManager();
+        $className = $em->getClassMetadata(get_class($entity))->getName();
+        $query = $em->createQuery('UPDATE '.$className.' t SET t.counter = t.counter + 1');
+
+        $query->getResult();
+
+        return $this;
     }
 }

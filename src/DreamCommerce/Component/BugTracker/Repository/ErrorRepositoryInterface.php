@@ -13,4 +13,11 @@ interface ErrorRepositoryInterface extends ObjectRepository
      * @return null|ErrorInterface
      */
     public function findByToken($token);
+
+    /**
+     * @param ErrorInterface $entity
+     *
+     * @return $this
+     */
+    public function incrementCounter(ErrorInterface $entity);
 }

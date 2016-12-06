@@ -128,7 +128,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         $connector = $this->getConnector();
         $credentials = $this->getCredentials();
 
-
         if ($this->isUseToken()) {
             $token = $this->getTokenGenerator()->generate($exc, $level, $context);
             $result = $connector->findIssuesByField($credentials, $this->getTokenFieldName(), $token);
