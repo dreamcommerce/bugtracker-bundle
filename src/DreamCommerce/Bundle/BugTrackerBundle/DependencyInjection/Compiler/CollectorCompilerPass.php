@@ -77,7 +77,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
                 case BugHandler::COLLECTOR_TYPE_DOCTRINE:
                     Assert::oneOf(DoctrineCollectorInterface::class, $interfaces);
 
-                    $serviceName = $serviceResolver($collector, 'doctrine.entity_manager', 'entity_manager');
+                    $serviceName = $serviceResolver($collector, 'doctrine.orm.entity_manager', 'entity_manager');
                     $collectorDefinition->addMethodCall('setEntityManager', array(new Reference($serviceName)));
 
                     break;

@@ -34,4 +34,31 @@ interface DoctrineCollectorInterface extends CollectorInterface
      * @return $this
      */
     public function setModel($model);
+
+    /**
+     * @return bool
+     */
+    public function isUseCounter();
+
+    /**
+     * @param bool $useCounter
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return $this
+     */
+    public function setUseCounter($useCounter);
+
+    /**
+     * @return null|int
+     */
+    public function getCounterMaxValue();
+
+    /**
+     * @param int|null $counterMaxValue
+     *
+     * @return $this
+     */
+    public function setCounterMaxValue($counterMaxValue = null);
+
 }

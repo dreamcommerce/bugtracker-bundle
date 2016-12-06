@@ -2,59 +2,59 @@
 
 namespace DreamCommerce\Component\BugTracker\Model;
 
-class Error implements ErrorInterface
+abstract class Error implements ErrorInterface
 {
     /**
      * @var int
      */
-    protected $_id;
+    protected $id;
 
     /**
      * @var string|null
      */
-    protected $_token;
+    protected $token;
 
     /**
      * @var string
      */
-    protected $_message;
+    protected $message;
 
     /**
      * @var int
      */
-    protected $_code;
+    protected $code;
 
     /**
      * @var int
      */
-    protected $_line;
+    protected $line;
 
     /**
      * @var string
      */
-    protected $_file;
+    protected $file;
 
     /**
      * @var array
      */
-    protected $_trace;
+    protected $trace;
 
     /**
      * @var int
      */
-    protected $_level;
+    protected $level;
 
     /**
      * @var array
      */
-    protected $_context;
+    protected $context;
 
     /**
      * {@inheritdoc}
      */
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
 
     /**
@@ -62,7 +62,7 @@ class Error implements ErrorInterface
      */
     public function getToken()
     {
-        return $this->_token;
+        return $this->token;
     }
 
     /**
@@ -70,7 +70,7 @@ class Error implements ErrorInterface
      */
     public function setToken($token = null)
     {
-        $this->_token = $token;
+        $this->token = $token;
 
         return $this;
     }
@@ -80,7 +80,7 @@ class Error implements ErrorInterface
      */
     public function getMessage()
     {
-        return $this->_message;
+        return $this->message;
     }
 
     /**
@@ -88,7 +88,7 @@ class Error implements ErrorInterface
      */
     public function setMessage($message)
     {
-        $this->_message = $message;
+        $this->message = $message;
 
         return $this;
     }
@@ -98,7 +98,7 @@ class Error implements ErrorInterface
      */
     public function getCode()
     {
-        return $this->_code;
+        return $this->code;
     }
 
     /**
@@ -106,7 +106,7 @@ class Error implements ErrorInterface
      */
     public function setCode($code)
     {
-        $this->_code = $code;
+        $this->code = $code;
 
         return $this;
     }
@@ -116,7 +116,7 @@ class Error implements ErrorInterface
      */
     public function getLine()
     {
-        return $this->_line;
+        return $this->line;
     }
 
     /**
@@ -124,7 +124,7 @@ class Error implements ErrorInterface
      */
     public function setLine($line)
     {
-        $this->_line = $line;
+        $this->line = $line;
 
         return $this;
     }
@@ -134,7 +134,7 @@ class Error implements ErrorInterface
      */
     public function getFile()
     {
-        return $this->_file;
+        return $this->file;
     }
 
     /**
@@ -142,7 +142,7 @@ class Error implements ErrorInterface
      */
     public function setFile($file)
     {
-        $this->_file = $file;
+        $this->file = $file;
 
         return $this;
     }
@@ -152,7 +152,7 @@ class Error implements ErrorInterface
      */
     public function getTrace()
     {
-        return $this->_trace;
+        return $this->trace;
     }
 
     /**
@@ -160,7 +160,7 @@ class Error implements ErrorInterface
      */
     public function setTrace(array $trace = array())
     {
-        $this->_trace = $trace;
+        $this->trace = $trace;
 
         return $this;
     }
@@ -170,7 +170,7 @@ class Error implements ErrorInterface
      */
     public function getLevel()
     {
-        return $this->_level;
+        return $this->level;
     }
 
     /**
@@ -178,7 +178,7 @@ class Error implements ErrorInterface
      */
     public function setLevel($level)
     {
-        $this->_level = $level;
+        $this->level = $level;
 
         return $this;
     }
@@ -188,7 +188,7 @@ class Error implements ErrorInterface
      */
     public function getContext()
     {
-        return $this->_context;
+        return $this->context;
     }
 
     /**
@@ -196,7 +196,7 @@ class Error implements ErrorInterface
      */
     public function setContext(array $context = array())
     {
-        $this->_context = $context;
+        $this->context = $context;
 
         return $this;
     }

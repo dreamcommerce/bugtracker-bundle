@@ -9,6 +9,11 @@
         </id>
 
         <field name="token" type="string" column="token" length="32" nullable="true" unique="true" />
+        <field name="counter" type="smallint" column="counter" nullable="true">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
         <field name="message" type="string" column="message" length="255" />
         <field name="code" type="smallint" column="code">
             <options>
