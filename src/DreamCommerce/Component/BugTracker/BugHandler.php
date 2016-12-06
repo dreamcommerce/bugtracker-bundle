@@ -169,7 +169,7 @@ class BugHandler extends ErrorHandler
 
         $level = strtolower($level);
         $prioLevels = self::getLogLevelPriorities();
-        Assert::oneOf($level, $prioLevels);
+        Assert::keyExists($prioLevels, $level);
 
         return (int) $prioLevels[$level];
     }

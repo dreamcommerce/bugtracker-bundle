@@ -261,7 +261,7 @@ final class Issue
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
     public function getType()
     {
@@ -269,7 +269,7 @@ final class Issue
     }
 
     /**
-     * @param string|null $type
+     * @param int|null $type
      *
      * @throws \InvalidArgumentException
      *
@@ -277,7 +277,7 @@ final class Issue
      */
     public function setType($type = null)
     {
-        Assert::nullOrString($type);
+        Assert::nullOrIntegerish($type);
 
         $this->_type = $type;
 

@@ -112,7 +112,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
             $collector = $data['collector'];
 
             if (BugHandler::getLogLevelPriority($level) < BugHandler::getLogLevelPriority($data['level'])) {
-                return false;
+                continue;
             }
 
             try {

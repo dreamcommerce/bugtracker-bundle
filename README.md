@@ -3,13 +3,6 @@
  Example config.yml:
 ------------
 ```yaml
- monolog:
-     handlers:
-         file_log:
-             type: stream
-             path: "%kernel.logs_dir%/%kernel.environment%.log"
-             level: notice
- 
  dream_commerce_bug_tracker:
      configuration:
          jira:

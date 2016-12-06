@@ -92,7 +92,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
 
             if (!$skipTokenizer) {
                 $serviceName = $serviceResolver($collector, DreamCommerceBugTrackerExtension::ALIAS.'.token_generator', 'token_generator');
-                $definition->addMethodCall('setTokenGenerator', array(new Reference($serviceName)));
+                $collectorDefinition->addMethodCall('setTokenGenerator', array(new Reference($serviceName)));
             }
 
             $definition->addMethodCall(

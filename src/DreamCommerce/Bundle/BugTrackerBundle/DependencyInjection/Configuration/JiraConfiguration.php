@@ -42,6 +42,7 @@ final class JiraConfiguration implements ConfigurationInterface
                 ->booleanNode('use_counter')->defaultTrue()->end()
                 ->integerNode('counter_field_id')->defaultValue(10300)->end()
                 ->integerNode('counter_max_value')->defaultValue(1000)->end()
+                ->booleanNode('use_token')->defaultTrue()->end()
                 ->integerNode('token_field_id')->defaultValue(12400)->end()
                 ->scalarNode('token_field_name')->defaultValue('hash')->cannotBeEmpty()->end()
                 ->scalarNode('assignee')->cannotBeEmpty()->end()

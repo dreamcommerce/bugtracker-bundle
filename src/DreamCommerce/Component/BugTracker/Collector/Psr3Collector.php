@@ -29,11 +29,12 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
         }
 
         if ($this->_formatException) {
-            $exc = '';
+            $message = '';
             if ($this->isUseToken()) {
-                $exc .= '[ '.$token.' ] ';
+                $message .= '[ '.$token.' ] ';
             }
-            $exc .= "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
+            $exc = $message . "exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
+
         } elseif ($this->isUseToken()) {
             $context['token'] = $token;
         }

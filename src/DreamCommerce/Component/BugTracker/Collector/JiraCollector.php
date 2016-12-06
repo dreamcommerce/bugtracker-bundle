@@ -128,17 +128,22 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         $connector = $this->getConnector();
         $credentials = $this->getCredentials();
 
+
         if ($this->isUseToken()) {
             $token = $this->getTokenGenerator()->generate($exc, $level, $context);
             $result = $connector->findIssuesByField($credentials, $this->getTokenFieldName(), $token);
-            if ($result === null) {
+
+            if ($result === null || count($result) === 0) {
                 $issue = new Issue();
                 $this->_fillModel($issue, $exc, $level, $context);
                 $connector->createIssue($credentials, $issue);
             } else {
+                $result = $result[0];
+
                 if ($this->isUseCounter()) {
                     $counterField = 'customfield_'.$this->getCounterFieldId();
                     $counterMaxValue = $this->getCounterMaxValue();
+
                     if ($counterMaxValue === null || $result['fields'][$counterField] < $counterMaxValue) {
                         $connector->updateIssueFields(
                             $credentials,
