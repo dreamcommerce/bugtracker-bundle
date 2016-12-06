@@ -2,7 +2,6 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 interface Psr3CollectorInterface extends CollectorInterface
@@ -27,7 +26,7 @@ interface Psr3CollectorInterface extends CollectorInterface
     /**
      * @param bool $formatException
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */

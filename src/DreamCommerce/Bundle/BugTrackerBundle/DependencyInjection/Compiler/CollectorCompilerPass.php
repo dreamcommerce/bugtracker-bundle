@@ -3,7 +3,6 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
-use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Collector\BaseCollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
@@ -16,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Webmozart\Assert\Assert;
 
 final class CollectorCompilerPass implements CompilerPassInterface
 {
@@ -28,6 +28,21 @@ final class CollectorCompilerPass implements CompilerPassInterface
             DreamCommerceBugTrackerExtension::ALIAS.'.collector_queue'
         );
 
+        $serviceResolver = function (&$collector, $serviceName, $configName = null) {
+            if ($configName === null) {
+                $configName = $serviceName;
+            }
+
+            if (isset($collector[$configName])) {
+                if (!empty($collector[$configName])) {
+                    $serviceName = ltrim($collector[$configName], '@');
+                }
+                unset($collector[$configName]);
+            }
+
+            return $serviceName;
+        };
+
         foreach ($container->getParameter(DreamCommerceBugTrackerExtension::ALIAS.'.collectors') as $name => $collector) {
             $interfaces = \class_implements($collector['class']);
             Assert::oneOf(CollectorInterface::class, $interfaces);
@@ -37,6 +52,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
             $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);
 
+            $skipTokenizer = false;
             switch ($collector['type']) {
                 case BugHandler::COLLECTOR_TYPE_BASE:
                     Assert::oneOf(BaseCollectorInterface::class, $interfaces);
@@ -45,48 +61,38 @@ final class CollectorCompilerPass implements CompilerPassInterface
                 case BugHandler::COLLECTOR_TYPE_PSR3:
                     Assert::oneOf(Psr3CollectorInterface::class, $interfaces);
 
-                    $serviceName = 'logger';
-                    if (isset($collector['logger'])) {
-                        if (!empty($collector['logger'])) {
-                            $serviceName = ltrim($collector['logger'], '@');
-                        }
-                        unset($collector['logger']);
-                    }
+                    $serviceName = $serviceResolver($collector, 'logger');
+                    $collectorDefinition->addMethodCall('setLogger', array(new Reference($serviceName)));
 
-                    $collectorDefinition->addMethodCall('setLogger', $container->getDefinition($serviceName));
                     break;
 
                 case BugHandler::COLLECTOR_TYPE_JIRA:
                     Assert::oneOf(JiraCollectorInterface::class, $interfaces);
 
-                    $serviceName = DreamCommerceBugTrackerExtension::ALIAS.'.jira_connector';
-                    if (isset($collector['connector'])) {
-                        if (!empty($collector['connector'])) {
-                            $serviceName = ltrim($collector['connector'], '@');
-                        }
-                        unset($collector['connector']);
-                    }
+                    $serviceName = $serviceResolver($collector, DreamCommerceBugTrackerExtension::ALIAS.'.jira_connector', 'connector');
+                    $collectorDefinition->addMethodCall('setConnector', array(new Reference($serviceName)));
 
-                    $collectorDefinition->addMethodCall('setConnector', $container->getDefinition($serviceName));
                     break;
 
                 case BugHandler::COLLECTOR_TYPE_DOCTRINE:
                     Assert::oneOf(DoctrineCollectorInterface::class, $interfaces);
 
-                    $serviceName = 'doctrine.entity_manager';
-                    if (isset($collector['entity_manager'])) {
-                        if (!empty($collector['entity_manager'])) {
-                            $serviceName = ltrim($collector['entity_manager'], '@');
-                        }
-                        unset($collector['entity_manager']);
-                    }
+                    $serviceName = $serviceResolver($collector, 'doctrine.entity_manager', 'entity_manager');
+                    $collectorDefinition->addMethodCall('setEntityManager', array(new Reference($serviceName)));
 
-                    $collectorDefinition->addMethodCall('setEntityManager', $container->getDefinition($serviceName));
                     break;
 
                 case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
                     // TODO
                     break;
+
+                default:
+                    $skipTokenizer = true;
+            }
+
+            if (!$skipTokenizer) {
+                $serviceName = $serviceResolver($collector, DreamCommerceBugTrackerExtension::ALIAS.'.token_generator', 'token_generator');
+                $definition->addMethodCall('setTokenGenerator', array(new Reference($serviceName)));
             }
 
             $definition->addMethodCall(

@@ -3,12 +3,12 @@
 namespace DreamCommerce\Component\BugTracker;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
+use Webmozart\Assert\Assert;
 
 class BugHandler extends ErrorHandler
 {
@@ -159,7 +159,7 @@ class BugHandler extends ErrorHandler
     /**
      * @param string $level
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return int
      */

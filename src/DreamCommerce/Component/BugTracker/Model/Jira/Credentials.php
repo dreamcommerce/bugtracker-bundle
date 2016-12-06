@@ -2,10 +2,9 @@
 
 namespace DreamCommerce\Component\BugTracker\Model\Jira;
 
-use DreamCommerce\Component\BugTracker\Assert;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Traits\Options;
+use Webmozart\Assert\Assert;
 
 final class Credentials
 {
@@ -51,7 +50,7 @@ final class Credentials
     /**
      * @param string $entryPoint
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -81,7 +80,7 @@ final class Credentials
     /**
      * @param string $username
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -111,7 +110,7 @@ final class Credentials
     /**
      * @param string $password
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */

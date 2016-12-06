@@ -2,10 +2,9 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\BugHandler;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
+use Webmozart\Assert\Assert;
 
 class QueueCollector extends BaseCollector implements QueueCollectorInterface
 {
@@ -87,7 +86,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
                     $result[] = $data;
                 }
             } else {
-                throw new InvalidArgumentException('Unsupported type of variable');
+                throw new \InvalidArgumentException('Unsupported type of variable');
             }
         }
 

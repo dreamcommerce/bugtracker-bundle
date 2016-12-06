@@ -30,7 +30,7 @@ final class Psr3Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('logger')->defaultValue('monolog.logger')->cannotBeEmpty()->end()
-                ->booleanNode('format_exception')->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode('format_exception')->defaultFalse()->end()
             ->end();
     }
 }

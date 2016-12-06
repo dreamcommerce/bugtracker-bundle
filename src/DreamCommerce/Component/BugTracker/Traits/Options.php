@@ -2,7 +2,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Traits;
 
-use DreamCommerce\Component\BugTracker\Assert;
+use Webmozart\Assert\Assert;
 
 trait Options
 {

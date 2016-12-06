@@ -2,7 +2,6 @@
 
 namespace DreamCommerce\Component\BugTracker\Connector;
 
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
 
@@ -21,7 +20,7 @@ interface JiraConnectorInterface
      * @param string      $fieldName
      * @param string      $fieldValue
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return array
      */
@@ -32,7 +31,7 @@ interface JiraConnectorInterface
      * @param int         $issueId
      * @param array       $fields
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return \stdClass
      */
@@ -42,7 +41,7 @@ interface JiraConnectorInterface
      * @param Credentials $credentials
      * @param int         $issueId
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return \stdClass
      */
@@ -53,7 +52,7 @@ interface JiraConnectorInterface
      * @param int         $issueId
      * @param int         $transition
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return \stdClass
      */

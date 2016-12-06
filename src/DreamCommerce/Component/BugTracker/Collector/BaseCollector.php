@@ -2,14 +2,13 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 use DreamCommerce\Component\BugTracker\Traits\Options;
 use Psr\Log\LogLevel;
+use Webmozart\Assert\Assert;
 
 abstract class BaseCollector implements BaseCollectorInterface
 {
@@ -59,7 +58,9 @@ abstract class BaseCollector implements BaseCollectorInterface
     public function hasSupportException($exception, $level = LogLevel::WARNING, array $context = array())
     {
         Assert::object($exception);
-        Assert::isInstanceOneOf($exception, array(\Exception::class, '\Throwable'));
+        if (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable)) {
+            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable)');
+        }
 
         Assert::string($level);
         $level = strtolower($level);
@@ -115,7 +116,9 @@ abstract class BaseCollector implements BaseCollectorInterface
     public function handle($exception, $level = LogLevel::WARNING, array $context = array())
     {
         Assert::object($exception);
-        Assert::isInstanceOneOf($exception, array(\Exception::class, '\Throwable'));
+        if (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable)) {
+            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable)');
+        }
 
         Assert::string($level);
         $level = strtolower($level);
@@ -164,7 +167,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     public function addIgnoreException($exception)
     {
         if (!is_string($exception) && (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable))) {
-            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
+            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
         }
 
         $this->_ignoreExceptions[] = $exception;
@@ -196,7 +199,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     public function addException($exception)
     {
         if (!is_string($exception) && (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable))) {
-            throw new InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
+            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
         }
 
         $this->_exceptions[] = $exception;
@@ -290,7 +293,9 @@ abstract class BaseCollector implements BaseCollectorInterface
     public function getContext($exception)
     {
         Assert::object($exception);
-        Assert::isInstanceOneOf($exception, array(\Exception::class, '\Throwable'));
+        if (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable)) {
+            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable)');
+        }
 
         $context = array();
         if ($exception instanceof ContextInterface) {

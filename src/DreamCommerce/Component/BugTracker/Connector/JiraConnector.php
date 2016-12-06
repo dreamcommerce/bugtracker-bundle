@@ -2,13 +2,13 @@
 
 namespace DreamCommerce\Component\BugTracker\Connector;
 
-use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
 use DreamCommerce\Component\BugTracker\Http\Client\ClientInterface;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Webmozart\Assert\Assert;
 
 final class JiraConnector implements JiraConnectorInterface
 {

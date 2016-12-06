@@ -2,9 +2,8 @@
 
 namespace DreamCommerce\Component\BugTracker\Generator;
 
-use DreamCommerce\Component\BugTracker\Assert;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
+use Webmozart\Assert\Assert;
 
 class ContextTokenGenerator implements TokenGeneratorInterface
 {
@@ -49,7 +48,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     /**
      * @param array $tokenParams
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -65,7 +64,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     /**
      * @param string $tokenParam
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */

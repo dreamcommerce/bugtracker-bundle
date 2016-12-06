@@ -2,8 +2,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Assert;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
+use Webmozart\Assert\Assert;
 
 class SplPriorityQueue extends \SplPriorityQueue
 {
@@ -14,7 +13,7 @@ class SplPriorityQueue extends \SplPriorityQueue
         if (is_object($item)) {
             Assert::isInstanceOf($item, CollectorInterface::class);
         } elseif (!is_string($item)) {
-            throw new InvalidArgumentException('Cannot delete the item from the queue');
+            throw new \InvalidArgumentException('Cannot delete the item from the queue');
         }
 
         $this->setExtractFlags(self::EXTR_BOTH);

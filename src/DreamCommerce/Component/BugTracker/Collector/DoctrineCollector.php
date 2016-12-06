@@ -3,10 +3,10 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use Doctrine\ORM\EntityManagerInterface;
-use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use Psr\Log\LogLevel;
+use Webmozart\Assert\Assert;
 
 class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterface
 {

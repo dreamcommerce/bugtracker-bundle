@@ -2,7 +2,6 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 interface CollectorInterface
@@ -12,7 +11,7 @@ interface CollectorInterface
      * @param string                $level
      * @param array                 $context
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return bool
      */
@@ -23,7 +22,7 @@ interface CollectorInterface
      * @param string                $level
      * @param array                 $context
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return bool
      */

@@ -3,7 +3,6 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\Connector\JiraConnectorInterface;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 
@@ -47,7 +46,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param int $openStatus
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -61,7 +60,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param int $inProgressStatus
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -70,7 +69,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param array $inProgressStatuses
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -86,7 +85,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param int $reopenStatus
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -101,7 +100,7 @@ interface JiraCollectorInterface extends CollectorInterface
      * @param int $level
      * @param int $id
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -124,7 +123,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param string $label
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -147,7 +146,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param int $counterFieldId
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -163,7 +162,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param int $tokenFieldId
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -177,7 +176,7 @@ interface JiraCollectorInterface extends CollectorInterface
     public function getTokenFieldName();
 
     /**
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @param string $tokenFieldName
      *
@@ -191,7 +190,7 @@ interface JiraCollectorInterface extends CollectorInterface
     public function getFields();
 
     /**
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @param string                $name
      * @param string|int|float|bool $value
@@ -215,7 +214,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param bool $useCounter
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -229,7 +228,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param bool $useReopen
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -243,7 +242,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param string|null $defaultType
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -257,7 +256,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param null|int $defaultPriority
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -305,7 +304,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param string $project
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -321,7 +320,7 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @param string $assignee
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */

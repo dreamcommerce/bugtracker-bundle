@@ -2,7 +2,6 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 
@@ -30,7 +29,7 @@ interface TokenAwareInterface
     /**
      * @param bool $useToken
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this;
      */

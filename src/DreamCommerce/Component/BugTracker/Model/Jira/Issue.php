@@ -2,10 +2,9 @@
 
 namespace DreamCommerce\Component\BugTracker\Model\Jira;
 
-use DreamCommerce\Component\BugTracker\Assert;
-use DreamCommerce\Component\BugTracker\Exception\InvalidArgumentException;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Traits\Options;
+use Webmozart\Assert\Assert;
 
 final class Issue
 {
@@ -76,7 +75,7 @@ final class Issue
     /**
      * @param string $summary
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -106,7 +105,7 @@ final class Issue
     /**
      * @param string $description
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -136,7 +135,7 @@ final class Issue
     /**
      * @param string $project
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -166,7 +165,7 @@ final class Issue
     /**
      * @param string $assignee
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -202,7 +201,7 @@ final class Issue
     /**
      * @param string $label
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -248,7 +247,7 @@ final class Issue
     /**
      * @param int|null $priority
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -272,7 +271,7 @@ final class Issue
     /**
      * @param string|null $type
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */

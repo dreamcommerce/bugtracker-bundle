@@ -2,7 +2,6 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Assert;
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Connector\JiraConnectorInterface;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
@@ -10,6 +9,7 @@ use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\Exception\ContextErrorException;
+use Webmozart\Assert\Assert;
 
 class JiraCollector extends BaseCollector implements JiraCollectorInterface
 {
@@ -571,7 +571,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      */
     public function setDefaultType($defaultType = null)
     {
-        Assert::nullOrString($defaultType);
+        Assert::nullOrIntegerish($defaultType);
 
         $this->_defaultType = $defaultType;
 
