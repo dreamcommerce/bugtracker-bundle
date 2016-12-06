@@ -3,6 +3,7 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use Doctrine\ORM\EntityManagerInterface;
+use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
@@ -74,13 +75,15 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
      */
     protected function _fillModel(ErrorInterface $entity, $exc, $level = LogLevel::WARNING, array $context = array())
     {
+        $levelPriority = BugHandler::getLogLevelPriority($level);
+
         $entity->setMessage($exc->getMessage())
             ->setCode($exc->getCode())
             ->setFile($exc->getFile())
             ->setLine($exc->getLine())
             ->setTrace($exc->getTraceAsString())
             ->setContext((array) $this->_prepareContext($context))
-            ->setLevel($level);
+            ->setLevel($levelPriority);
     }
 
     /**

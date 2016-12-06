@@ -134,7 +134,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
             if ($result === null || count($result) === 0) {
                 $issue = new Issue();
-                $this->_fillModel($issue, $exc, $level, $context);
+                $this->_fillModel($issue, $exc, $level, $context, $token);
                 $connector->createIssue($credentials, $issue);
             } else {
                 $result = $result[0];
@@ -182,8 +182,9 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      * @param \Exception|\Throwable $exc
      * @param int                   $level
      * @param array                 $context
+     * @param string|null           $token
      */
-    protected function _fillModel(Issue $issue, $exc, $level, array $context = array())
+    protected function _fillModel(Issue $issue, $exc, $level, array $context = array(), $token = null)
     {
         $message = substr($exc->getMessage(), 0, 200).' (code: '.$exc->getCode().')';
         if (!($exc instanceof ContextErrorException)) {
@@ -209,8 +210,17 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
         $issue->setAssignee($this->getAssignee());
         $issue->setLabels($this->getLabels());
-        $issue->setFields($this->getFields());
         $issue->setProject($this->getProject());
+
+        $fields = $this->getFields();
+        if($token !== null) {
+            $fields[$this->getTokenFieldId()] = $token;
+        }
+        if($this->isUseCounter()) {
+            $fields[$this->getCounterFieldId()] = 1;
+        }
+
+        $issue->setFields($fields);
 
         $priority = null;
         $priorities = $this->getPriorities();

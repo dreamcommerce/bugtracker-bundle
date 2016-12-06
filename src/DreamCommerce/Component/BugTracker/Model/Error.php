@@ -15,6 +15,11 @@ abstract class Error implements ErrorInterface
     protected $token;
 
     /**
+     * @var integer|null
+     */
+    protected $counter;
+
+    /**
      * @var string
      */
     protected $message;
@@ -71,6 +76,24 @@ abstract class Error implements ErrorInterface
     public function setToken($token = null)
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCounter()
+    {
+        return $this->counter;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCounter($counter = 0)
+    {
+        $this->counter = $counter;
 
         return $this;
     }
@@ -158,7 +181,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setTrace(array $trace = array())
+    public function setTrace($trace)
     {
         $this->trace = $trace;
 
