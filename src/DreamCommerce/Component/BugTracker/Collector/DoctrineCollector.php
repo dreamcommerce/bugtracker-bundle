@@ -51,7 +51,8 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
         }
 
         if ($entity !== null) {
-            if ($this->isUseCounter() && $entity->getCounter() < $this->getCounterMaxValue()) {
+            $maxValue = $this->getCounterMaxValue();
+            if ($this->isUseCounter() && ($maxValue === null || $entity->getCounter() < $maxValue)) {
                 $repository->incrementCounter($entity);
             }
         } else {

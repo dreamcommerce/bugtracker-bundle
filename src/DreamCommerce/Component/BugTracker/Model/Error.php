@@ -15,7 +15,7 @@ abstract class Error implements ErrorInterface
     protected $token;
 
     /**
-     * @var integer|null
+     * @var int|null
      */
     protected $counter;
 

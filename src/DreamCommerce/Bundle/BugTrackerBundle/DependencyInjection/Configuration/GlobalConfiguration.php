@@ -38,6 +38,10 @@ final class GlobalConfiguration implements ConfigurationInterface
         $doctrineNode = new ArrayNodeDefinition('doctrine');
         $doctrineConfiguration->injectPartialNode($doctrineNode);
 
+        $swiftMailerConfiguration = new SwiftMailerConfiguration();
+        $swiftMailerNode = new ArrayNodeDefinition('swiftmailer');
+        $swiftMailerConfiguration->injectPartialNode($swiftMailerNode);
+
         $rootNode
             ->fixXmlConfig('collector')
             ->children()
@@ -48,6 +52,7 @@ final class GlobalConfiguration implements ConfigurationInterface
                         ->append($psr3Node)
                         ->append($jiraNode)
                         ->append($doctrineNode)
+                        ->append($swiftMailerNode)
                     ->end()
                 ->end()
                 ->arrayNode('collectors')

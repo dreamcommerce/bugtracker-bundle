@@ -13,7 +13,7 @@ use Webmozart\Assert\Assert;
 
 class JiraCollector extends BaseCollector implements JiraCollectorInterface
 {
-    const SEPARATOR = "-----------------------------------------------------------\r\n";
+    const SEPARATOR = '-----------------------------------------------------------';
 
     /**
      * @var string
@@ -193,13 +193,13 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
 
         $description = $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
             $exc->getFile().':'.$exc->getLine().PHP_EOL.
-            static::SEPARATOR;
+            static::SEPARATOR.PHP_EOL;
 
         if (!empty($context)) {
             $description .=
                 'Parameters:'.PHP_EOL.PHP_EOL.
                 $this->_prepareContext($context).PHP_EOL.
-                static::SEPARATOR;
+                static::SEPARATOR.PHP_EOL;
         }
 
         $description .= 'Stack trace:'.PHP_EOL.PHP_EOL;
@@ -213,10 +213,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         $issue->setProject($this->getProject());
 
         $fields = $this->getFields();
-        if($token !== null) {
+        if ($token !== null) {
             $fields[$this->getTokenFieldId()] = $token;
         }
-        if($this->isUseCounter()) {
+        if ($this->isUseCounter()) {
             $fields[$this->getCounterFieldId()] = 1;
         }
 
