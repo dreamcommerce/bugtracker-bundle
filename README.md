@@ -1,5 +1,14 @@
 # DreamCommerce BugTracker Bundle
 
+Changelog
+---------
+
+``1.1.0``
+   - added doctrine collector
+   - added swiftmailer collector
+   - improved jira collector
+
+
  Example config.yml:
 ------------
 ```yaml
@@ -12,6 +21,12 @@
              project: "PROJECT_SYMBOL"
              labels: [ "app_test" ]
              assignee: "my.login"
+             
+         swiftmailer:
+             sender: "%mailer_user%"
+             recipients:
+                 - bugtracker@example.com
+                         
      collectors:
          psr3:
              type: psr3
@@ -25,6 +40,16 @@
              class: DreamCommerce\Component\BugTracker\Collector\JiraCollector
              level: error
              priority: -100
+             
+         doctrine:
+             type: doctrine
+             class: DreamCommerce\Component\BugTracker\Collector\DoctrineCollector
+             options:
+                 model: AppBundle\Entity\UserError
+ 
+         swiftmailer:
+             type: swiftmailer
+             class: DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollector
 ```
 
 Example code:
