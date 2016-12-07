@@ -53,7 +53,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
 
         if ($this->isUseToken()) {
             $token = $this->getTokenGenerator()->generate($exc, $level, $context);
-            $subject .= ' ['.$token.' ]';
+            $subject .= ' [ '.$token.' ]';
         }
 
         $body =

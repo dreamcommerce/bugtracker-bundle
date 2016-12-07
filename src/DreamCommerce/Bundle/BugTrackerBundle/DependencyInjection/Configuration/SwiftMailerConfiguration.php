@@ -30,9 +30,12 @@ final class SwiftMailerConfiguration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('mailer')->defaultValue('mailer')->cannotBeEmpty()->end()
-                ->scalarNode('subject')->cannotBeEmpty()->end()
+                ->scalarNode('subject')->defaultValue('An exception occurred')->cannotBeEmpty()->end()
                 ->scalarNode('sender')->cannotBeEmpty()->end()
-                ->arrayNode('recipients')->cannotBeEmpty()->end()
+                ->arrayNode('recipients')
+                    ->requiresAtLeastOneElement()
+                    ->prototype('scalar')->end()
+                ->end()
             ->end();
     }
 }
