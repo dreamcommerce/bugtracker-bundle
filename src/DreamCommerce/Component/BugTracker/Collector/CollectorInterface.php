@@ -23,8 +23,6 @@ interface CollectorInterface
      * @param array                 $context
      *
      * @throws \InvalidArgumentException
-     *
-     * @return bool
      */
     public function handle($exception, $level = LogLevel::WARNING, array $context = array());
 

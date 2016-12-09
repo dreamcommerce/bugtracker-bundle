@@ -39,8 +39,6 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
         }
 
         $this->_logger->log($level, $exc, $context);
-
-        $this->setIsCollected(true);
     }
 
     /**

@@ -173,8 +173,6 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
             $this->_fillModel($issue, $exc, $level, $context);
             $connector->createIssue($credentials, $issue);
         }
-
-        $this->setIsCollected(true);
     }
 
     /**

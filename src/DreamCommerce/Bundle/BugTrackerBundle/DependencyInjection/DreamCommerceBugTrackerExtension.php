@@ -59,7 +59,7 @@ final class DreamCommerceBugTrackerExtension extends Extension
                         $partialConfiguration = $swiftMailerConfiguration;
                         break;
                     default:
-                        continue;
+                        continue 2;
                 }
 
                 $partialConfig = $collectorConfig['options'];
