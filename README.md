@@ -3,6 +3,9 @@
 Changelog
 ---------
 
+``1.1.2``
+   - added context trait
+
 ``1.1.1``
    - improved marking collectors as collected
    - fixed custom collector
