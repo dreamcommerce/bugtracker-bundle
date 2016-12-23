@@ -8,6 +8,7 @@ use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Doct
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\GlobalConfiguration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\JiraConfiguration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Psr3Configuration;
+use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\SwiftMailerConfiguration;
 use DreamCommerce\Component\BugTracker\BugHandler;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -32,6 +33,7 @@ final class DreamCommerceBugTrackerExtension extends Extension
         $jiraConfiguration = new JiraConfiguration();
         $psr3Configuration = new Psr3Configuration();
         $doctrineConfiguration = new DoctrineConfiguration();
+        $swiftMailerConfiguration = new SwiftMailerConfiguration();
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
         $loader->load('base.xml');
@@ -54,10 +56,10 @@ final class DreamCommerceBugTrackerExtension extends Extension
                         $partialConfiguration = $doctrineConfiguration;
                         break;
                     case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
-                        // TODO
+                        $partialConfiguration = $swiftMailerConfiguration;
                         break;
                     default:
-                        continue;
+                        continue 2;
                 }
 
                 $partialConfig = $collectorConfig['options'];

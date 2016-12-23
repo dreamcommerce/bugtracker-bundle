@@ -130,7 +130,8 @@ abstract class BaseCollector implements BaseCollectorInterface
             return false;
         }
 
-        return $this->_handle($exception, $level, $context);
+        $this->_handle($exception, $level, $context);
+        $this->setIsCollected(true);
     }
 
     /**
@@ -321,8 +322,6 @@ abstract class BaseCollector implements BaseCollectorInterface
      * @param \Throwable|\Exception $exception
      * @param string                $level
      * @param array                 $context
-     *
-     * @return bool
      */
     abstract protected function _handle($exception, $level = LogLevel::WARNING, array $context = array());
 }

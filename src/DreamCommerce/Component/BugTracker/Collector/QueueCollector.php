@@ -104,7 +104,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
         $this->setIsCollected(false);
 
         if (count($this->_collectorQueue) === 0) {
-            return false;
+            return;
         }
 
         foreach (clone $this->_collectorQueue as $data) {
@@ -121,7 +121,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
                 }
 
                 $result = $collector->handle($exc, $level, $context);
-                if (!$this->isCollected() && $collector->isCollected()) {
+                if ($collector->isCollected()) {
                     $this->setIsCollected(true);
                 }
                 if ($result === true) {

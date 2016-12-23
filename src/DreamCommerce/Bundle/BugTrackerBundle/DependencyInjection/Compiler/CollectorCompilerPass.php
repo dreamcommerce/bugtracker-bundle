@@ -10,6 +10,8 @@ use DreamCommerce\Component\BugTracker\Collector\DoctrineCollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\JiraCollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\Psr3CollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\QueueCollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\TokenAwareInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -83,14 +85,18 @@ final class CollectorCompilerPass implements CompilerPassInterface
                     break;
 
                 case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
-                    // TODO
+                    Assert::oneOf(SwiftMailerCollectorInterface::class, $interfaces);
+
+                    $serviceName = $serviceResolver($collector, 'mailer');
+                    $collectorDefinition->addMethodCall('setMailer', array(new Reference($serviceName)));
+
                     break;
 
                 default:
                     $skipTokenizer = true;
             }
 
-            if (!$skipTokenizer) {
+            if (!$skipTokenizer || in_array(TokenAwareInterface::class, $interfaces)) {
                 $serviceName = $serviceResolver($collector, DreamCommerceBugTrackerExtension::ALIAS.'.token_generator', 'token_generator');
                 $collectorDefinition->addMethodCall('setTokenGenerator', array(new Reference($serviceName)));
             }
