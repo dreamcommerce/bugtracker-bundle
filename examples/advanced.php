@@ -1,12 +1,20 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 require_once '../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
 use DreamCommerce\Component\BugTracker\Collector\QueueCollector;
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class TestException extends \Exception implements ContextInterface
 {
@@ -22,8 +30,12 @@ class TestException extends \Exception implements ContextInterface
     }
 }
 
-class Test1Exception extends TestException {}
-class Test2Exception extends TestException {}
+class Test1Exception extends TestException
+{
+}
+class Test2Exception extends TestException
+{
+}
 
 class FirstCollector extends Psr3Collector
 {
@@ -61,6 +73,6 @@ $queue->registerCollector(new SecondCollector(array('logger' => $logger2)));
 
 try {
     throw new TestException('test');
-} catch(\Exception $exc) {
+} catch (\Exception $exc) {
     $queue->handle($exc);
 }

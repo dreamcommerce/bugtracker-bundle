@@ -1,8 +1,18 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
+use DreamCommerce\Component\Common\Model\ArrayableInterface;
+
+interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface, ArrayableInterface
 {
     /**
      * @return array

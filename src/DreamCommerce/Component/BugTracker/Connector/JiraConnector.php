@@ -1,11 +1,19 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker\Connector;
 
 use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
-use DreamCommerce\Component\BugTracker\Http\Client\ClientInterface;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
+use DreamCommerce\Component\Common\Http\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Webmozart\Assert\Assert;

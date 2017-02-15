@@ -1,10 +1,18 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 require_once '../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
-use DreamCommerce\Component\BugTracker\Http\Client\GuzzleClient;
 use DreamCommerce\Component\BugTracker\Connector\JiraConnector;
+use DreamCommerce\Component\BugTracker\Http\Client\GuzzleClient;
 use GuzzleHttp\Client;
 use Psr\Log\LogLevel;
 
@@ -37,6 +45,6 @@ $collector = new JiraCollector($options);
 
 try {
     throw new \Exception('test');
-} catch(\Exception $exc) {
+} catch (\Exception $exc) {
     $collector->handle($exc, LogLevel::EMERGENCY);
 }

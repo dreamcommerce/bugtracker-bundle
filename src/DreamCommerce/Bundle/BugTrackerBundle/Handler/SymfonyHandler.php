@@ -1,6 +1,14 @@
 <?php
 
-namespace DreamCommerce\Component\BugTracker\Handler;
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
+namespace DreamCommerce\Bundle\BugTrackerBundle\Handler;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;

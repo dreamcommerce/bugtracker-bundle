@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorCompilerPass;
@@ -10,10 +18,10 @@ use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Jira
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Psr3Configuration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\SwiftMailerConfiguration;
 use DreamCommerce\Component\BugTracker\BugHandler;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 final class DreamCommerceBugTrackerExtension extends Extension
 {

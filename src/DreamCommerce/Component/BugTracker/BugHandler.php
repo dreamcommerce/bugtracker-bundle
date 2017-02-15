@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
@@ -49,9 +57,17 @@ class BugHandler extends ErrorHandler
     /**
      * {@inheritdoc}
      */
-    public function handleError($type, $message, $file, $line, array $context, array $backtrace = null)
+    public function handleError($type, $message, $file, $line)
     {
         try {
+            if (4 < $numArgs = func_num_args()) {
+                $context = func_get_arg(4) ?: array();
+                $backtrace = 5 < $numArgs ? func_get_arg(5) : null; // defined on HHVM
+            } else {
+                $context = array();
+                $backtrace = null;
+            }
+
             parent::handleError($type, $message, $file, $line, $context, $backtrace);
         } catch (\Exception $ex) {
             $this->handleException($ex);

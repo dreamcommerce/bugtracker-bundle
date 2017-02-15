@@ -1,18 +1,26 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
-use DreamCommerce\Component\BugTracker\Traits\Options;
+use DreamCommerce\Component\Common\Model\ArrayableTrait;
 use Psr\Log\LogLevel;
 use Webmozart\Assert\Assert;
 
 abstract class BaseCollector implements BaseCollectorInterface
 {
-    use Options;
+    use ArrayableTrait;
 
     /**
      * @var bool
@@ -49,7 +57,7 @@ abstract class BaseCollector implements BaseCollectorInterface
      */
     public function __construct(array $options = array())
     {
-        $this->setOptions($options);
+        $this->fromArray($options);
     }
 
     /**

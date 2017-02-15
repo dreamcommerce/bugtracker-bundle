@@ -1,14 +1,23 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker\Model\Jira;
 
 use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
-use DreamCommerce\Component\BugTracker\Traits\Options;
+use DreamCommerce\Component\Common\Model\ArrayableInterface;
+use DreamCommerce\Component\Common\Model\ArrayableTrait;
 use Webmozart\Assert\Assert;
 
-final class Issue
+final class Issue implements ArrayableInterface
 {
-    use Options;
+    use ArrayableTrait;
 
     /**
      * @var string
@@ -55,7 +64,7 @@ final class Issue
      */
     public function __construct($options = array())
     {
-        $this->setOptions($options);
+        $this->fromArray($options);
     }
 
     /**

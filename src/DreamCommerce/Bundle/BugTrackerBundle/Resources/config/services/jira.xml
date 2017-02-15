@@ -5,7 +5,7 @@
 
     <parameters>
         <parameter key="dream_commerce_bug_tracker.guzzle_client.class">GuzzleHttp\Client</parameter>
-        <parameter key="dream_commerce_bug_tracker.http_client.class">DreamCommerce\Component\BugTracker\Http\Client\GuzzleClient</parameter>
+        <parameter key="dream_commerce_bug_tracker.http_client.class">DreamCommerce\Component\Common\Http\GuzzleClient</parameter>
         <parameter key="dream_commerce_bug_tracker.jira_connector.class">DreamCommerce\Component\BugTracker\Connector\JiraConnector</parameter>
     </parameters>
 

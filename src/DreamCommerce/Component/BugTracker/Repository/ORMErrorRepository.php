@@ -1,12 +1,19 @@
 <?php
 
-namespace DreamCommerce\Bundle\BugTrackerBundle\Doctrine\ORM\Repository;
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
+namespace DreamCommerce\Component\BugTracker\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
-use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
 
-class ErrorRepository extends EntityRepository implements ErrorRepositoryInterface
+class ORMErrorRepository extends EntityRepository implements ErrorRepositoryInterface
 {
     /**
      * {@inheritdoc}
@@ -16,9 +23,9 @@ class ErrorRepository extends EntityRepository implements ErrorRepositoryInterfa
         $token = iconv('UTF-8', 'ASCII//TRANSLIT', trim(strtoupper($token)));
 
         /** @var ErrorInterface $entity */
-        $entity = $this->findOneBy([
+        $entity = $this->findOneBy(array(
             'token' => $token,
-        ]);
+        ));
 
         return $entity;
     }

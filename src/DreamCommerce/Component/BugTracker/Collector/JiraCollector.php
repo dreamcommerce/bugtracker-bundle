@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
@@ -115,7 +123,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     public function __construct(array $options = array())
     {
         $this->_credentials = new Credentials();
-        $this->setOptions($options, $this->_credentials);
+        $this->fromArray($options, $this->_credentials);
 
         parent::__construct($options);
     }

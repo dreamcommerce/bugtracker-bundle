@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
@@ -13,8 +21,8 @@ use DreamCommerce\Component\BugTracker\Collector\QueueCollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollectorInterface;
 use DreamCommerce\Component\BugTracker\Collector\TokenAwareInterface;
 use Psr\Log\LogLevel;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Webmozart\Assert\Assert;
