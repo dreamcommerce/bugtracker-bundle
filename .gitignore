@@ -13,6 +13,7 @@
 /phpunit.xml
 /vendor
 /bin
+/.php_cs.cache
 /docker/docker-compose.yml
 /test/app/cache
 /test/app/logs
