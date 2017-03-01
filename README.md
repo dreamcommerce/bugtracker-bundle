@@ -3,6 +3,10 @@
 Changelog
 ---------
 
+``1.2.1``
+
+  - move ContextInterface to dreamcommerce/common-bundle
+
 ``1.2.0``
 
    - library is no longer supported on PHP 5

@@ -12,7 +12,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
 use DreamCommerce\Component\BugTracker\Collector\QueueCollector;
-use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
+use DreamCommerce\Component\Common\Exception\ContextInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;

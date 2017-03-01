@@ -10,8 +10,11 @@
 
 namespace DreamCommerce\Component\BugTracker\Exception;
 
+use DreamCommerce\Component\Common\Exception\ContextInterface;
+use DreamCommerce\Component\Common\Exception\ContextTrait;
 use Exception;
 
-class JiraException extends Exception
+class JiraException extends Exception implements ContextInterface
 {
+    use ContextTrait;
 }

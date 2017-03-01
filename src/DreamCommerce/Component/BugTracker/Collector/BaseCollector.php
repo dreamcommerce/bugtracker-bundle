@@ -11,8 +11,8 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
-use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
+use DreamCommerce\Component\Common\Exception\ContextInterface;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
 use InvalidArgumentException;
