@@ -53,7 +53,7 @@ abstract class Error implements ErrorInterface
     protected $trace;
 
     /**
-     * @var int
+     * @var string
      */
     protected $level;
 
@@ -81,7 +81,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setToken($token = null)
+    public function setToken(string $token = null)
     {
         $this->token = $token;
 
@@ -99,7 +99,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setCounter($counter = 0)
+    public function setCounter(int $counter = 0)
     {
         $this->counter = $counter;
 
@@ -117,7 +117,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setMessage($message)
+    public function setMessage(string $message)
     {
         $this->message = $message;
 
@@ -135,7 +135,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setCode($code)
+    public function setCode(int $code)
     {
         $this->code = $code;
 
@@ -153,7 +153,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setLine($line)
+    public function setLine(int $line)
     {
         $this->line = $line;
 
@@ -171,7 +171,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setFile($file)
+    public function setFile(string $file)
     {
         $this->file = $file;
 
@@ -189,7 +189,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setTrace($trace)
+    public function setTrace(string $trace)
     {
         $this->trace = $trace;
 
@@ -207,7 +207,7 @@ abstract class Error implements ErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function setLevel($level)
+    public function setLevel(string $level)
     {
         $this->level = $level;
 

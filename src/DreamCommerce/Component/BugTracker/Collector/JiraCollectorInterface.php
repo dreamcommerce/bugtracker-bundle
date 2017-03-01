@@ -11,8 +11,9 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\Connector\JiraConnectorInterface;
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
+use InvalidArgumentException;
 
 interface JiraCollectorInterface extends CollectorInterface
 {
@@ -21,7 +22,7 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return Credentials
      */
-    public function getCredentials();
+    public function getCredentials(): Credentials;
 
     /**
      * @param Credentials $credentials
@@ -35,7 +36,7 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return JiraConnectorInterface
      */
-    public function getConnector();
+    public function getConnector(): JiraConnectorInterface;
 
     /**
      * @param JiraConnectorInterface $connector
@@ -47,37 +48,37 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @throws NotDefinedException
      *
-     * @return string
+     * @return int
      */
-    public function getOpenStatus();
+    public function getOpenStatus(): int;
 
     /**
      * @param int $openStatus
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setOpenStatus($openStatus);
+    public function setOpenStatus(int $openStatus);
 
     /**
      * @return array
      */
-    public function getInProgressStatuses();
+    public function getInProgressStatuses(): array;
 
     /**
      * @param int $inProgressStatus
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addInProgressStatus($inProgressStatus);
+    public function addInProgressStatus(int $inProgressStatus);
 
     /**
      * @param array $inProgressStatuses
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -88,31 +89,31 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return int
      */
-    public function getReopenStatus();
+    public function getReopenStatus(): int;
 
     /**
      * @param int $reopenStatus
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setReopenStatus($reopenStatus);
+    public function setReopenStatus(int $reopenStatus);
 
     /**
      * @return array
      */
-    public function getPriorities();
+    public function getPriorities(): array;
 
     /**
-     * @param int $level
+     * @param string $level
      * @param int $id
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addPriority($level, $id);
+    public function addPriority(string $level, int $id);
 
     /**
      * @param array $priorities
@@ -126,16 +127,16 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return array
      */
-    public function getLabels();
+    public function getLabels(): array;
 
     /**
      * @param string $label
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addLabel($label);
+    public function addLabel(string $label);
 
     /**
      * @param array $labels
@@ -149,63 +150,63 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return int
      */
-    public function getCounterFieldId();
+    public function getCounterFieldId(): int;
 
     /**
      * @param int $counterFieldId
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setCounterFieldId($counterFieldId);
+    public function setCounterFieldId(int $counterFieldId);
 
     /**
      * @throws NotDefinedException
      *
      * @return int
      */
-    public function getTokenFieldId();
+    public function getTokenFieldId(): int;
 
     /**
      * @param int $tokenFieldId
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setTokenFieldId($tokenFieldId);
+    public function setTokenFieldId(int $tokenFieldId);
 
     /**
      * @throws NotDefinedException
      *
-     * @return int
+     * @return string
      */
-    public function getTokenFieldName();
+    public function getTokenFieldName(): string;
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @param string $tokenFieldName
      *
      * @return $this
      */
-    public function setTokenFieldName($tokenFieldName);
+    public function setTokenFieldName(string $tokenFieldName);
 
     /**
      * @return array
      */
-    public function getFields();
+    public function getFields(): array;
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @param string                $name
      * @param string|int|float|bool $value
      *
      * @return $this
      */
-    public function addField($name, $value);
+    public function addField(string $name, $value);
 
     /**
      * @param array $fields
@@ -217,63 +218,65 @@ interface JiraCollectorInterface extends CollectorInterface
     /**
      * @return bool
      */
-    public function isUseCounter();
+    public function isUseCounter(): bool;
 
     /**
      * @param bool $useCounter
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setUseCounter($useCounter);
+    public function setUseCounter(bool $useCounter);
 
     /**
      * @return bool
      */
-    public function isUseReopen();
+    public function isUseReopen(): bool;
 
     /**
      * @param bool $useReopen
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setUseReopen($useReopen);
+    public function setUseReopen(bool $useReopen);
 
     /**
-     * @return string|null
+     * @throws NotDefinedException
+     * @return string
      */
-    public function getDefaultType();
+    public function getDefaultType(): string;
 
     /**
      * @param string|null $defaultType
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setDefaultType($defaultType = null);
+    public function setDefaultType(string $defaultType = null);
 
     /**
-     * @return int|null
+     * @throws NotDefinedException
+     * @return int
      */
-    public function getDefaultPriority();
+    public function getDefaultPriority(): int;
 
     /**
      * @param null|int $defaultPriority
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setDefaultPriority($defaultPriority);
+    public function setDefaultPriority(int $defaultPriority = null);
 
     /**
      * @return array
      */
-    public function getTypes();
+    public function getTypes(): array ;
 
     /**
      * @param string $level
@@ -281,7 +284,7 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return $this
      */
-    public function addType($level, $type);
+    public function addType(string $level, string $type);
 
     /**
      * @param array $types
@@ -300,37 +303,37 @@ interface JiraCollectorInterface extends CollectorInterface
      *
      * @return $this
      */
-    public function setCounterMaxValue($counterMaxValue = null);
+    public function setCounterMaxValue(int $counterMaxValue = null);
 
     /**
      * @throws NotDefinedException
      *
      * @return string
      */
-    public function getProject();
+    public function getProject(): string;
 
     /**
      * @param string $project
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setProject($project);
+    public function setProject(string $project);
 
     /**
      * @throws NotDefinedException
      *
      * @return string
      */
-    public function getAssignee();
+    public function getAssignee(): string;
 
     /**
      * @param string $assignee
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setAssignee($assignee);
+    public function setAssignee(string $assignee);
 }

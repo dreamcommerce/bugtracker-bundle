@@ -10,52 +10,67 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use Doctrine\ORM\EntityManagerInterface;
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
+use Doctrine\Common\Persistence\ObjectManager;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
+use InvalidArgumentException;
+use Sylius\Component\Resource\Factory\FactoryInterface;
 
 interface DoctrineCollectorInterface extends CollectorInterface
 {
     /**
      * @throws NotDefinedException
      *
-     * @return EntityManagerInterface
+     * @return ObjectManager
      */
-    public function getEntityManager();
+    public function getPersistManager(): ObjectManager;
 
     /**
-     * @param EntityManagerInterface $entityManager
+     * @param ObjectManager $persistManager
      *
      * @return $this
      */
-    public function setEntityManager(EntityManagerInterface $entityManager);
+    public function setPersistManager(ObjectManager $persistManager);
 
     /**
      * @throws NotDefinedException
      *
      * @return string
      */
-    public function getModel();
+    public function getModel(): string;
 
     /**
      * @param string $model
      *
      * @return $this
      */
-    public function setModel($model);
+    public function setModel(string $model);
+
+    /**
+     * @throws NotDefinedException
+     *
+     * @return FactoryInterface
+     */
+    public function getModelFactory(): FactoryInterface;
+
+    /**
+     * @param FactoryInterface $modelFactory
+     * @return $this
+     */
+    public function setModelFactory(FactoryInterface $modelFactory);
 
     /**
      * @return bool
      */
-    public function isUseCounter();
+    public function isUseCounter(): bool;
 
     /**
      * @param bool $useCounter
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setUseCounter($useCounter);
+    public function setUseCounter(bool $useCounter);
 
     /**
      * @return null|int
@@ -67,5 +82,5 @@ interface DoctrineCollectorInterface extends CollectorInterface
      *
      * @return $this
      */
-    public function setCounterMaxValue($counterMaxValue = null);
+    public function setCounterMaxValue(int $counterMaxValue = null);
 }

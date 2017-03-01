@@ -10,12 +10,13 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use Doctrine\ORM\EntityManagerInterface;
-use DreamCommerce\Component\BugTracker\BugHandler;
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
+use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LogLevel;
+use Sylius\Component\Resource\Factory\FactoryInterface;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterface
@@ -26,9 +27,14 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     protected $_model;
 
     /**
-     * @var EntityManagerInterface
+     * @var FactoryInterface
      */
-    protected $_entityManager;
+    protected $_modelFactory;
+
+    /**
+     * @var ObjectManager
+     */
+    protected $_persistManager;
 
     /**
      * @var bool
@@ -43,76 +49,83 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
-        $entityManager = $this->getEntityManager();
         $model = $this->getModel();
+        $persistManager = $this->getPersistManager();
         /** @var ErrorRepositoryInterface $repository */
-        $repository = $entityManager->getRepository($model);
+        $repository = $persistManager->getRepository($model);
 
-        $entity = null;
+        $object = null;
         $token = null;
 
         if ($this->isUseToken()) {
-            $token = $this->getTokenGenerator()->generate($exc, $level, $context);
-            $entity = $repository->findByToken($token);
+            $token = $this->getTokenGenerator()->generate($exception, $level, $context);
+            $object = $repository->findByToken($token);
         }
 
-        if ($entity !== null) {
+        if ($object !== null) {
             $maxValue = $this->getCounterMaxValue();
-            if ($this->isUseCounter() && ($maxValue === null || $entity->getCounter() < $maxValue)) {
-                $repository->incrementCounter($entity);
+            if ($this->isUseCounter() && ($maxValue === null || $object->getCounter() < $maxValue)) {
+                $repository->incrementCounter($object);
             }
         } else {
-            /** @var ErrorInterface $entity */
-            $entity = new $model();
-            $this->_fillModel($entity, $exc, $level, $context);
+            /** @var ErrorInterface $object */
+            if ($this->_modelFactory === null) {
+                $object = new $model();
+            } else {
+                $modelFactory = $this->getModelFactory();
+                $object = $modelFactory->createNew();
+                if ($object instanceof $model) {
+                    throw new \Exception(); // TODO
+                }
+            }
+
+            $this->_fillModel($object, $exception, $level, $context);
             if ($token !== null) {
-                $entity->setToken($token);
+                $object->setToken($token);
             }
         }
 
-        $entityManager->persist($entity);
-        $entityManager->flush();
+        $persistManager->persist($object);
+        $persistManager->flush();
     }
 
     /**
      * @param ErrorInterface        $entity
-     * @param \Throwable|\Exception $exc
+     * @param Throwable $exception
      * @param string                $level
      * @param array                 $context
      */
-    protected function _fillModel(ErrorInterface $entity, $exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _fillModel(ErrorInterface $entity, Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
-        $levelPriority = BugHandler::getLogLevelPriority($level);
-
-        $entity->setMessage($exc->getMessage())
-            ->setCode($exc->getCode())
-            ->setFile($exc->getFile())
-            ->setLine($exc->getLine())
-            ->setTrace($exc->getTraceAsString())
+        $entity->setMessage($exception->getMessage())
+            ->setCode($exception->getCode())
+            ->setFile($exception->getFile())
+            ->setLine($exception->getLine())
+            ->setTrace($exception->getTraceAsString())
             ->setContext((array) $this->_prepareContext($context))
-            ->setLevel($levelPriority);
+            ->setLevel($level);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEntityManager()
+    public function getPersistManager(): ObjectManager
     {
-        if ($this->_entityManager === null) {
-            throw new NotDefinedException(__CLASS__.'::_entityManager');
+        if ($this->_persistManager === null) {
+            throw NotDefinedException::forVariable(__CLASS__.'::_persistManager');
         }
 
-        return $this->_entityManager;
+        return $this->_persistManager;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setEntityManager(EntityManagerInterface $entityManager)
+    public function setPersistManager(ObjectManager $persistManager)
     {
-        $this->_entityManager = $entityManager;
+        $this->_persistManager = $persistManager;
 
         return $this;
     }
@@ -120,10 +133,10 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function getModel()
+    public function getModel(): string
     {
         if ($this->_model === null) {
-            throw new NotDefinedException(__CLASS__.'::_model');
+            throw NotDefinedException::forVariable(__CLASS__.'::_model');
         }
 
         return $this->_model;
@@ -132,7 +145,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function setModel($model)
+    public function setModel(string $model)
     {
         Assert::implementsInterface($model, ErrorInterface::class);
 
@@ -144,7 +157,29 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function isUseCounter()
+    public function getModelFactory(): FactoryInterface
+    {
+        if ($this->_modelFactory === null) {
+            throw NotDefinedException::forVariable(__CLASS__.'::_modelFactory');
+        }
+
+        return $this->_modelFactory;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setModelFactory(FactoryInterface $modelFactory)
+    {
+        $this->_modelFactory = $modelFactory;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isUseCounter(): bool
     {
         return $this->_useCounter;
     }
@@ -152,10 +187,8 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function setUseCounter($useCounter)
+    public function setUseCounter(bool $useCounter)
     {
-        Assert::boolean($useCounter);
-
         $this->_useCounter = $useCounter;
 
         return $this;
@@ -172,16 +205,14 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function setCounterMaxValue($counterMaxValue = null)
+    public function setCounterMaxValue(int $counterMaxValue = null)
     {
-        Assert::nullOrIntegerish($counterMaxValue);
-
         $this->_counterMaxValue = $counterMaxValue;
 
         return $this;
     }
 
-    protected function _prepareContext(array $array)
+    protected function _prepareContext(array $array): array
     {
         foreach ($array as $key => $value) {
             if (is_object($value)) {

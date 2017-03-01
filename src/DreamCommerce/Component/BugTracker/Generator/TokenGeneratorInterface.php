@@ -10,14 +10,16 @@
 
 namespace DreamCommerce\Component\BugTracker\Generator;
 
+use Throwable;
+
 interface TokenGeneratorInterface
 {
     /**
-     * @param \Exception|\Throwable $exc
+     * @param Throwable $exception
      * @param int                   $level
      * @param array                 $context
      *
      * @return string
      */
-    public function generate($exc, $level, array $context = array());
+    public function generate(Throwable $exception, int $level, array $context = array()): string;
 }

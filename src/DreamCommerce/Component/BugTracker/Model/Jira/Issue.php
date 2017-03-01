@@ -10,9 +10,10 @@
 
 namespace DreamCommerce\Component\BugTracker\Model\Jira;
 
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Model\ArrayableInterface;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
+use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 final class Issue implements ArrayableInterface
@@ -72,10 +73,10 @@ final class Issue implements ArrayableInterface
      *
      * @return string
      */
-    public function getSummary()
+    public function getSummary(): string
     {
         if ($this->_summary === null) {
-            throw new NotDefinedException(__CLASS__.'::_summary');
+            throw NotDefinedException::forVariable(__CLASS__.'::_summary');
         }
 
         return $this->_summary;
@@ -84,11 +85,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param string $summary
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setSummary($summary)
+    public function setSummary(string $summary)
     {
         Assert::stringNotEmpty($summary);
 
@@ -102,10 +103,10 @@ final class Issue implements ArrayableInterface
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         if ($this->_description === null) {
-            throw new NotDefinedException(__CLASS__.'::_description');
+            throw NotDefinedException::forVariable(__CLASS__.'::_description');
         }
 
         return $this->_description;
@@ -114,11 +115,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param string $description
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription(string $description)
     {
         Assert::stringNotEmpty($description);
 
@@ -132,10 +133,10 @@ final class Issue implements ArrayableInterface
      *
      * @return string
      */
-    public function getProject()
+    public function getProject(): string
     {
         if ($this->_project === null) {
-            throw new NotDefinedException(__CLASS__.'::_project');
+            throw NotDefinedException::forVariable(__CLASS__.'::_project');
         }
 
         return $this->_project;
@@ -144,11 +145,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param string $project
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setProject($project)
+    public function setProject(string $project)
     {
         Assert::stringNotEmpty($project);
 
@@ -162,10 +163,10 @@ final class Issue implements ArrayableInterface
      *
      * @return string
      */
-    public function getAssignee()
+    public function getAssignee(): string
     {
         if ($this->_assignee === null) {
-            throw new NotDefinedException(__CLASS__.'::_assignee');
+            throw NotDefinedException::forVariable(__CLASS__.'::_assignee');
         }
 
         return $this->_assignee;
@@ -174,11 +175,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param string $assignee
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setAssignee($assignee)
+    public function setAssignee(string $assignee)
     {
         Assert::stringNotEmpty($assignee);
 
@@ -190,7 +191,7 @@ final class Issue implements ArrayableInterface
     /**
      * @return array
      */
-    public function getLabels()
+    public function getLabels(): array
     {
         return $this->_labels;
     }
@@ -210,11 +211,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param string $label
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addLabel($label)
+    public function addLabel(string $label)
     {
         Assert::stringNotEmpty($label);
 
@@ -228,7 +229,7 @@ final class Issue implements ArrayableInterface
     /**
      * @return array
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->_fields;
     }
@@ -256,11 +257,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param int|null $priority
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setPriority($priority = null)
+    public function setPriority(int $priority = null)
     {
         Assert::nullOrIntegerish($priority);
 
@@ -280,11 +281,11 @@ final class Issue implements ArrayableInterface
     /**
      * @param int|null $type
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setType($type = null)
+    public function setType(int $type = null)
     {
         Assert::nullOrIntegerish($type);
 

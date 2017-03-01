@@ -10,6 +10,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 interface QueueCollectorInterface
@@ -23,14 +24,14 @@ interface QueueCollectorInterface
      * @param string             $level
      * @param int                $priority
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0);
+    public function registerCollector(CollectorInterface $collector, string $level = LogLevel::WARNING, int $priority = 0);
 
     /**
      * @param string|CollectorInterface $collector
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function unregisterCollector($collector);
 
@@ -42,7 +43,7 @@ interface QueueCollectorInterface
     /**
      * @param string|CollectorInterface|null $collector
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return CollectorInterface[]
      */

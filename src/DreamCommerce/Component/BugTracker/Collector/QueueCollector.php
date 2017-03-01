@@ -11,7 +11,9 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
+use InvalidArgumentException;
 use Psr\Log\LogLevel;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 class QueueCollector extends BaseCollector implements QueueCollectorInterface
@@ -22,24 +24,22 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
     private $_collectorSerials = PHP_INT_MAX;
 
     /**
-     * @var SplPriorityQueue
+     * @var CollectorPriorityQueue
      */
     private $_collectorQueue;
 
     /**
      * {@inheritdoc}
      */
-    public function registerCollector(CollectorInterface $collector, $level = LogLevel::WARNING, $priority = 0)
+    public function registerCollector(CollectorInterface $collector, string $level = LogLevel::WARNING, int $priority = 0)
     {
-        Assert::string($level);
         $level = strtolower($level);
         Assert::oneOf($level, BugHandler::getSupportedLogLevels());
-        Assert::integerish($priority);
 
         $priority = (int) $priority;
 
         if ($this->_collectorQueue === null) {
-            $this->_collectorQueue = new SplPriorityQueue();
+            $this->_collectorQueue = new CollectorPriorityQueue();
         }
 
         if (!is_array($priority)) {
@@ -60,7 +60,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
     public function unregisterCollector($collector)
     {
         if ($this->_collectorQueue === null) {
-            $this->_collectorQueue = new SplPriorityQueue();
+            $this->_collectorQueue = new CollectorPriorityQueue();
         } else {
             $this->_collectorQueue->remove($collector);
         }
@@ -94,7 +94,7 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
                     $result[] = $data;
                 }
             } else {
-                throw new \InvalidArgumentException('Unsupported type of variable');
+                throw new InvalidArgumentException('Unsupported type of variable');
             }
         }
 
@@ -104,10 +104,10 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
     /**
      * {@inheritdoc}
      */
-    protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
         if ($this->_collectorQueue === null) {
-            $this->_collectorQueue = new SplPriorityQueue();
+            $this->_collectorQueue = new CollectorPriorityQueue();
         }
         $this->setIsCollected(false);
 
@@ -124,21 +124,18 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
             }
 
             try {
-                if (!$collector->hasSupportException($exc, $level, $context)) {
+                if (!$collector->hasSupportException($exception, $level, $context)) {
                     continue;
                 }
 
-                $result = $collector->handle($exc, $level, $context);
+                $result = $collector->handle($exception, $level, $context);
                 if ($collector->isCollected()) {
                     $this->setIsCollected(true);
                 }
                 if ($result === true) {
                     break;
                 }
-            } catch (\Exception $exc) {
-                static::unregisterCollector($collector);
-                static::handle($exc, LogLevel::CRITICAL);
-            } catch (\Throwable $exc) {
+            } catch (Throwable $exc) {
                 static::unregisterCollector($collector);
                 static::handle($exc, LogLevel::CRITICAL);
             }
@@ -148,16 +145,16 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
     /**
      * {@inheritdoc}
      */
-    protected function _hasSupportException($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool
     {
         if ($this->_collectorQueue === null) {
-            $this->_collectorQueue = new SplPriorityQueue();
+            $this->_collectorQueue = new CollectorPriorityQueue();
         }
 
         foreach (clone $this->_collectorQueue as $data) {
             /** @var CollectorInterface $collector */
             $collector = $data['collector'];
-            if ($collector->hasSupportException($exc, $level, $context)) {
+            if ($collector->hasSupportException($exception, $level, $context)) {
                 return true;
             }
         }

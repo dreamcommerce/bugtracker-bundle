@@ -10,12 +10,14 @@
 
 namespace DreamCommerce\Component\BugTracker\Generator;
 
+use Throwable;
+
 class RandomTokenGenerator implements TokenGeneratorInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function generate($exc, $level, array $context = array())
+    public function generate(Throwable $exception, int $level, array $context = array()): string
     {
         return md5(uniqid(rand(), true));
     }

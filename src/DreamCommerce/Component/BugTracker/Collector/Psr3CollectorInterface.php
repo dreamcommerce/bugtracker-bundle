@@ -10,14 +10,17 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LoggerInterface;
 
 interface Psr3CollectorInterface extends CollectorInterface
 {
     /**
+     * @throws NotDefinedException
+     *
      * @return LoggerInterface
      */
-    public function getLogger();
+    public function getLogger(): LoggerInterface;
 
     /**
      * @param LoggerInterface $logger
@@ -29,14 +32,12 @@ interface Psr3CollectorInterface extends CollectorInterface
     /**
      * @return bool
      */
-    public function isFormatException();
+    public function isFormatException(): bool;
 
     /**
      * @param bool $formatException
      *
-     * @throws \InvalidArgumentException
-     *
      * @return $this
      */
-    public function setFormatException($formatException);
+    public function setFormatException(bool $formatException);
 }

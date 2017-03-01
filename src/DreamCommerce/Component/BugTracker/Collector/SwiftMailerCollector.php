@@ -10,8 +10,11 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LogLevel;
+use Swift_Mailer;
+use Swift_Message;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollectorInterface
@@ -19,7 +22,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     const SEPARATOR = '-----------------------------------------------------------';
 
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     protected $_mailer;
 
@@ -41,26 +44,26 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    protected function _handle($exception, $level = LogLevel::WARNING, array $context = array())
+    protected function _handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
-        $message = \Swift_Message::newInstance();
+        $message = Swift_Message::newInstance();
         $this->_fillModel($message, $exception, $level, $context);
         $this->_mailer->send($message);
     }
 
     /**
-     * @param \Swift_Message        $message
-     * @param \Exception|\Throwable $exc
+     * @param Swift_Message        $message
+     * @param Throwable $exception
      * @param int                   $level
      * @param array                 $context
      */
-    protected function _fillModel(\Swift_Message $message, $exc, $level, array $context = array())
+    protected function _fillModel(Swift_Message $message, $exception, $level, array $context = array())
     {
         $token = null;
         $subject = $this->getSubject();
 
         if ($this->isUseToken()) {
-            $token = $this->getTokenGenerator()->generate($exc, $level, $context);
+            $token = $this->getTokenGenerator()->generate($exception, $level, $context);
             $subject .= ' [ '.$token.' ]';
         }
 
@@ -73,8 +76,8 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
             $body .= 'Token: '.$token.PHP_EOL;
         }
 
-        $body .= 'Message: '.$exc->getMessage().PHP_EOL.
-            'File: '.$exc->getFile().' (line: '.$exc->getLine().')'.PHP_EOL.
+        $body .= 'Message: '.$exception->getMessage().PHP_EOL.
+            'File: '.$exception->getFile().' (line: '.$exception->getLine().')'.PHP_EOL.
             static::SEPARATOR.PHP_EOL;
 
         if (count($context) > 0) {
@@ -83,7 +86,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
                 static::SEPARATOR.PHP_EOL;
         }
 
-        $body .= 'Stack trace:'.PHP_EOL.PHP_EOL.$exc->getTraceAsString();
+        $body .= 'Stack trace:'.PHP_EOL.PHP_EOL.$exception->getTraceAsString();
 
         $message
             ->setSubject($subject)
@@ -98,10 +101,10 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function getMailer()
+    public function getMailer(): Swift_Mailer
     {
         if ($this->_mailer === null) {
-            throw new NotDefinedException(__CLASS__.'::_mailer');
+            throw NotDefinedException::forVariable(__CLASS__.'::_mailer');
         }
 
         return $this->_mailer;
@@ -110,7 +113,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function setMailer(\Swift_Mailer $mailer)
+    public function setMailer(Swift_Mailer $mailer)
     {
         $this->_mailer = $mailer;
 
@@ -120,10 +123,10 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         if ($this->_subject === null) {
-            throw new NotDefinedException(__CLASS__.'::_subject');
+            throw NotDefinedException::forVariable(__CLASS__.'::_subject');
         }
 
         return $this->_subject;
@@ -132,7 +135,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function setSubject($subject)
+    public function setSubject(string $subject)
     {
         $this->_subject = $subject;
 
@@ -142,10 +145,10 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function getSender()
+    public function getSender(): string
     {
         if ($this->_sender === null) {
-            throw new NotDefinedException(__CLASS__.'::_sender');
+            throw NotDefinedException::forVariable(__CLASS__.'::_sender');
         }
 
         return $this->_sender;
@@ -154,7 +157,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function setSender($sender)
+    public function setSender(string $sender)
     {
         $this->_sender = $sender;
 
@@ -164,7 +167,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function getRecipients()
+    public function getRecipients(): array
     {
         return $this->_recipients;
     }
@@ -188,7 +191,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
     /**
      * {@inheritdoc}
      */
-    public function addRecipient($recipient)
+    public function addRecipient(string $recipient)
     {
         Assert::string($recipient);
 
@@ -200,7 +203,7 @@ class SwiftMailerCollector extends BaseCollector implements SwiftMailerCollector
         return $this;
     }
 
-    protected function _prepareContext(array $array, $prefix = "\t")
+    protected function _prepareContext(array $array, $prefix = "\t"): string
     {
         $result = '';
 

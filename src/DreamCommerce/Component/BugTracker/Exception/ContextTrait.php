@@ -20,7 +20,7 @@ trait ContextTrait
     /**
      * @return array
      */
-    public function getExceptionContext()
+    public function getExceptionContext(): array
     {
         return $this->context;
     }

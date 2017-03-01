@@ -20,7 +20,7 @@ interface ErrorRepositoryInterface extends ObjectRepository
      *
      * @return null|ErrorInterface
      */
-    public function findByToken($token);
+    public function findByToken(string $token);
 
     /**
      * @param ErrorInterface $entity

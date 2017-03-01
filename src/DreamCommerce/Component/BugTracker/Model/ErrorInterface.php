@@ -10,13 +10,10 @@
 
 namespace DreamCommerce\Component\BugTracker\Model;
 
-interface ErrorInterface
-{
-    /**
-     * @return int
-     */
-    public function getId();
+use Sylius\Component\Resource\Model\ResourceInterface;
 
+interface ErrorInterface extends ResourceInterface
+{
     /**
      * @return null|string
      */
@@ -27,10 +24,10 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setToken($token = null);
+    public function setToken(string $token = null);
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getCounter();
 
@@ -39,10 +36,10 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setCounter($counter = 0);
+    public function setCounter(int $counter = 0);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMessage();
 
@@ -51,10 +48,10 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setMessage($message);
+    public function setMessage(string $message);
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getCode();
 
@@ -63,10 +60,10 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setCode($code);
+    public function setCode(int $code);
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getLine();
 
@@ -75,10 +72,10 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setLine($line);
+    public function setLine(int $line);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFile();
 
@@ -87,10 +84,10 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setFile($file);
+    public function setFile(string $file);
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getTrace();
 
@@ -99,19 +96,19 @@ interface ErrorInterface
      *
      * @return $this
      */
-    public function setTrace($trace);
+    public function setTrace(string $trace);
 
     /**
-     * @return int
+     * @return string|null
      */
     public function getLevel();
 
     /**
-     * @param int $level
+     * @param string $level
      *
      * @return $this
      */
-    public function setLevel($level);
+    public function setLevel(string $level);
 
     /**
      * @return array

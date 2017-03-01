@@ -10,32 +10,34 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use InvalidArgumentException;
 use Psr\Log\LogLevel;
+use Throwable;
 
 interface CollectorInterface
 {
     /**
-     * @param \Exception|\Throwable $exception
+     * @param Throwable $exception
      * @param string                $level
      * @param array                 $context
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return bool
      */
-    public function hasSupportException($exception, $level = LogLevel::WARNING, array $context = array());
+    public function hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool;
 
     /**
-     * @param \Exception|\Throwable $exception
+     * @param Throwable $exception
      * @param string                $level
      * @param array                 $context
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function handle($exception, $level = LogLevel::WARNING, array $context = array());
+    public function handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array());
 
     /**
      * @return bool
      */
-    public function isCollected();
+    public function isCollected(): bool;
 }

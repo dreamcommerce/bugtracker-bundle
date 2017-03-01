@@ -10,9 +10,11 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use InvalidArgumentException;
+use SplPriorityQueue;
 use Webmozart\Assert\Assert;
 
-class SplPriorityQueue extends \SplPriorityQueue
+final class CollectorPriorityQueue extends SplPriorityQueue
 {
     protected $_recoverList = array();
 
@@ -21,7 +23,7 @@ class SplPriorityQueue extends \SplPriorityQueue
         if (is_object($item)) {
             Assert::isInstanceOf($item, CollectorInterface::class);
         } elseif (!is_string($item)) {
-            throw new \InvalidArgumentException('Cannot delete the item from the queue');
+            throw new InvalidArgumentException('Cannot delete the item from the queue');
         }
 
         $this->setExtractFlags(self::EXTR_BOTH);
@@ -44,7 +46,7 @@ class SplPriorityQueue extends \SplPriorityQueue
         $this->_recoverList = array();
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         $array = array();
         foreach (clone $this as $item) {

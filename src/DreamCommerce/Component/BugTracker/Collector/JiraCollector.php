@@ -12,11 +12,12 @@ namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Connector\JiraConnectorInterface;
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LogLevel;
 use Symfony\Component\Debug\Exception\ContextErrorException;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 class JiraCollector extends BaseCollector implements JiraCollectorInterface
@@ -122,27 +123,25 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
      */
     public function __construct(array $options = array())
     {
-        $this->_credentials = new Credentials();
-        $this->fromArray($options, $this->_credentials);
-
+        $this->_credentials = new Credentials($options);
         parent::__construct($options);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
         $connector = $this->getConnector();
         $credentials = $this->getCredentials();
 
         if ($this->isUseToken()) {
-            $token = $this->getTokenGenerator()->generate($exc, $level, $context);
+            $token = $this->getTokenGenerator()->generate($exception, $level, $context);
             $result = $connector->findIssuesByField($credentials, $this->getTokenFieldName(), $token);
 
             if ($result === null || count($result) === 0) {
                 $issue = new Issue();
-                $this->_fillModel($issue, $exc, $level, $context, $token);
+                $this->_fillModel($issue, $exception, $level, $context, $token);
                 $connector->createIssue($credentials, $issue);
             } else {
                 $result = $result[0];
@@ -178,27 +177,27 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
             }
         } else {
             $issue = new Issue();
-            $this->_fillModel($issue, $exc, $level, $context);
+            $this->_fillModel($issue, $exception, $level, $context);
             $connector->createIssue($credentials, $issue);
         }
     }
 
     /**
      * @param Issue                 $issue
-     * @param \Exception|\Throwable $exc
+     * @param Throwable $exception
      * @param int                   $level
      * @param array                 $context
      * @param string|null           $token
      */
-    protected function _fillModel(Issue $issue, $exc, $level, array $context = array(), $token = null)
+    protected function _fillModel(Issue $issue, Throwable $exception, $level, array $context = array(), $token = null)
     {
-        $message = substr($exc->getMessage(), 0, 200).' (code: '.$exc->getCode().')';
-        if (!($exc instanceof ContextErrorException)) {
-            $message = get_class($exc).': '.$message;
+        $message = substr($exception->getMessage(), 0, 200).' (code: '.$exception->getCode().')';
+        if (!($exception instanceof ContextErrorException)) {
+            $message = get_class($exception).': '.$message;
         }
 
-        $description = $exc->getMessage().' (code: '.$exc->getCode().')'.PHP_EOL.PHP_EOL.
-            $exc->getFile().':'.$exc->getLine().PHP_EOL.
+        $description = $exception->getMessage().' (code: '.$exception->getCode().')'.PHP_EOL.PHP_EOL.
+            $exception->getFile().':'.$exception->getLine().PHP_EOL.
             static::SEPARATOR.PHP_EOL;
 
         if (!empty($context)) {
@@ -209,7 +208,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         }
 
         $description .= 'Stack trace:'.PHP_EOL.PHP_EOL;
-        $description .= $exc->getTraceAsString();
+        $description .= $exception->getTraceAsString();
 
         $issue->setSummary($message);
         $issue->setDescription($description);
@@ -250,10 +249,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getCredentials()
+    public function getCredentials(): Credentials
     {
         if ($this->_credentials === null) {
-            throw new NotDefinedException(__CLASS__.'::_credentials');
+            throw NotDefinedException::forVariable(__CLASS__.'::_credentials');
         }
 
         return $this->_credentials;
@@ -272,10 +271,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnector()
+    public function getConnector(): JiraConnectorInterface
     {
         if ($this->_connector === null) {
-            throw new NotDefinedException(__CLASS__.'::_connector');
+            throw NotDefinedException::forVariable(__CLASS__.'::_connector');
         }
 
         return $this->_connector;
@@ -294,10 +293,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getOpenStatus()
+    public function getOpenStatus(): int
     {
         if ($this->_openStatus === null) {
-            throw new NotDefinedException(__CLASS__.'::_openStatus');
+            throw NotDefinedException::forVariable(__CLASS__.'::_openStatus');
         }
 
         return $this->_openStatus;
@@ -306,11 +305,9 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setOpenStatus($openStatus)
+    public function setOpenStatus(int $openStatus)
     {
-        Assert::integerish($openStatus);
-
-        $this->_openStatus = (int) $openStatus;
+        $this->_openStatus = $openStatus;
 
         return $this;
     }
@@ -318,7 +315,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getInProgressStatuses()
+    public function getInProgressStatuses(): array
     {
         return $this->_inProgressStatuses;
     }
@@ -326,10 +323,8 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addInProgressStatus($inProgressStatus)
+    public function addInProgressStatus(int $inProgressStatus)
     {
-        Assert::integerish($inProgressStatus);
-
         if (!in_array($inProgressStatus, $this->_inProgressStatuses)) {
             $this->_inProgressStatuses[] = $inProgressStatus;
         }
@@ -350,10 +345,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getReopenStatus()
+    public function getReopenStatus(): int
     {
         if ($this->_reopenStatus === null) {
-            throw new NotDefinedException(__CLASS__.'::_reopenStatus');
+            throw NotDefinedException::forVariable(__CLASS__.'::_reopenStatus');
         }
 
         return $this->_reopenStatus;
@@ -362,10 +357,8 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setReopenStatus($reopenStatus)
+    public function setReopenStatus(int $reopenStatus)
     {
-        Assert::integerish($reopenStatus);
-
         $this->_reopenStatus = $reopenStatus;
 
         return $this;
@@ -374,7 +367,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getPriorities()
+    public function getPriorities(): array
     {
         return $this->_priorities;
     }
@@ -382,7 +375,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addPriority($level, $id)
+    public function addPriority(string $level, int $id)
     {
         Assert::stringNotEmpty($level);
         $level = strtolower($level);
@@ -406,7 +399,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getLabels()
+    public function getLabels(): array
     {
         return $this->_labels;
     }
@@ -414,7 +407,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addLabel($label)
+    public function addLabel(string $label)
     {
         Assert::stringNotEmpty($label);
 
@@ -438,10 +431,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getCounterFieldId()
+    public function getCounterFieldId(): int
     {
         if ($this->_counterFieldId === null) {
-            throw new NotDefinedException(__CLASS__.'::_counterFieldId');
+            throw NotDefinedException::forVariable(__CLASS__.'::_counterFieldId');
         }
 
         return $this->_counterFieldId;
@@ -450,11 +443,9 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setCounterFieldId($counterFieldId)
+    public function setCounterFieldId(int $counterFieldId)
     {
-        Assert::integerish($counterFieldId);
-
-        $this->_counterFieldId = (int) $counterFieldId;
+        $this->_counterFieldId = $counterFieldId;
 
         return $this;
     }
@@ -462,10 +453,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getTokenFieldId()
+    public function getTokenFieldId(): int
     {
         if ($this->_tokenFieldId === null) {
-            throw new NotDefinedException(__CLASS__.'::_tokenFieldId');
+            throw NotDefinedException::forVariable(__CLASS__.'::_tokenFieldId');
         }
 
         return $this->_tokenFieldId;
@@ -474,10 +465,8 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setTokenFieldId($tokenFieldId)
+    public function setTokenFieldId(int $tokenFieldId)
     {
-        Assert::integerish($tokenFieldId);
-
         $this->_tokenFieldId = $tokenFieldId;
 
         return $this;
@@ -486,10 +475,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getTokenFieldName()
+    public function getTokenFieldName(): string
     {
         if ($this->_tokenFieldName === null) {
-            throw new NotDefinedException(__CLASS__.'::_tokenFieldName');
+            throw NotDefinedException::forVariable(__CLASS__.'::_tokenFieldName');
         }
 
         return $this->_tokenFieldName;
@@ -498,7 +487,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setTokenFieldName($tokenFieldName)
+    public function setTokenFieldName(string $tokenFieldName)
     {
         Assert::stringNotEmpty($tokenFieldName);
 
@@ -510,7 +499,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getFields()
+    public function getFields(): array
     {
         return $this->_fields;
     }
@@ -518,7 +507,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addField($name, $value)
+    public function addField(string $name, $value)
     {
         Assert::stringNotEmpty($name);
         Assert::scalar($value);
@@ -541,7 +530,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function isUseCounter()
+    public function isUseCounter(): bool
     {
         return $this->_useCounter;
     }
@@ -549,10 +538,8 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setUseCounter($useCounter)
+    public function setUseCounter(bool $useCounter)
     {
-        Assert::boolean($useCounter);
-
         $this->_useCounter = $useCounter;
 
         return $this;
@@ -561,7 +548,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function isUseReopen()
+    public function isUseReopen(): bool
     {
         return $this->_useReopen;
     }
@@ -569,10 +556,8 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setUseReopen($useReopen)
+    public function setUseReopen(bool $useReopen)
     {
-        Assert::boolean($useReopen);
-
         $this->_useReopen = $useReopen;
 
         return $this;
@@ -581,18 +566,20 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getDefaultType()
+    public function getDefaultType(): string
     {
+        if ($this->_defaultType === null) {
+            throw NotDefinedException::forVariable(__CLASS__.'::_defaultType');
+        }
+
         return $this->_defaultType;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setDefaultType($defaultType = null)
+    public function setDefaultType(string $defaultType = null)
     {
-        Assert::nullOrIntegerish($defaultType);
-
         $this->_defaultType = $defaultType;
 
         return $this;
@@ -601,18 +588,20 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getDefaultPriority()
+    public function getDefaultPriority(): int
     {
+        if ($this->_defaultPriority === null) {
+            throw NotDefinedException::forVariable(__CLASS__.'::_defaultPriority');
+        }
+
         return $this->_defaultPriority;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setDefaultPriority($defaultPriority = null)
+    public function setDefaultPriority(int $defaultPriority = null)
     {
-        Assert::nullOrIntegerish($defaultPriority);
-
         $this->_defaultPriority = (int) $defaultPriority;
 
         return $this;
@@ -621,7 +610,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         return $this->_types;
     }
@@ -629,7 +618,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function addType($level, $type)
+    public function addType(string $level, string $type)
     {
         Assert::stringNotEmpty($level);
         $level = strtolower($level);
@@ -661,10 +650,8 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setCounterMaxValue($counterMaxValue = null)
+    public function setCounterMaxValue(int $counterMaxValue = null)
     {
-        Assert::nullOrIntegerish($counterMaxValue);
-
         $this->_counterMaxValue = $counterMaxValue;
 
         return $this;
@@ -673,10 +660,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getProject()
+    public function getProject(): string
     {
         if ($this->_project === null) {
-            throw new NotDefinedException(__CLASS__.'::_project');
+            throw NotDefinedException::forVariable(__CLASS__.'::_project');
         }
 
         return $this->_project;
@@ -685,7 +672,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setProject($project)
+    public function setProject(string $project)
     {
         Assert::stringNotEmpty($project);
 
@@ -697,10 +684,10 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getAssignee()
+    public function getAssignee(): string
     {
         if ($this->_assignee === null) {
-            throw new NotDefinedException(__CLASS__.'::_assignee');
+            throw NotDefinedException::forVariable(__CLASS__.'::_assignee');
         }
 
         return $this->_assignee;
@@ -709,7 +696,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setAssignee($assignee)
+    public function setAssignee(string $assignee)
     {
         Assert::stringNotEmpty($assignee);
 
@@ -718,7 +705,7 @@ class JiraCollector extends BaseCollector implements JiraCollectorInterface
         return $this;
     }
 
-    protected function _prepareContext(array $array, $prefix = "\t")
+    protected function _prepareContext(array $array, $prefix = "\t"): string
     {
         $result = '';
 

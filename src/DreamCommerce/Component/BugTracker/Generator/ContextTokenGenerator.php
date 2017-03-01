@@ -10,7 +10,9 @@
 
 namespace DreamCommerce\Component\BugTracker\Generator;
 
-use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
+use DreamCommerce\Component\BugTracker\Exception\UnableGenerateTokenException;
+use InvalidArgumentException;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 class ContextTokenGenerator implements TokenGeneratorInterface
@@ -20,12 +22,12 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function generate($exc, $level, array $context = array())
+    public function generate(Throwable $exception, int $level, array $context = array()): string
     {
-        $context['message'] = $exc->getMessage();
-        $context['code'] = $exc->getCode();
-        $context['line'] = $exc->getLine();
-        $context['file'] = $exc->getFile();
+        $context['message'] = $exception->getMessage();
+        $context['code'] = $exception->getCode();
+        $context['line'] = $exception->getLine();
+        $context['file'] = $exception->getFile();
         $context['level'] = $level;
 
         $genTokenParams = array();
@@ -36,7 +38,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
         }
 
         if (count($genTokenParams) === 0) {
-            throw new RuntimeException('Unable generate token from empty context');
+            throw UnableGenerateTokenException::forEmptyContext();
         }
 
         ksort($genTokenParams);
@@ -48,7 +50,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     /**
      * @return array
      */
-    public function getTokenParams()
+    public function getTokenParams(): array
     {
         return $this->_tokenParams;
     }
@@ -56,7 +58,7 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     /**
      * @param array $tokenParams
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -72,11 +74,11 @@ class ContextTokenGenerator implements TokenGeneratorInterface
     /**
      * @param string $tokenParam
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function addTokenParam($tokenParam)
+    public function addTokenParam(string $tokenParam)
     {
         Assert::stringNotEmpty($tokenParam);
 

@@ -11,18 +11,20 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\Common\Model\ArrayableInterface;
+use InvalidArgumentException;
+use Throwable;
 
 interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface, ArrayableInterface
 {
     /**
      * @return array
      */
-    public function getIgnoreExceptions();
+    public function getIgnoreExceptions(): array;
 
     /**
-     * @param \Throwable|\Exception|string $exception
+     * @param Throwable|string $exception
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -31,7 +33,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     /**
      * @param array $ignoreExceptions
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -40,12 +42,12 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     /**
      * @return array
      */
-    public function getExceptions();
+    public function getExceptions(): array;
 
     /**
-     * @param \Throwable|\Exception|string $exception
+     * @param Throwable|string $exception
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -54,7 +56,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     /**
      * @param array $exceptions
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
@@ -63,7 +65,7 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     /**
      * @return bool
      */
-    public function isLocked();
+    public function isLocked(): bool;
 
     /**
      * @return $this
@@ -76,11 +78,11 @@ interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface
     public function unlock();
 
     /**
-     * @param \Exception|\Throwable $exception
+     * @param Throwable $exception
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return array
      */
-    public function getContext($exception);
+    public function getContext(Throwable $exception): array;
 }

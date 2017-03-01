@@ -10,56 +10,57 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
+use Swift_Mailer;
 
 interface SwiftMailerCollectorInterface extends CollectorInterface
 {
     /**
      * @throws NotDefinedException
      *
-     * @return \Swift_Mailer
+     * @return Swift_Mailer
      */
-    public function getMailer();
+    public function getMailer(): Swift_Mailer;
 
     /**
-     * @param \Swift_Mailer $mailer
+     * @param Swift_Mailer $mailer
      *
      * @return $this
      */
-    public function setMailer(\Swift_Mailer $mailer);
+    public function setMailer(Swift_Mailer $mailer);
 
     /**
      * @throws NotDefinedException
      *
      * @return string
      */
-    public function getSubject();
+    public function getSubject(): string;
 
     /**
      * @param string $subject
      *
      * @return $this
      */
-    public function setSubject($subject);
+    public function setSubject(string $subject);
 
     /**
      * @throws NotDefinedException
      *
      * @return string
      */
-    public function getSender();
+    public function getSender(): string;
 
     /**
      * @param string $sender
      *
      * @return $this
      */
-    public function setSender($sender);
+    public function setSender(string $sender);
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getRecipients();
+    public function getRecipients(): array;
 
     /**
      * @param array $recipients
@@ -73,5 +74,5 @@ interface SwiftMailerCollectorInterface extends CollectorInterface
      *
      * @return $this
      */
-    public function addRecipient($recipient);
+    public function addRecipient(string $recipient);
 }

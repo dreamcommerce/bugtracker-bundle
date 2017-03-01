@@ -10,9 +10,12 @@
 
 namespace DreamCommerce\Component\BugTracker\Connector;
 
-use DreamCommerce\Component\BugTracker\Exception\RuntimeException;
+use DreamCommerce\Component\BugTracker\Exception\Jira\ErrorMessageException;
+use DreamCommerce\Component\BugTracker\Exception\Jira\UnableDecodeResponseException;
+use DreamCommerce\Component\BugTracker\Exception\JiraException;
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Http\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -25,18 +28,22 @@ final class JiraConnector implements JiraConnectorInterface
      */
     private $_httpClient;
 
+    /**
+     * @param ClientInterface|null $httpClient
+     */
     public function __construct(ClientInterface $httpClient = null)
     {
         $this->_httpClient = $httpClient;
     }
 
     /**
+     * @throws NotDefinedException
      * @return ClientInterface
      */
-    public function getHttpClient()
+    public function getHttpClient(): ClientInterface
     {
         if ($this->_httpClient === null) {
-            throw new RuntimeException('HTTP client has been not defined');
+            throw NotDefinedException::forVariable(__CLASS__ . '::_httpClient');
         }
 
         return $this->_httpClient;
@@ -57,7 +64,7 @@ final class JiraConnector implements JiraConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function createIssue(Credentials $credentials, Issue $issue)
+    public function createIssue(Credentials $credentials, Issue $issue): array
     {
         $summary = $this->_repairString($issue->getSummary());
         $description = $this->_repairString($issue->getDescription());
@@ -109,7 +116,7 @@ final class JiraConnector implements JiraConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function findIssuesByField(Credentials $credentials, $fieldName, $fieldValue)
+    public function findIssuesByField(Credentials $credentials, string $fieldName, string $fieldValue): array
     {
         Assert::notEmpty($fieldName);
         Assert::notEmpty($fieldValue);
@@ -127,7 +134,7 @@ final class JiraConnector implements JiraConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function updateIssueFields(Credentials $credentials, $issueId, array $fields = array())
+    public function updateIssueFields(Credentials $credentials, int $issueId, array $fields = array()): array
     {
         Assert::integerish($issueId);
         $issueId = (int) $issueId;
@@ -148,11 +155,8 @@ final class JiraConnector implements JiraConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getIssueTransitions(Credentials $credentials, $issueId)
+    public function getIssueTransitions(Credentials $credentials, int $issueId): array
     {
-        Assert::integerish($issueId);
-        $issueId = (int) $issueId;
-
         $client = $this->getHttpClient();
         $uri = $credentials->getEntryPoint().'/rest/api/2/issue/'.$issueId.'/transitions';
 
@@ -165,14 +169,8 @@ final class JiraConnector implements JiraConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function updateIssueTransition(Credentials $credentials, $issueId, $transition)
+    public function updateIssueTransition(Credentials $credentials, int $issueId, int $transition): array
     {
-        Assert::integerish($issueId);
-        Assert::integerish($transition);
-
-        $issueId = (int) $issueId;
-        $transition = (int) $transition;
-
         $data = array(
             'transition' => array(
                 'id' => $transition,
@@ -193,7 +191,7 @@ final class JiraConnector implements JiraConnectorInterface
      *
      * @return array
      */
-    private function _getAuthParams(Credentials $credentials)
+    private function _getAuthParams(Credentials $credentials): array
     {
         return array(
             'auth' => array(
@@ -206,14 +204,15 @@ final class JiraConnector implements JiraConnectorInterface
     /**
      * @param RequestInterface  $request
      * @param ResponseInterface $response
+     * @throws JiraException
      *
-     * @return \stdClass
+     * @return array
      */
-    private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response)
+    private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response): array
     {
         $result = json_decode($response->getBody(), true);
         if ($result === false) {
-            throw new RuntimeException('Unable decode response from URL '.$request->getUri().'; method: '.$request->getMethod());
+            throw UnableDecodeResponseException::forRequest($request);
         }
 
         if (isset($result['errorMessages']) || isset($result['errors'])) {
@@ -239,13 +238,13 @@ final class JiraConnector implements JiraConnectorInterface
                 }
             }
 
-            throw new RuntimeException('The error occurred while processing data; error messages: "'.implode('; ', $errorMessagesArr).'"; errors: "'.implode('; ', $errorArr));
+            throw ErrorMessageException::forResponseErrors($errorArr, $errorMessagesArr);
         }
 
         return $result;
     }
 
-    private function _repairString($string)
+    private function _repairString(string $string): string
     {
         $s = trim($string);
         $s = iconv('UTF-8', 'UTF-8//IGNORE', $s);

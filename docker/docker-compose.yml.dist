@@ -14,7 +14,7 @@ services:
 #        ports:
 #            - 19000:9000
 #        environment:
-#            XDEBUG_CONFIG: idekey=PHPSTORM remote_host=xx.yy.zz.vv
+#            XDEBUG_CONFIG: idekey=DC_BUGTRACKER remote_host=xx.yy.zz.vv
 
     php-7.1:
         build: build/php-7.1
@@ -30,4 +30,12 @@ services:
 #        ports:
 #            - 19001:9000
 #        environment:
-#            XDEBUG_CONFIG: idekey=PHPSTORM remote_host=xx.yy.zz.vv
+#            XDEBUG_CONFIG: idekey=DC_BUGTRACKER remote_host=xx.yy.zz.vv
+
+    mysql:
+        image: mariadb
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: docker
+            MYSQL_USER: docker
+            MYSQL_PASSWORD: docker

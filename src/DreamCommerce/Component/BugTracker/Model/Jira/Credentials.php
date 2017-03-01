@@ -10,9 +10,10 @@
 
 namespace DreamCommerce\Component\BugTracker\Model\Jira;
 
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Model\ArrayableInterface;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
+use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 final class Credentials implements ArrayableInterface
@@ -47,10 +48,10 @@ final class Credentials implements ArrayableInterface
      *
      * @throws NotDefinedException
      */
-    public function getEntryPoint()
+    public function getEntryPoint(): string
     {
         if ($this->_entryPoint === null) {
-            throw new NotDefinedException(__CLASS__.'::_entryPoint');
+            throw NotDefinedException::forVariable(__CLASS__.'::_entryPoint');
         }
 
         return $this->_entryPoint;
@@ -59,11 +60,11 @@ final class Credentials implements ArrayableInterface
     /**
      * @param string $entryPoint
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setEntryPoint($entryPoint)
+    public function setEntryPoint(string $entryPoint)
     {
         Assert::stringNotEmpty($entryPoint);
 
@@ -77,10 +78,10 @@ final class Credentials implements ArrayableInterface
      *
      * @throws NotDefinedException
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         if ($this->_username === null) {
-            throw new NotDefinedException(__CLASS__.'::_username');
+            throw NotDefinedException::forVariable(__CLASS__.'::_username');
         }
 
         return $this->_username;
@@ -89,11 +90,11 @@ final class Credentials implements ArrayableInterface
     /**
      * @param string $username
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setUsername($username)
+    public function setUsername(string $username)
     {
         Assert::stringNotEmpty($username);
 
@@ -107,10 +108,10 @@ final class Credentials implements ArrayableInterface
      *
      * @throws NotDefinedException
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         if ($this->_password === null) {
-            throw new NotDefinedException(__CLASS__.'::_password');
+            throw NotDefinedException::forVariable(__CLASS__.'::_password');
         }
 
         return $this->_password;
@@ -119,11 +120,11 @@ final class Credentials implements ArrayableInterface
     /**
      * @param string $password
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
-    public function setPassword($password)
+    public function setPassword(string $password)
     {
         Assert::stringNotEmpty($password);
 

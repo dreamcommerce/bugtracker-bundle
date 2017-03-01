@@ -12,10 +12,12 @@ namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
-use DreamCommerce\Component\BugTracker\Exception\NotDefinedException;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Model\ArrayableTrait;
+use InvalidArgumentException;
 use Psr\Log\LogLevel;
+use Throwable;
 use Webmozart\Assert\Assert;
 
 abstract class BaseCollector implements BaseCollectorInterface
@@ -63,14 +65,8 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function hasSupportException($exception, $level = LogLevel::WARNING, array $context = array())
+    public function hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool
     {
-        Assert::object($exception);
-        if (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable)) {
-            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable)');
-        }
-
-        Assert::string($level);
         $level = strtolower($level);
         Assert::oneOf($level, BugHandler::getSupportedLogLevels());
 
@@ -121,14 +117,8 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function handle($exception, $level = LogLevel::WARNING, array $context = array())
+    public function handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
-        Assert::object($exception);
-        if (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable)) {
-            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable)');
-        }
-
-        Assert::string($level);
         $level = strtolower($level);
         Assert::oneOf($level, BugHandler::getSupportedLogLevels());
 
@@ -145,7 +135,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function isCollected()
+    public function isCollected(): bool
     {
         return $this->_collected;
     }
@@ -165,7 +155,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getIgnoreExceptions()
+    public function getIgnoreExceptions(): array
     {
         return $this->_ignoreExceptions;
     }
@@ -175,8 +165,8 @@ abstract class BaseCollector implements BaseCollectorInterface
      */
     public function addIgnoreException($exception)
     {
-        if (!is_string($exception) && (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable))) {
-            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable|string)');
+        if (!is_string($exception) && !($exception instanceof Throwable)) {
+            throw new InvalidArgumentException('Unsupported class of object (expected: Throwable|string)');
         }
 
         $this->_ignoreExceptions[] = $exception;
@@ -197,7 +187,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getExceptions()
+    public function getExceptions(): array
     {
         return $this->_exceptions;
     }
@@ -229,7 +219,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function isLocked()
+    public function isLocked(): bool
     {
         return (bool) $this->_locked;
     }
@@ -257,10 +247,10 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getTokenGenerator()
+    public function getTokenGenerator(): TokenGeneratorInterface
     {
         if ($this->_tokenGenerator === null) {
-            throw new NotDefinedException(__CLASS__.'::_tokenGenerator');
+            throw NotDefinedException::forVariable(__CLASS__.'::_tokenGenerator');
         }
 
         return $this->_tokenGenerator;
@@ -279,7 +269,7 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function isUseToken()
+    public function isUseToken(): bool
     {
         return $this->_useToken;
     }
@@ -287,10 +277,8 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setUseToken($useToken)
+    public function setUseToken(bool $useToken)
     {
-        Assert::boolean($useToken);
-
         $this->_useToken = $useToken;
 
         return $this;
@@ -299,13 +287,8 @@ abstract class BaseCollector implements BaseCollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function getContext($exception)
+    public function getContext(Throwable $exception): array
     {
-        Assert::object($exception);
-        if (!($exception instanceof \Exception) && !(interface_exists('\Throwable') && $exception instanceof \Throwable)) {
-            throw new \InvalidArgumentException('Unsupported class of object (expected: \Exception|\Throwable)');
-        }
-
         $context = array();
         if ($exception instanceof ContextInterface) {
             $context = $exception->getExceptionContext();
@@ -315,21 +298,21 @@ abstract class BaseCollector implements BaseCollectorInterface
     }
 
     /**
-     * @param \Throwable|\Exception $exception
+     * @param Throwable $exception
      * @param string                $level
      * @param array                 $context
      *
      * @return bool
      */
-    protected function _hasSupportException($exception, $level = LogLevel::WARNING, array $context = array())
+    protected function _hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool
     {
         return true;
     }
 
     /**
-     * @param \Throwable|\Exception $exception
+     * @param Throwable $exception
      * @param string                $level
      * @param array                 $context
      */
-    abstract protected function _handle($exception, $level = LogLevel::WARNING, array $context = array());
+    abstract protected function _handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array());
 }

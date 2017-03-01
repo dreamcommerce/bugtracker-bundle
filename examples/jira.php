@@ -8,11 +8,11 @@
  * @link https://www.dreamcommerce.com
  */
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
 use DreamCommerce\Component\BugTracker\Connector\JiraConnector;
-use DreamCommerce\Component\BugTracker\Http\Client\GuzzleClient;
+use DreamCommerce\Component\Common\Http\GuzzleClient;
 use GuzzleHttp\Client;
 use Psr\Log\LogLevel;
 
@@ -25,9 +25,10 @@ $options = array(
     'username' => '...',
     'password' => '...',
     'project' => '...',
-    'counter_field_id' => '...',
-    'hash_field_id' => '...',
-    'default_priority' => '...', // normal
+    'counter_field_id' => 88888,
+    'token_field_id' => 99999,
+    'default_priority' => 2, // normal
+    'assignee' => '...',
     'priorities' => array(
         LogLevel::WARNING => 1, // minor
         LogLevel::ERROR => 2, // normal
@@ -46,5 +47,5 @@ $collector = new JiraCollector($options);
 try {
     throw new \Exception('test');
 } catch (\Exception $exc) {
-    $collector->handle($exc, LogLevel::EMERGENCY);
+    $collector->handle($exc, LogLevel::WARNING, array('jira' => 'test'));
 }

@@ -10,9 +10,10 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Webmozart\Assert\Assert;
+use Throwable;
 
 class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
 {
@@ -29,11 +30,11 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
     /**
      * {@inheritdoc}
      */
-    protected function _handle($exc, $level = LogLevel::WARNING, array $context = array())
+    protected function _handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
     {
         $token = null;
         if ($this->isUseToken()) {
-            $token = $this->getTokenGenerator()->generate($exc, $level, $context);
+            $token = $this->getTokenGenerator()->generate($exception, $level, $context);
         }
 
         if ($this->_formatException) {
@@ -41,19 +42,24 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
             if ($this->isUseToken()) {
                 $message .= '[ '.$token.' ] ';
             }
-            $exc = $message."exception '".get_class($exc)."' with message '".$exc->getMessage()."' in '".$exc->getFile().':'.$exc->getLine().' Stack trace: '.$exc->getTraceAsString();
+            $exception = $message."exception '".get_class($exception)."' with message '".$exception->getMessage()."' in '".$exception->getFile().':'.$exception->getLine().' Stack trace: '.$exception->getTraceAsString();
         } elseif ($this->isUseToken()) {
             $context['token'] = $token;
         }
 
-        $this->_logger->log($level, $exc, $context);
+        $logger = $this->getLogger();
+        $logger->log($level, $exception, $context);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
+        if ($this->_logger === null) {
+            throw NotDefinedException::forVariable(__CLASS__.'::_logger');
+        }
+
         return $this->_logger;
     }
 
@@ -70,7 +76,7 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function isFormatException()
+    public function isFormatException(): bool
     {
         return $this->_formatException;
     }
@@ -78,10 +84,8 @@ class Psr3Collector extends BaseCollector implements Psr3CollectorInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormatException($formatException)
+    public function setFormatException(bool $formatException)
     {
-        Assert::boolean($formatException);
-
         $this->_formatException = $formatException;
 
         return $this;

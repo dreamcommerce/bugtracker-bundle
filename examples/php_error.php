@@ -8,7 +8,7 @@
  * @link https://www.dreamcommerce.com
  */
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\BugHandler;
 use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;

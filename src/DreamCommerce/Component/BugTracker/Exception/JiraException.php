@@ -10,6 +10,8 @@
 
 namespace DreamCommerce\Component\BugTracker\Exception;
 
-class RuntimeException extends \RuntimeException
+use Exception;
+
+class JiraException extends Exception
 {
 }

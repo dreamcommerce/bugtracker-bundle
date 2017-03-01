@@ -8,20 +8,21 @@
  * @link https://www.dreamcommerce.com
  */
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
 use DreamCommerce\Component\BugTracker\Collector\QueueCollector;
 use DreamCommerce\Component\BugTracker\Exception\ContextInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Log\LogLevel;
 
-class TestException extends \Exception implements ContextInterface
+class TestException extends Exception implements ContextInterface
 {
     /**
      * @return array
      */
-    public function getExceptionContext()
+    public function getExceptionContext(): array
     {
         return array(
             'field_a' => 'A',
@@ -42,9 +43,9 @@ class FirstCollector extends Psr3Collector
     /**
      * {@inheritdoc}
      */
-    protected function _hasSupportException($exc, $level, array $context = array())
+    protected function _hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool
     {
-        return $exc instanceof Test1Exception;
+        return $exception instanceof Test1Exception;
     }
 }
 
@@ -53,7 +54,7 @@ class SecondCollector extends Psr3Collector
     /**
      * {@inheritdoc}
      */
-    protected function _hasSupportException($exc, $level, array $context = array())
+    protected function _hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool
     {
         return isset($context['field_a']) && $context['field_a'] == 'A';
     }

@@ -3,6 +3,11 @@
 Changelog
 ---------
 
+``1.2.0``
+
+   - library is no longer supported on PHP 5
+   - added doctrine DBAL types
+
 ``1.1.2``
    - added context trait
 
@@ -84,13 +89,13 @@ Example Doctrine model:
 
 ```
 
-Example Doctrine mapping:
+Example Doctrine ORM mapping:
 ------------
 
 ```xml
     <?xml version="1.0" encoding="utf-8"?>
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-      <entity repository-class="DreamCommerce\Bundle\BugTrackerBundle\Doctrine\ORM\Repository\ErrorRepository" name="AppBundle\Entity\UserError" table="user_errors">
+      <entity repository-class="DreamCommerce\Component\BugTracker\Repository\ORMErrorRepository" name="AppBundle\Entity\UserError" table="user_errors">
             <!-- ... -->
       </entity>
     </doctrine-mapping>
@@ -104,12 +109,14 @@ Example custom collector
     namespace AppBundle\BugTracker;
     
     use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
-    use DreamCommerce\Component\BugTracker\Traits\Options;
+    use DreamCommerce\Component\Common\Model\ArrayableInterface;
+    use DreamCommerce\Component\Common\Model\ArrayableTrait;
     use Psr\Log\LogLevel;
+    use Throwable;
     
-    class CustomCollector implements CollectorInterface
+    class CustomCollector implements CollectorInterface, ArrayableInterface
     {
-        use Options;
+        use ArrayableTrait;
     
         private $collected = false;
     
@@ -119,21 +126,21 @@ Example custom collector
     
         public function __construct(array $options = array())
         {
-            $this->setOptions($options);
+            $this->fromArray($options);
         }
     
-        public function hasSupportException($exception, $level = LogLevel::WARNING, array $context = array())
+        public function hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool
         {
             return is_object($exception) && $exception instanceof \RuntimeException;
         }
     
-        public function handle($exception, $level = LogLevel::WARNING, array $context = array())
+        public function handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array())
         {
             echo $exception->getMessage() . '; foo: ' . $this->foo . '; bar: ' . $this->bar;
             $this->collected = true;
         }
     
-        public function isCollected()
+        public function isCollected(): bool
         {
             return $this->collected;
         }
@@ -160,16 +167,16 @@ Example code:
         // use all collectors
         
         try {
-            throw new \RuntimeException();
-        } catch(\Exception $exc) {
-            $this->get('bug_tracker')->handle($exc, LogLevel::ERROR, array('a' => 1, 'b' => 2, 'c' => 3, 'd' => new \stdClass()));
+            throw new RuntimeException();
+        } catch(Exception $exc) {
+            $this->get('bug_tracker')->handle($exc, LogLevel::ERROR, array('a' => 1, 'b' => 2, 'c' => 3, 'd' => new stdClass()));
         }
         
         // use only one collector
         
         try {
-            throw new \RuntimeException();
-        } catch(\Exception $exc) {
+            throw new RuntimeException();
+        } catch(Exception $exc) {
             $this->get('dream_commerce_bug_tracker.collector.custom_1')->handle($exc);
         }
 ```

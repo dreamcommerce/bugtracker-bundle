@@ -12,6 +12,7 @@ namespace DreamCommerce\Component\BugTracker\Connector;
 
 use DreamCommerce\Component\BugTracker\Model\Jira\Credentials;
 use DreamCommerce\Component\BugTracker\Model\Jira\Issue;
+use InvalidArgumentException;
 
 interface JiraConnectorInterface
 {
@@ -19,50 +20,50 @@ interface JiraConnectorInterface
      * @param Credentials $credentials
      * @param Issue       $issue
      *
-     * @return \stdClass
+     * @return array
      */
-    public function createIssue(Credentials $credentials, Issue $issue);
+    public function createIssue(Credentials $credentials, Issue $issue): array;
 
     /**
      * @param Credentials $credentials
      * @param string      $fieldName
      * @param string      $fieldValue
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return array
      */
-    public function findIssuesByField(Credentials $credentials, $fieldName, $fieldValue);
+    public function findIssuesByField(Credentials $credentials, string $fieldName, string $fieldValue): array;
 
     /**
      * @param Credentials $credentials
      * @param int         $issueId
      * @param array       $fields
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
-     * @return \stdClass
+     * @return array
      */
-    public function updateIssueFields(Credentials $credentials, $issueId, array $fields = array());
+    public function updateIssueFields(Credentials $credentials, int $issueId, array $fields = array()): array;
 
     /**
      * @param Credentials $credentials
      * @param int         $issueId
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
-     * @return \stdClass
+     * @return array
      */
-    public function getIssueTransitions(Credentials $credentials, $issueId);
+    public function getIssueTransitions(Credentials $credentials, int $issueId): array;
 
     /**
      * @param Credentials $credentials
      * @param int         $issueId
      * @param int         $transition
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
-     * @return \stdClass
+     * @return array
      */
-    public function updateIssueTransition(Credentials $credentials, $issueId, $transition);
+    public function updateIssueTransition(Credentials $credentials, int $issueId, int $transition): array;
 }

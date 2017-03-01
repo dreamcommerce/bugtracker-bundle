@@ -18,7 +18,7 @@ class ORMErrorRepository extends EntityRepository implements ErrorRepositoryInte
     /**
      * {@inheritdoc}
      */
-    public function findByToken($token)
+    public function findByToken(string $token)
     {
         $token = iconv('UTF-8', 'ASCII//TRANSLIT', trim(strtoupper($token)));
 
