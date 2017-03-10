@@ -37,7 +37,7 @@ final class DoctrineConfiguration implements ConfigurationInterface
         $node
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('entity_manager')->defaultValue('doctrine.orm.entity_manager')->cannotBeEmpty()->end()
+                ->scalarNode('object_manager')->defaultValue('doctrine.orm.entity_manager')->cannotBeEmpty()->end()
                 ->scalarNode('model')->cannotBeEmpty()->end()
                 ->booleanNode('use_token')->defaultTrue()->end()
                 ->booleanNode('use_counter')->defaultTrue()->end()

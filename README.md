@@ -3,6 +3,11 @@
 Changelog
 ---------
 
+``1.2.2``
+    
+  - fixed Doctrine collector
+  - fixed bundle configuration
+
 ``1.2.1``
 
   - move ContextInterface to dreamcommerce/common-bundle

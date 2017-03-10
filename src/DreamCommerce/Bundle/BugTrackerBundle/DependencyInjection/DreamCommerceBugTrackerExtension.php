@@ -46,40 +46,41 @@ final class DreamCommerceBugTrackerExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
         $loader->load('base.xml');
 
+        $globalBaseOptions = array();
+        if(isset($config['configuration'][BugHandler::COLLECTOR_TYPE_BASE])) {
+            $globalBaseOptions = $config['configuration'][BugHandler::COLLECTOR_TYPE_BASE];
+        }
+
         foreach ($config['collectors'] as $name => $collectorConfig) {
-            if (isset($collectorConfig['options'])) {
-                $partialConfiguration = null;
-
-                switch ($collectorConfig['type']) {
-                    case BugHandler::COLLECTOR_TYPE_BASE:
-                        $partialConfiguration = $baseConfiguration;
-                        break;
-                    case BugHandler::COLLECTOR_TYPE_PSR3:
-                        $partialConfiguration = $psr3Configuration;
-                        break;
-                    case BugHandler::COLLECTOR_TYPE_JIRA:
-                        $partialConfiguration = $jiraConfiguration;
-                        break;
-                    case BugHandler::COLLECTOR_TYPE_DOCTRINE:
-                        $partialConfiguration = $doctrineConfiguration;
-                        break;
-                    case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
-                        $partialConfiguration = $swiftMailerConfiguration;
-                        break;
-                    default:
-                        continue 2;
-                }
-
-                $partialConfig = $collectorConfig['options'];
-                if (isset($config['configuration'][$collectorConfig['type']])) {
-                    $partialConfig = array_merge($config['configuration'][$collectorConfig['type']], $partialConfig);
-                }
-
-                $partialConfig = $this->processConfiguration($partialConfiguration, array($partialConfig));
-                unset($collectorConfig['options']);
-                $config['collectors'][$name] = array_merge($collectorConfig, $partialConfig);
+            $globalPartialOptions = array();
+            if (isset($config['configuration'][$collectorConfig['type']])) {
+                $globalPartialOptions = $config['configuration'][$collectorConfig['type']];
             }
 
+            $partialConfiguration = null;
+            switch ($collectorConfig['type']) {
+                case BugHandler::COLLECTOR_TYPE_BASE:
+                    $partialConfiguration = $baseConfiguration;
+                    break;
+                case BugHandler::COLLECTOR_TYPE_PSR3:
+                    $partialConfiguration = $psr3Configuration;
+                    break;
+                case BugHandler::COLLECTOR_TYPE_JIRA:
+                    $partialConfiguration = $jiraConfiguration;
+                    break;
+                case BugHandler::COLLECTOR_TYPE_DOCTRINE:
+                    $partialConfiguration = $doctrineConfiguration;
+                    break;
+                case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
+                    $partialConfiguration = $swiftMailerConfiguration;
+                    break;
+            }
+            $partialOptions = array();
+            if($partialConfiguration !== null) {
+                $partialOptions = $this->processConfiguration($partialConfiguration, array($collectorConfig['options']));
+            }
+
+            $config['collectors'][$name]['options'] = array_merge($globalBaseOptions, $globalPartialOptions, $partialOptions);
             $this->loadAdditionalConfiguration($container, $collectorConfig['type']);
         }
 
