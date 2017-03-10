@@ -10,26 +10,22 @@
 
 namespace DreamCommerce\Tests\BugTrackerBundle;
 
+use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DreamCommerceBugTrackerBundleTest extends WebTestCase
 {
-    /**
-     * @test
-     */
-    public function its_services_are_intitializable()
+    public function testInitServices()
     {
         /** @var ContainerInterface $container */
         $container = self::createClient()->getContainer();
-
-        $services = $container->getServiceIds();
-
-        $services = array_filter($services, function ($serviceId) {
-            return false !== strpos($serviceId, 'dream_commerce_bug_tracker');
-        });
-
-        $this->assertTrue(count($services) > 0);
+        $services = array(
+            'bug_tracker',
+            DreamCommerceBugTrackerExtension::ALIAS . '.collector_queue',
+            DreamCommerceBugTrackerExtension::ALIAS . '.symfony_handler',
+            DreamCommerceBugTrackerExtension::ALIAS . '.token_generator'
+        );
 
         foreach ($services as $id) {
             $container->get($id);

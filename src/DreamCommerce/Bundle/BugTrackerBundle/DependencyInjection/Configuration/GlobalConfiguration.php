@@ -69,7 +69,7 @@ final class GlobalConfiguration implements ConfigurationInterface
                     ->fixXmlConfig('option')
                     ->prototype('array')
                         ->children()
-                            ->scalarNode('class')->cannotBeEmpty()->end()
+                            ->scalarNode('class')->end()
                             ->integerNode('priority')
                                 ->defaultValue(QueueCollectorInterface::PRIORITY_NORMAL)
                             ->end()

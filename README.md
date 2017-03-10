@@ -3,6 +3,10 @@
 Changelog
 ---------
 
+``1.3.0``
+  - added more tests
+  - change collector service name to dream_commerce_bug_tracker.< name >_collector
+
 ``1.2.2``
     
   - fixed Doctrine collector

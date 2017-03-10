@@ -39,6 +39,8 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "DreamCommerce\\Fixtures\\BugTracker\\": "test/src/DreamCommerce/Fixtures/BugTracker",
+      "DreamCommerce\\Fixtures\\BugTrackerBundle\\": "test/src/DreamCommerce/Fixtures/BugTrackerBundle",
       "DreamCommerce\\Tests\\BugTracker\\": "test/src/DreamCommerce/Tests/BugTracker",
       "DreamCommerce\\Tests\\BugTrackerBundle\\": "test/src/DreamCommerce/Tests/BugTrackerBundle",
       "AppBundle\\": "test/src/AppBundle/"

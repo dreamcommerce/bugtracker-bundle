@@ -57,7 +57,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
             $interfaces = \class_implements($collector['class']);
             Assert::oneOf(CollectorInterface::class, $interfaces);
 
-            $id = DreamCommerceBugTrackerExtension::ALIAS.'.collector.'.$name;
+            $id = DreamCommerceBugTrackerExtension::ALIAS.'.' . $name . '_collector';
 
             $collectorDefinition = new Definition($collector['class']);
             $container->setDefinition($id, $collectorDefinition);

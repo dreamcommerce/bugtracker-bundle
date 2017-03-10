@@ -18,6 +18,16 @@ use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Jira
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\Psr3Configuration;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Configuration\SwiftMailerConfiguration;
 use DreamCommerce\Component\BugTracker\BugHandler;
+use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\DoctrineCollector;
+use DreamCommerce\Component\BugTracker\Collector\DoctrineCollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\JiraCollector;
+use DreamCommerce\Component\BugTracker\Collector\JiraCollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\Psr3Collector;
+use DreamCommerce\Component\BugTracker\Collector\Psr3CollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollector;
+use DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollectorInterface;
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -47,7 +57,7 @@ final class DreamCommerceBugTrackerExtension extends Extension
         $loader->load('base.xml');
 
         $globalBaseOptions = array();
-        if(isset($config['configuration'][BugHandler::COLLECTOR_TYPE_BASE])) {
+        if (isset($config['configuration'][BugHandler::COLLECTOR_TYPE_BASE])) {
             $globalBaseOptions = $config['configuration'][BugHandler::COLLECTOR_TYPE_BASE];
         }
 
@@ -58,29 +68,67 @@ final class DreamCommerceBugTrackerExtension extends Extension
             }
 
             $partialConfiguration = null;
+            $partialClass = null;
+            $partialInterface = null;
+
             switch ($collectorConfig['type']) {
                 case BugHandler::COLLECTOR_TYPE_BASE:
                     $partialConfiguration = $baseConfiguration;
+                    $partialInterface = CollectorInterface::class;
                     break;
                 case BugHandler::COLLECTOR_TYPE_PSR3:
                     $partialConfiguration = $psr3Configuration;
+                    $partialClass = Psr3Collector::class;
+                    $partialInterface = Psr3CollectorInterface::class;
                     break;
                 case BugHandler::COLLECTOR_TYPE_JIRA:
                     $partialConfiguration = $jiraConfiguration;
+                    $partialClass = JiraCollector::class;
+                    $partialInterface = JiraCollectorInterface::class;
                     break;
                 case BugHandler::COLLECTOR_TYPE_DOCTRINE:
                     $partialConfiguration = $doctrineConfiguration;
+                    $partialClass = DoctrineCollector::class;
+                    $partialInterface = DoctrineCollectorInterface::class;
                     break;
                 case BugHandler::COLLECTOR_TYPE_SWIFTMAILER:
                     $partialConfiguration = $swiftMailerConfiguration;
+                    $partialClass = SwiftMailerCollector::class;
+                    $partialInterface = SwiftMailerCollectorInterface::class;
                     break;
-            }
-            $partialOptions = array();
-            if($partialConfiguration !== null) {
-                $partialOptions = $this->processConfiguration($partialConfiguration, array($collectorConfig['options']));
+                case BugHandler::COLLECTOR_TYPE_CUSTOM:
+                    $partialInterface = CollectorInterface::class;
+                    break;
+                default:
+                    throw new RuntimeException('Type "' . $collectorConfig['type'] . '" is not supported');
             }
 
-            $config['collectors'][$name]['options'] = array_merge($globalBaseOptions, $globalPartialOptions, $partialOptions);
+            if (empty($collectorConfig['class'])) {
+                if ($partialClass === null) {
+                    throw new RuntimeException('Parameter "class" is required');
+                }
+                $config['collectors'][$name]['class'] = $partialClass;
+            } else {
+                if (!class_exists($collectorConfig['class'])) {
+                    throw new RuntimeException('Class "' . $collectorConfig['class'] . '" does not exist');
+                }
+                $interfaces = class_implements($collectorConfig['class']);
+                if (!in_array($partialInterface, $interfaces)) {
+                    throw new RuntimeException('Class "' . $collectorConfig['class'] . '" does not implement interface "' . $partialInterface . '"');
+                }
+            }
+
+            if ($collectorConfig['type'] === BugHandler::COLLECTOR_TYPE_CUSTOM) {
+                $partialOptions = $collectorConfig['options'];
+            } else {
+                $partialOptions = array_merge($globalBaseOptions, $globalPartialOptions, $collectorConfig['options']);
+            }
+
+            if ($partialConfiguration !== null) {
+                $partialOptions = $this->processConfiguration($partialConfiguration, array($partialOptions));
+            }
+
+            $config['collectors'][$name]['options'] = $partialOptions;
             $this->loadAdditionalConfiguration($container, $collectorConfig['type']);
         }
 
