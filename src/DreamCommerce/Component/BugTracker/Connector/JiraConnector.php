@@ -129,6 +129,9 @@ final class JiraConnector implements JiraConnectorInterface
         $response = $client->send($request, $this->_getAuthParams($credentials));
 
         $result = $this->_apiHandleResponse($request, $response);
+        if(!isset($result['issues'])) {
+            throw NotDefinedException::forVariable('issues');
+        }
 
         return $result['issues'];
     }
@@ -212,8 +215,14 @@ final class JiraConnector implements JiraConnectorInterface
      */
     private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response): array
     {
+        $body = $response->getBody();
+        if(strlen($body) === 0 && $response->getStatusCode() === 204 && in_array($request->getMethod(), array('PUT', 'POST'))) {
+            return array();
+        }
+
         try {
-            $result = Json::decode($response->getBody(), true);
+            Json::$useBuiltinEncoderDecoder = true;
+            $result = Json::decode($body);
         } catch(RuntimeException $exception) {
             throw UnableDecodeResponseException::forRequest($request, $exception);
         }
