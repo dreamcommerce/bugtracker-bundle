@@ -17,7 +17,7 @@ class RandomTokenGenerator implements TokenGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function generate(Throwable $exception, int $level, array $context = array()): string
+    public function generate(Throwable $exception, string $level, array $context = array()): string
     {
         return md5(uniqid(rand(), true));
     }

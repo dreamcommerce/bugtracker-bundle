@@ -21,5 +21,5 @@ interface TokenGeneratorInterface
      *
      * @return string
      */
-    public function generate(Throwable $exception, int $level, array $context = array()): string;
+    public function generate(Throwable $exception, string $level, array $context = array()): string;
 }

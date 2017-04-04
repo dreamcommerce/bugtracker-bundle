@@ -73,6 +73,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
 
                     $serviceName = $serviceResolver($collector, 'logger');
                     $collectorDefinition->addMethodCall('setLogger', array(new Reference($serviceName)));
+                    unset($collector['options']['logger']);
 
                     break;
 
@@ -81,6 +82,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
 
                     $serviceName = $serviceResolver($collector, DreamCommerceBugTrackerExtension::ALIAS.'.jira_connector', 'connector');
                     $collectorDefinition->addMethodCall('setConnector', array(new Reference($serviceName)));
+                    unset($collector['options']['connector']);
 
                     break;
 
@@ -89,6 +91,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
 
                     $serviceName = $serviceResolver($collector, 'doctrine.orm.entity_manager', 'object_manager');
                     $collectorDefinition->addMethodCall('setPersistManager', array(new Reference($serviceName)));
+                    unset($collector['options']['object_manager']);
 
                     break;
 
@@ -97,6 +100,7 @@ final class CollectorCompilerPass implements CompilerPassInterface
 
                     $serviceName = $serviceResolver($collector, 'mailer');
                     $collectorDefinition->addMethodCall('setMailer', array(new Reference($serviceName)));
+                    unset($collector['options']['mailer']);
 
                     break;
 
@@ -117,8 +121,9 @@ final class CollectorCompilerPass implements CompilerPassInterface
             unset($collector['level']);
             unset($collector['priority']);
             unset($collector['class']);
+            unset($collector['options']['token_generator']);
 
-            $collectorDefinition->addArgument($collector);
+            $collectorDefinition->addArgument($collector['options']);
         }
 
         $taggedServices = $container->findTaggedServiceIds(
