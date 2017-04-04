@@ -11,6 +11,7 @@
 namespace DreamCommerce\Component\BugTracker\Exception\Jira;
 
 use DreamCommerce\Component\BugTracker\Exception\JiraException;
+use Exception;
 use Psr\Http\Message\RequestInterface;
 
 class UnableDecodeResponseException extends JiraException
@@ -24,11 +25,12 @@ class UnableDecodeResponseException extends JiraException
 
     /**
      * @param RequestInterface $request
+     * @param Exception $previousException
      * @return UnableDecodeResponseException
      */
-    public static function forRequest(RequestInterface $request): UnableDecodeResponseException
+    public static function forRequest(RequestInterface $request, Exception $previousException = null): UnableDecodeResponseException
     {
-        $exception = new static('Unable decode response', static::CODE_FOR_REQUEST);
+        $exception = new static('Unable decode response', static::CODE_FOR_REQUEST, $previousException);
         $exception->request = $request;
 
         return $exception;

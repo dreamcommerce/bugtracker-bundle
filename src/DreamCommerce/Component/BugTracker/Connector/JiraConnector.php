@@ -19,7 +19,9 @@ use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use DreamCommerce\Component\Common\Http\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Webmozart\Assert\Assert;
+use Zend\Json\Json;
 
 final class JiraConnector implements JiraConnectorInterface
 {
@@ -210,9 +212,10 @@ final class JiraConnector implements JiraConnectorInterface
      */
     private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response): array
     {
-        $result = json_decode($response->getBody(), true);
-        if ($result === false) {
-            throw UnableDecodeResponseException::forRequest($request);
+        try {
+            $result = Json::decode($response->getBody(), true);
+        } catch(RuntimeException $exception) {
+            throw UnableDecodeResponseException::forRequest($request, $exception);
         }
 
         if (isset($result['errorMessages']) || isset($result['errors'])) {
