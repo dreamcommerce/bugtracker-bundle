@@ -25,7 +25,7 @@ interface CollectorInterface
      *
      * @return bool
      */
-    public function hasSupportException(Throwable $exception, string $level = LogLevel::WARNING, array $context = array()): bool;
+    public function hasSupportException(Throwable $exception, string $level = LogLevel::ERROR, array $context = array()): bool;
 
     /**
      * @param Throwable $exception
@@ -34,7 +34,7 @@ interface CollectorInterface
      *
      * @throws InvalidArgumentException
      */
-    public function handle(Throwable $exception, string $level = LogLevel::WARNING, array $context = array());
+    public function handle(Throwable $exception, string $level = LogLevel::ERROR, array $context = array());
 
     /**
      * @return bool
