@@ -74,7 +74,7 @@ final class JiraConnector implements JiraConnectorInterface
             'project' => array(
                 'key' => $issue->getProject(),
             ),
-            'summary' => substr($summary, 0, 255),
+            'summary' => substr(str_replace(array("\n","\r"), '', $summary), 0, 255),
             'description' => substr($description, 0, 4000),
             'assignee' => array(
                 'name' => $issue->getAssignee(),
