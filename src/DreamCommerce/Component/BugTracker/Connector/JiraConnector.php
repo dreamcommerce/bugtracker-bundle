@@ -21,7 +21,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Webmozart\Assert\Assert;
-use Zend\Json\Json;
 
 final class JiraConnector implements JiraConnectorInterface
 {
@@ -221,8 +220,12 @@ final class JiraConnector implements JiraConnectorInterface
         }
 
         try {
-            Json::$useBuiltinEncoderDecoder = true;
-            $result = Json::decode($body);
+            if(class_exists('\Zend\Json\Json')) {
+                \Zend\Json\Json::$useBuiltinEncoderDecoder = true;
+                $result = \Zend\Json\Json::decode($body);
+            } else {
+                $result = json_decode($body, true);
+            }
         } catch(RuntimeException $exception) {
             throw UnableDecodeResponseException::forRequest($request, $exception);
         }

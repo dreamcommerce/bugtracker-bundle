@@ -15,7 +15,6 @@ use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LogLevel;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 use Throwable;
 use Webmozart\Assert\Assert;
 
@@ -27,7 +26,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     protected $_model;
 
     /**
-     * @var FactoryInterface
+     * @var \Sylius\Component\Resource\Factory\FactoryInterface
      */
     protected $_modelFactory;
 
@@ -157,7 +156,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function getModelFactory(): FactoryInterface
+    public function getModelFactory(): \Sylius\Component\Resource\Factory\FactoryInterface
     {
         if ($this->_modelFactory === null) {
             throw NotDefinedException::forVariable(__CLASS__.'::_modelFactory');
@@ -169,7 +168,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
     /**
      * {@inheritdoc}
      */
-    public function setModelFactory(FactoryInterface $modelFactory)
+    public function setModelFactory(\Sylius\Component\Resource\Factory\FactoryInterface $modelFactory)
     {
         $this->_modelFactory = $modelFactory;
 

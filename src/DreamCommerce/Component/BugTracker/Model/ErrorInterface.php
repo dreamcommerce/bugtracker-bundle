@@ -10,9 +10,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Model;
 
-use Sylius\Component\Resource\Model\ResourceInterface;
-
-interface ErrorInterface extends ResourceInterface
+interface ErrorInterface
 {
     /**
      * @return null|string

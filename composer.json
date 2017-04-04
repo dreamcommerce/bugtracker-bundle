@@ -30,7 +30,8 @@
   "suggest": {
     "symfony/symfony": "Great PHP framework !",
     "monolog/monolog": "Allows more advanced logging of the application flow",
-    "guzzlehttp/guzzle": "Guzzle is a PHP HTTP client library"
+    "guzzlehttp/guzzle": "Guzzle is a PHP HTTP client library",
+    "zendframework/zend-json": "The perfect tool to decode the response from JIRA"
   },
   "autoload": {
     "psr-4": {

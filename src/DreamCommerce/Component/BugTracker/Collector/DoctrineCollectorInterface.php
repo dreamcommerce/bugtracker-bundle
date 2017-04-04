@@ -13,7 +13,6 @@ namespace DreamCommerce\Component\BugTracker\Collector;
 use Doctrine\Common\Persistence\ObjectManager;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use InvalidArgumentException;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 
 interface DoctrineCollectorInterface extends CollectorInterface
 {
@@ -48,15 +47,15 @@ interface DoctrineCollectorInterface extends CollectorInterface
     /**
      * @throws NotDefinedException
      *
-     * @return FactoryInterface
+     * @return \Sylius\Component\Resource\Factory\FactoryInterface
      */
-    public function getModelFactory(): FactoryInterface;
+    public function getModelFactory(): \Sylius\Component\Resource\Factory\FactoryInterface;
 
     /**
-     * @param FactoryInterface $modelFactory
+     * @param \Sylius\Component\Resource\Factory\FactoryInterface $modelFactory
      * @return $this
      */
-    public function setModelFactory(FactoryInterface $modelFactory);
+    public function setModelFactory(\Sylius\Component\Resource\Factory\FactoryInterface $modelFactory);
 
     /**
      * @return bool
