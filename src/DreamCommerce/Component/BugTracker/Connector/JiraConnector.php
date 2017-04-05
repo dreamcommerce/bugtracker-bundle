@@ -225,6 +225,18 @@ final class JiraConnector implements JiraConnectorInterface
                 $result = \Zend\Json\Json::decode($body);
             } else {
                 $result = json_decode($body, true);
+                if($result === null) {
+                    switch (json_last_error()) {
+                        case JSON_ERROR_DEPTH:
+                            throw new RuntimeException('Decoding failed: Maximum stack depth exceeded');
+                        case JSON_ERROR_CTRL_CHAR:
+                            throw new RuntimeException('Decoding failed: Unexpected control character found');
+                        case JSON_ERROR_SYNTAX:
+                            throw new RuntimeException('Decoding failed: Syntax error');
+                        default:
+                            throw new RuntimeException('Decoding failed');
+                    }
+                }
             }
         } catch(RuntimeException $exception) {
             throw UnableDecodeResponseException::forRequest($request, $exception);

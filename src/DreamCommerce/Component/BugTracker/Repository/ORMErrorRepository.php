@@ -37,8 +37,8 @@ class ORMErrorRepository extends EntityRepository implements ErrorRepositoryInte
     {
         $em = $this->getEntityManager();
         $className = $em->getClassMetadata(get_class($entity))->getName();
-        $query = $em->createQuery('UPDATE '.$className.' t SET t.counter = t.counter + 1');
-
+        $query = $em->createQuery('UPDATE ?1 t SET t.counter = t.counter + 1');
+        $query->setParameter(1, $className);
         $query->getResult();
 
         return $this;

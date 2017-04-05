@@ -15,6 +15,7 @@ use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
 use Psr\Log\LogLevel;
+use RuntimeException;
 use Throwable;
 use Webmozart\Assert\Assert;
 
@@ -76,7 +77,7 @@ class DoctrineCollector extends BaseCollector implements DoctrineCollectorInterf
                 $modelFactory = $this->getModelFactory();
                 $object = $modelFactory->createNew();
                 if ($object instanceof $model) {
-                    throw new \Exception(); // TODO
+                    throw new RuntimeException('Expected an instance of "' . $model . '". Got: "' . get_class($object) . '"');
                 }
             }
 
