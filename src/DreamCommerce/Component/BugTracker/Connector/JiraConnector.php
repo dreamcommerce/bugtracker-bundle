@@ -74,7 +74,7 @@ final class JiraConnector implements JiraConnectorInterface
             'project' => array(
                 'key' => $issue->getProject(),
             ),
-            'summary' => substr(str_replace(array("\n","\r"), '', $summary), 0, 255),
+            'summary' => substr(str_replace(array("\n", "\r"), '', $summary), 0, 255),
             'description' => substr($description, 0, 4000),
             'assignee' => array(
                 'name' => $issue->getAssignee(),
@@ -128,7 +128,7 @@ final class JiraConnector implements JiraConnectorInterface
         $response = $client->send($request, $this->_getAuthParams($credentials));
 
         $result = $this->_apiHandleResponse($request, $response);
-        if(!isset($result['issues'])) {
+        if (!isset($result['issues'])) {
             throw NotDefinedException::forVariable('issues');
         }
 
@@ -215,17 +215,17 @@ final class JiraConnector implements JiraConnectorInterface
     private function _apiHandleResponse(RequestInterface $request, ResponseInterface $response): array
     {
         $body = $response->getBody();
-        if(strlen($body) === 0 && $response->getStatusCode() === 204 && in_array($request->getMethod(), array('PUT', 'POST'))) {
+        if (strlen($body) === 0 && $response->getStatusCode() === 204 && in_array($request->getMethod(), array('PUT', 'POST'))) {
             return array();
         }
 
         try {
-            if(class_exists('\Zend\Json\Json')) {
+            if (class_exists('\Zend\Json\Json')) {
                 \Zend\Json\Json::$useBuiltinEncoderDecoder = true;
                 $result = \Zend\Json\Json::decode($body);
             } else {
                 $result = json_decode($body, true);
-                if($result === null) {
+                if ($result === null) {
                     switch (json_last_error()) {
                         case JSON_ERROR_DEPTH:
                             throw new RuntimeException('Decoding failed: Maximum stack depth exceeded');
@@ -238,7 +238,7 @@ final class JiraConnector implements JiraConnectorInterface
                     }
                 }
             }
-        } catch(RuntimeException $exception) {
+        } catch (RuntimeException $exception) {
             throw UnableDecodeResponseException::forRequest($request, $exception);
         }
 
