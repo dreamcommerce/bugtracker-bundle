@@ -222,7 +222,7 @@ final class JiraConnector implements JiraConnectorInterface
         try {
             if (class_exists('\Zend\Json\Json')) {
                 \Zend\Json\Json::$useBuiltinEncoderDecoder = true;
-                $result = \Zend\Json\Json::decode($body);
+                $result = \Zend\Json\Json::decode($body, \Zend\Json\Json::TYPE_ARRAY);
             } else {
                 $result = json_decode($body, true);
                 if ($result === null) {
