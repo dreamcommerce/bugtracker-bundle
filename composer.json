@@ -13,7 +13,7 @@
     "dreamcommerce/common-bundle": "dev-master"
   },
   "require-dev": {
-    "symfony/symfony": "~2.7|~3.0",
+    "symfony/symfony": "~2.8|~3.0",
     "monolog/monolog": "^1.19",
     "guzzlehttp/guzzle": "^6.2",
     "phpunit/phpunit": "^5.5",
