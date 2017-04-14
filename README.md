@@ -2,7 +2,7 @@
 
 ## Changelog
 
-``1.3.3``
+``1.3.4``
   - bump minimum Symfony version to 2.8
   - many fixes
 
