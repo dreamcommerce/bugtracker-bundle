@@ -1,7 +1,10 @@
 # DreamCommerce BugTracker Bundle
 
-Changelog
----------
+## Changelog
+
+``1.3.3``
+  - bump minimum Symfony version to 2.8
+  - many fixes
 
 ``1.3.0``
   - added more tests
@@ -35,8 +38,62 @@ Changelog
    - improved jira collector
 
 
- Example config.yml:
-------------
+## Installation (Standalone)
+
+### Installing the lib/bundle
+
+Simply run assuming you have installed composer.phar or composer binary:
+
+``` bash
+$ composer require dreamcommerce/bugtracker-bundle
+```
+
+### Additional libraries
+
+If you want to enable other handlers than PSR-3 handler, you must also install additional packages:
+
+#### JIRA:
+
+``` bash
+$ composer require guzzlehttp/guzzle
+$ composer require zendframework/zend-json
+```
+
+#### Doctrine
+
+``` bash
+$ composer require doctrine/orm
+```
+
+#### Swiftmailer
+
+``` bash
+$ composer require swiftmailer/swiftmailer
+```
+
+## Installation (In Symfony 3 Application)
+
+### Enable the bundle
+
+Enable the bundle in the kernel:
+
+``` php
+// app/AppKernel.php
+
+public function registerBundles()
+{
+    $bundles = array(
+        //...
+            new DreamCommerce\Bundle\CommonBundle\DreamCommerceCommonBundle(),
+            new DreamCommerce\Bundle\BugTrackerBundle\DreamCommerceBugTrackerBundle(),
+        //...
+    );
+    return $bundles;
+}
+```
+
+## Configuration:
+
 ```yaml
  dream_commerce_bug_tracker:
      configuration:
@@ -85,8 +142,33 @@ Changelog
                   bar: 2           
 ```
 
-Example Doctrine model:
-------------
+## Usage
+
+```php
+        <?php
+        
+        use Psr\Log\LogLevel;
+        
+        // use all collectors
+        
+        try {
+            throw new RuntimeException();
+        } catch(Exception $exc) {
+            $this->get('bug_tracker')->handle($exc, LogLevel::ERROR, array('a' => 1, 'b' => 2, 'c' => 3, 'd' => new stdClass()));
+        }
+        
+        // use only one collector
+        
+        try {
+            throw new RuntimeException();
+        } catch(Exception $exc) {
+            $this->get('dream_commerce_bug_tracker.collector.custom_1')->handle($exc);
+        }
+```
+
+## Examples 
+
+### Doctrine:
 
 ```php
     <?php
@@ -102,9 +184,6 @@ Example Doctrine model:
 
 ```
 
-Example Doctrine ORM mapping:
-------------
-
 ```xml
     <?xml version="1.0" encoding="utf-8"?>
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
@@ -114,8 +193,8 @@ Example Doctrine ORM mapping:
     </doctrine-mapping>
 ```
 
-Example custom collector
-------------
+### Custom
+
 ```php
     <?php
     
@@ -168,28 +247,4 @@ Example custom collector
             $this->bar = $bar;
         }
     }
-```
-
-Example code:
-------------
-```php
-        <?php
-        
-        use Psr\Log\LogLevel;
-        
-        // use all collectors
-        
-        try {
-            throw new RuntimeException();
-        } catch(Exception $exc) {
-            $this->get('bug_tracker')->handle($exc, LogLevel::ERROR, array('a' => 1, 'b' => 2, 'c' => 3, 'd' => new stdClass()));
-        }
-        
-        // use only one collector
-        
-        try {
-            throw new RuntimeException();
-        } catch(Exception $exc) {
-            $this->get('dream_commerce_bug_tracker.collector.custom_1')->handle($exc);
-        }
 ```
