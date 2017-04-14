@@ -92,54 +92,112 @@ public function registerBundles()
 }
 ```
 
-## Configuration:
+## Minimal configuration
 
 ```yaml
- dream_commerce_bug_tracker:
-     configuration:
-         jira:
-             entry_point: "https://jira.example.com"
-             username: "login"
-             password: "*****"
-             project: "PROJECT_SYMBOL"
-             labels: [ "app_test" ]
-             assignee: "my.login"
-             
-         swiftmailer:
-             sender: "%mailer_user%"
-             recipients:
-                 - bugtracker@example.com
-                         
-     collectors:
-         psr3:
-             type: psr3
-             class: DreamCommerce\Component\BugTracker\Collector\Psr3Collector
-             priority: 100
-             options:
-                 ignore_exceptions:
-                     - \ErrorException
-         jira:
-             type: jira
-             class: DreamCommerce\Component\BugTracker\Collector\JiraCollector
-             level: error
-             priority: -100
-             
-         doctrine:
-             type: doctrine
-             class: DreamCommerce\Component\BugTracker\Collector\DoctrineCollector
-             options:
-                 model: AppBundle\Entity\UserError
- 
-         swiftmailer:
-             type: swiftmailer
-             class: DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollector
-             
-          custom_1:
-              type: custom
-              class: AppBundle\BugTracker\CustomCollector
-              options:
-                  foo: 1
-                  bar: 2           
+dream_commerce_bug_tracker:
+    configuration:
+        jira:
+            entry_point: "https://jira.example.com"
+            username: "login"
+            password: "*****"
+            project: "PROJECT_SYMBOL"
+        swiftmailer:
+            sender: "%mailer_user%"
+            recipients:
+                - bugtracker@example.com
+
+    collectors:
+        psr3:
+            type: psr3
+
+        jira:
+            type: jira
+            
+        doctrine:
+            type: doctrine
+            
+        swiftmailer:
+            type: swiftmailer
+```
+
+## Advanced configuration:
+
+```yaml
+dream_commerce_bug_tracker:
+    configuration:
+        base:
+            token_generator: dream_commerce_bug_tracker.token_generator
+            use_token: false
+            ignore_exceptions:
+                - 'RuntimeException'
+            exceptions:
+                - 'FooException'
+                - 'BarException'
+        jira:
+            entry_point: "https://jira.example.com"
+            username: "login"
+            password: "*****"
+            project: "PROJECT_SYMBOL"
+            labels: [ "app_test" ]
+            assignee: "my.login"
+            token_generator: dream_commerce_bug_tracker.token_generator
+            use_token: true
+            ignore_exceptions:
+                - 'RuntimeException1'
+            exceptions:
+                - 'FooException1'
+                - 'BarException1'
+          
+        doctrine:
+            model: AppBundle\Entity\UserError
+            token_generator: dream_commerce_bug_tracker.token_generator
+            use_token: true
+            
+        swiftmailer:
+            sender: "%mailer_user%"
+            recipients:
+                - bugtracker@example.com
+            ignore_exceptions:
+                - 'RuntimeException2'
+            exceptions:
+                - 'FooException2'
+                - 'BarException2'
+            token_generator: dream_commerce_bug_tracker.token_generator
+            use_token: false
+                        
+    collectors:
+        psr3:
+            type: psr3
+            class: DreamCommerce\Component\BugTracker\Collector\Psr3Collector
+            priority: 100
+            options:
+                ignore_exceptions:
+                    - 'ErrorException'
+                exceptions:
+                    - 'MyException'
+        jira:
+            type: jira
+            class: DreamCommerce\Component\BugTracker\Collector\JiraCollector
+            level: error
+            priority: -100
+            
+        doctrine:
+            type: doctrine
+            class: DreamCommerce\Component\BugTracker\Collector\DoctrineCollector
+            options:
+                model: AppBundle\Entity\UserError
+
+        swiftmailer:
+            type: swiftmailer
+            class: DreamCommerce\Component\BugTracker\Collector\SwiftMailerCollector
+            
+        custom_1:
+            type: custom
+            class: AppBundle\BugTracker\CustomCollector
+            options:
+                foo: 1
+                bar: 2           
 ```
 
 ## Usage
