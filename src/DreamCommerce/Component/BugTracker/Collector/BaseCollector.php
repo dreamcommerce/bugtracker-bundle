@@ -11,6 +11,7 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
+use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChainInterface;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 use DreamCommerce\Component\Common\Exception\ContextInterface;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;
@@ -53,6 +54,11 @@ abstract class BaseCollector implements BaseCollectorInterface
      * @var TokenGeneratorInterface|null
      */
     private $_tokenGenerator;
+
+    /**
+     * @var CollectorExtensionChainInterface|null
+     */
+    private $_extensionChain;
 
     /**
      * @param array $options
@@ -122,7 +128,9 @@ abstract class BaseCollector implements BaseCollectorInterface
         $level = strtolower($level);
         Assert::oneOf($level, BugHandler::getSupportedLogLevels());
 
-        $context = array_merge($context, $this->getContext($exception));
+        $additionalContext = ($this->_extensionChain) ? $this->_extensionChain->getAdditionalContext($exception) : [];
+
+        $context = array_merge($context, $this->getContext($exception), $additionalContext);
 
         if (!$this->hasSupportException($exception, $level, $context)) {
             return false;
@@ -295,6 +303,11 @@ abstract class BaseCollector implements BaseCollectorInterface
         }
 
         return $context;
+    }
+
+    public function setExtensionChain(CollectorExtensionChainInterface $extensionChain)
+    {
+        $this->_extensionChain = $extensionChain;
     }
 
     /**

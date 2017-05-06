@@ -10,6 +10,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChainInterface;
 use InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -35,6 +36,12 @@ interface CollectorInterface
      * @throws InvalidArgumentException
      */
     public function handle(Throwable $exception, string $level = LogLevel::ERROR, array $context = array());
+
+    /**
+     * @param CollectorExtensionChainInterface $extensionChain
+     * @return null
+     */
+    public function setExtensionChain(CollectorExtensionChainInterface $extensionChain);
 
     /**
      * @return bool

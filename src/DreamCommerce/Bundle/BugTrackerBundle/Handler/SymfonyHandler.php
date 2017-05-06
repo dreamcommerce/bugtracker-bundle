@@ -23,15 +23,9 @@ final class SymfonyHandler
      */
     private $_collector;
 
-    /**
-     * @var CollectorExtensionChainInterface
-     */
-    private $_extensionChain;
-
-    public function __construct(CollectorInterface $collector, CollectorExtensionChainInterface $extensionChain)
+    public function __construct(CollectorInterface $collector)
     {
         $this->_collector       = $collector;
-        $this->_extensionChain  = $extensionChain;
     }
 
     /**
@@ -60,9 +54,7 @@ final class SymfonyHandler
     public function handleConsoleException(ConsoleExceptionEvent $event)
     {
         $exception = $event->getException();
-
-        $additionalContext = $this->_extensionChain->getAdditionalContext($exception);
-        $this->getCollector()->handle($exception, LogLevel::ERROR, $additionalContext);
+        $this->getCollector()->handle($exception);
     }
 
     /**
@@ -71,8 +63,6 @@ final class SymfonyHandler
     public function handleKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-
-        $additionalContext = $this->_extensionChain->getAdditionalContext($exception);
-        $this->getCollector()->handle($exception, LogLevel::ERROR, $additionalContext);
+        $this->getCollector()->handle($exception);
     }
 }
