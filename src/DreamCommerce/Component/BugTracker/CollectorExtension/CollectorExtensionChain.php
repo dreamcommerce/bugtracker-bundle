@@ -43,4 +43,14 @@ class CollectorExtensionChain implements CollectorExtensionChainInterface
 
         return $additionalContext;
     }
+
+    /**
+     * Get information how much extensions is registered
+     *
+     * @return int
+     */
+    public function countRegisteredExtensions(): int
+    {
+        return count($this->registeredExtensions);
+    }
 }
