@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Reference;
 class CollectorExtensionCompilerPass implements CompilerPassInterface
 {
     const CHAIN_DEFINITION_NAME = 'dream_commerce_bug_tracker.collector_extension_chain';
-    const CONTEXT_EXTENSION_TAG = 'dream_commerce_bug_tracker.collector_extension_context';
+    const EXTENSION_TAG = 'dream_commerce_bug_tracker.collector_extension';
 
     public function process(ContainerBuilder $container)
     {
@@ -16,16 +16,14 @@ class CollectorExtensionCompilerPass implements CompilerPassInterface
             return;
         }
 
-        $definition = $container->getDefinition(self::CHAIN_DEFINITION_NAME);
-        $taggedServices = $container->findTaggedServiceIds(self::CONTEXT_EXTENSION_TAG);
+        $chainDefinition = $container->getDefinition(self::CHAIN_DEFINITION_NAME);
+        $taggedServices = $container->findTaggedServiceIds(self::EXTENSION_TAG);
 
         foreach ($taggedServices as $id => $tags) {
-            foreach ($tags as $attributes) {
-                $definition->addMethodCall('addTransport', array(
-                    new Reference($id),
-                    $attributes["alias"]
-                ));
-            }
+            $chainDefinition->addMethodCall('registerExtension', [
+                $id,
+                new Reference($id)
+            ]);
         }
     }
 }

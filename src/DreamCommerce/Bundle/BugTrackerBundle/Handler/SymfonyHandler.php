@@ -11,6 +11,8 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle\Handler;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
+use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChainInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
@@ -21,9 +23,15 @@ final class SymfonyHandler
      */
     private $_collector;
 
-    public function __construct(CollectorInterface $collector)
+    /**
+     * @var CollectorExtensionChainInterface
+     */
+    private $_extensionChain;
+
+    public function __construct(CollectorInterface $collector, CollectorExtensionChainInterface $extensionChain)
     {
-        $this->_collector = $collector;
+        $this->_collector       = $collector;
+        $this->_extensionChain  = $extensionChain;
     }
 
     /**
@@ -52,7 +60,9 @@ final class SymfonyHandler
     public function handleConsoleException(ConsoleExceptionEvent $event)
     {
         $exception = $event->getException();
-        $this->getCollector()->handle($exception);
+
+        $additionalContext = $this->_extensionChain->getAdditionalContext($exception);
+        $this->getCollector()->handle($exception, LogLevel::ERROR, $additionalContext);
     }
 
     /**
@@ -61,6 +71,8 @@ final class SymfonyHandler
     public function handleKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        $this->getCollector()->handle($exception);
+
+        $additionalContext = $this->_extensionChain->getAdditionalContext($exception);
+        $this->getCollector()->handle($exception, LogLevel::ERROR, $additionalContext);
     }
 }

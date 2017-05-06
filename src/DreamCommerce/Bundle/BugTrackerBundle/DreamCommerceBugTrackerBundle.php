@@ -11,7 +11,7 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorCompilerPass;
-use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\ExtensionCompilerPass;
+use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorExtensionCompilerPass;
 use DreamCommerce\Component\BugTracker\Doctrine\DBAL\Types\LogLevelEnumType;
 use DreamCommerce\Component\BugTracker\Doctrine\DBAL\Types\LogLevelUInt16Type;
 use DreamCommerce\Component\BugTracker\Doctrine\DBAL\Types\LogLevelUInt8Type;
@@ -56,7 +56,7 @@ final class DreamCommerceBugTrackerBundle extends Bundle
         $this->addDoctrinePass($container);
 
         $container->addCompilerPass(new CollectorCompilerPass(), PassConfig::TYPE_BEFORE_REMOVING);
-        $container->addCompilerPass(new ExtensionCompilerPass());
+        $container->addCompilerPass(new CollectorExtensionCompilerPass());
     }
 
     /**
