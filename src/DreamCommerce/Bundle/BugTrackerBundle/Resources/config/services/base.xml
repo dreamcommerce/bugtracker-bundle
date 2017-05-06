@@ -7,6 +7,7 @@
         <parameter key="dream_commerce_bug_tracker.symfony_handler.class">DreamCommerce\Bundle\BugTrackerBundle\Handler\SymfonyHandler</parameter>
         <parameter key="dream_commerce_bug_tracker.collector.class">DreamCommerce\Component\BugTracker\Collector\QueueCollector</parameter>
         <parameter key="dream_commerce_bug_tracker.token_generator.class">DreamCommerce\Component\BugTracker\Generator\ContextTokenGenerator</parameter>
+        <parameter key="dream_commerce_bug_tracker.collector_extension_chain.class">DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChain</parameter>
     </parameters>
 
     <services>
@@ -19,5 +20,7 @@
         <service id="dream_commerce_bug_tracker.token_generator" class="%dream_commerce_bug_tracker.token_generator.class%" />
 
         <service id="bug_tracker" alias="dream_commerce_bug_tracker.collector_queue" />
+
+        <service id="dream_commerce_bug_tracker.collector_extension_chain" class="%dream_commerce_bug_tracker.collector_extension_chain.class%" />
     </services>
 </container>
