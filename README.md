@@ -306,3 +306,60 @@ dream_commerce_bug_tracker:
         }
     }
 ```
+
+
+## Extending
+Bug Tracker can inject additional context to exceptions from other packages without modifying them. These context is visible in logs and it can help diagnose errors.
+It can be realise by simple service implements suitable interface with special tag.
+For more information look for below examples.
+
+First you need to create service that implements **ContextCollectorExtensionInterface** interface
+Class that implement ContextCollectorExtensionInterface need one method called **getAdditionalContext**
+For details look to the interface file
+```php
+    <?php
+    namespace AppBundle\BugTracker\Extension;
+    
+    use DreamCommerce\Component\BugTracker\CollectorExtension\ContextCollectorExtensionInterface;
+    use Symfony\Component\HttpKernel\Exception\HttpException;
+    use Symfony\Component\HttpFoundation\RequestStack;
+    
+    class ContextCollectorExtension implements ContextCollectorExtensionInterface
+    {
+        /**
+         * @var RequestStack 
+         */
+        private $requestStack;
+        
+        public function __construct(RequestStack $requestStack) {
+            $this->requestStack = $requestStack;
+        }
+        
+        public function getAdditionalContext(\Throwable $throwable): array
+        {
+            if ($throwable instanceof HttpException) {
+                $request = $this->requestStack->getMasterRequest();
+                
+                return [
+                    'query'     => serialize($request->query->all()),
+                    'client_ip' => $request->server->get('REMOTE_ADDR')
+                ];
+            }
+            
+            return [];
+        }
+    }
+```
+
+Next step is create our service definition with tag **dream_commerce_bug_tracker.collector_extension**
+```xml
+    ...
+    <service id="app.bug_tracker_extension" class="AppBundle\BugTracker\Extension\ContextCollectorExtension">
+        <argument type="service" id="request_stack" />
+
+        <tag name="dream_commerce_bug_tracker.collector_extension" />
+    </service>
+    ...
+```
+
+Now whenever HttpException will be threw we will see our additional information in log files.
