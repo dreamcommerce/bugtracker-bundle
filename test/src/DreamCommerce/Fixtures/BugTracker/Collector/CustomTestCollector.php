@@ -12,6 +12,7 @@ namespace DreamCommerce\Fixtures\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
 use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChainInterface;
+use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionQueueInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 
@@ -32,7 +33,7 @@ class CustomTestCollector implements CollectorInterface
         return false;
     }
 
-    public function setExtensionChain(CollectorExtensionChainInterface $extensionChain)
+    public function setExtensionQueue(CollectorExtensionQueueInterface $extensionChain)
     {
         // empty
     }
