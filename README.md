@@ -340,6 +340,10 @@ For details look to the interface file
             if ($throwable instanceof HttpException) {
                 $request = $this->requestStack->getMasterRequest();
                 
+                if ($request === null) {
+                    return [];
+                }
+                
                 return [
                     'query'     => serialize($request->query->all()),
                     'client_ip' => $request->server->get('REMOTE_ADDR')
@@ -363,3 +367,36 @@ Next step is create our service definition with tag **dream_commerce_bug_tracker
 ```
 
 Now whenever HttpException will be threw we will see our additional information in log files.
+
+If you want you can use our embeded extensions:
+* **ClientIpContextExtension** - append to log client ip
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\ClientIpContextExtension">
+    <argument type="service" id="request_stack" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+* **QueryDataContextExtension** - append to log parameters stored in $_GET variable
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\QueryDataContextExtension">
+    <argument type="service" id="request_stack" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+* **RequestDataContextExtension** - append to log parameters stored in $_POST variable
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\RequestDataContextExtension">
+    <argument type="service" id="request_stack" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+* **UserInfoContextExtension** - append to log information from security component about current user(login, role, credentials etc.)
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\UserInfoContextExtension">
+    <argument type="service" id="security.token_storage" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
