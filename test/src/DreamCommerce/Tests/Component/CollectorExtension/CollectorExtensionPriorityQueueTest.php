@@ -24,6 +24,22 @@ class CollectorExtensionPriorityQueueTest extends TestCase
         $this->assertEquals(3, $collectorExtensionQueue->count());
     }
 
+    public function testPriority()
+    {
+        $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
+        $collectorExtensionQueue->registerExtension('a', $this->getStubForContextCollectorExtensionInterface(['a']), 3);
+        $collectorExtensionQueue->registerExtension('b', $this->getStubForContextCollectorExtensionInterface(['b']), 2);
+        $collectorExtensionQueue->registerExtension('c', $this->getStubForContextCollectorExtensionInterface(['c']), 1);
+        $this->assertEquals(['a', 'b', 'c'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
+
+
+        $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
+        $collectorExtensionQueue->registerExtension('a', $this->getStubForContextCollectorExtensionInterface(['a']));
+        $collectorExtensionQueue->registerExtension('b', $this->getStubForContextCollectorExtensionInterface(['b']));
+        $collectorExtensionQueue->registerExtension('c', $this->getStubForContextCollectorExtensionInterface(['c']));
+        $this->assertEquals(['c', 'b', 'a'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
+    }
+
     public function testRemovingExtensions()
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
@@ -101,19 +117,19 @@ class CollectorExtensionPriorityQueueTest extends TestCase
         $collectorExtensionQueue->registerExtension('ext1', $this->getStubForContextCollectorExtensionInterface([
             'a' => 'a',
             'b' => 'b'
-        ]));
+        ]), 3);
         $this->assertEquals(['a' => 'a', 'b' => 'b'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
-
 
         $collectorExtensionQueue->registerExtension('ext2', $this->getStubForContextCollectorExtensionInterface([
             'c' => 'c',
             'a' => 'd'
-        ]));
-        $this->assertEquals(['b' => 'b', 'c' => 'c', 'a' => 'd'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
+        ]), 1);
 
+        $this->assertEquals(['b' => 'b', 'c' => 'c', 'a' => 'd'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
         /** Ignore because stub implements only CollectorExtensionInterface */
         $collectorExtensionQueue->registerExtension('ext3', $this->getStubForCollectorExtensionInterface());
         $this->assertEquals(['b' => 'b', 'c' => 'c', 'a' => 'd'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
+
     }
 
     /****************
