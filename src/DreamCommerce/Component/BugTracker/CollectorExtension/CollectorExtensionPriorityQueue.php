@@ -42,8 +42,12 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
      * @param CollectorExtensionInterface $extension
      * @param int $priority
      */
-    public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority = 0)
+    public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority = -1)
     {
+        if ($priority < 0) {
+            $priority = $this->getMaxPriority() + 1;
+        }
+
         $this->remove($name);
 
         $this->insert([
@@ -125,5 +129,28 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
         }
 
         return $additionalContext;
+    }
+
+    /**
+     * Return max priority that is set
+     *
+     * @return int
+     */
+    private function getMaxPriority() : int
+    {
+        if ($this->isEmpty()) {
+            return 0;
+        }
+
+        $queue = clone $this;
+        $queue->setExtractFlags(SplPriorityQueue::EXTR_PRIORITY);
+        $maxPriority = 0;
+        foreach ($queue as $priority) {
+            if ($priority > $maxPriority) {
+                $maxPriority = $priority;
+            }
+        }
+
+        return $maxPriority;
     }
 }
