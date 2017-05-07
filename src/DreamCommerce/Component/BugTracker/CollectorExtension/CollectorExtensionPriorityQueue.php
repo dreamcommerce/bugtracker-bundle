@@ -29,6 +29,10 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
             throw new InvalidCollectorExtensionTypeException($value[self::OBJ_KEY]);
         }
 
+        if ($this->has($value[self::NAME_KEY])) {
+            throw new NotUniqueCollectorExtension($value[self::NAME_KEY]);
+        }
+
         parent::insert($value, $priority);
     }
 
@@ -40,11 +44,44 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
      */
     public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority = 0)
     {
+        $this->remove($name);
+
         $this->insert([
             self::NAME_KEY => $name,
             self::OBJ_KEY  => $extension
         ], $priority);
     }
+
+    /**
+     * Remove extension called $name from queue and return operation status
+     * @param $name
+     * @return bool
+     */
+    public function remove(string $name): bool
+    {
+        if (!$this->has($name)) {
+            return false;
+        }
+
+        $tmpExtensions = [];
+        $found = false;
+
+        $this->setExtractFlags(self::EXTR_BOTH);
+        foreach ($this as $extension) {
+            if (isset($extension['data'][self::NAME_KEY]) && $extension['data'][self::NAME_KEY] == $name) {
+                $found = true;
+                continue;
+            }
+            $tmpExtensions[] = $extension;
+        }
+
+        foreach ($tmpExtensions as $extension) {
+            $this->insert($extension['data'], $extension['priority']);
+        }
+
+        return $found;
+    }
+
 
     /**
      * Check if extension is registered
@@ -54,7 +91,7 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
      */
     public function has($name): bool
     {
-        foreach ($this as $extension) {
+        foreach (clone $this as $extension) {
             if (isset($extension[self::NAME_KEY]) && $extension[self::NAME_KEY] == $name) {
                 return true;
             }
@@ -74,12 +111,17 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
         $additionalContext = [];
 
         /** @var ContextCollectorExtensionInterface $extension */
-        foreach ($this as $extension) {
-            if (!($extension instanceof ContextCollectorExtensionInterface)) {
+        foreach (clone $this as $extension) {
+            if (!isset($extension[self::OBJ_KEY])) {
                 continue;
             }
 
-            $additionalContext = array_merge($additionalContext, $extension->getAdditionalContext($throwable));
+            $extensionObj = $extension[self::OBJ_KEY];
+            if (!($extensionObj instanceof ContextCollectorExtensionInterface)) {
+                continue;
+            }
+
+            $additionalContext = array_merge($additionalContext, $extensionObj->getAdditionalContext($throwable));
         }
 
         return $additionalContext;

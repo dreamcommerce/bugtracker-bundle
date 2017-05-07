@@ -14,6 +14,12 @@ interface CollectorExtensionQueueInterface extends \Countable
      */
     public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority=0);
 
+    /**
+     * Remove extension called $name from queue and return operation status
+     * @param $name
+     * @return bool
+     */
+    public function remove(string $name): bool;
 
     /**
      * Check if extension is registered
