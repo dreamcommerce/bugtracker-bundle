@@ -1,14 +1,38 @@
 <?php
 namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
-use Exception;
 
-class NotUniqueCollectorExtension extends Exception
+use DreamCommerce\Component\Common\Exception\NotUniqueException;
+
+class NotUniqueCollectorExtension extends NotUniqueException
 {
-    public function __construct(string $extensionName)
+    const CODE_NOT_UNIQUE_EXTENSION = 0xEE;
+    /**
+     * @var string
+     */
+    protected $extensionName;
+
+
+    /**
+     * @param string $extensionName
+     * @param \Throwable $previousException
+     * @return NotUniqueCollectorExtension
+     */
+    public static function forExtension(string $extensionName, \Throwable $previousException = null): NotUniqueCollectorExtension
     {
-        parent::__construct(
-            sprintf("Extension called %s already is registered. Name must be unique", $extensionName)
-        );
+        $exception = new static('The parameter must be unique', static::CODE_NOT_UNIQUE_EXTENSION, $previousException);
+        $exception->extensionName = $extensionName;
+
+        return $exception;
     }
+
+    /**
+     * @return string
+     */
+    public function getExtensionName(): string
+    {
+        return $this->extensionName;
+    }
+
+
 }

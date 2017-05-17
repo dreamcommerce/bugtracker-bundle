@@ -30,7 +30,7 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
         }
 
         if ($this->has($value[self::NAME_KEY])) {
-            throw new NotUniqueCollectorExtension($value[self::NAME_KEY]);
+            throw NotUniqueCollectorExtension::forExtension($value[self::NAME_KEY]);
         }
 
         parent::insert($value, $priority);
