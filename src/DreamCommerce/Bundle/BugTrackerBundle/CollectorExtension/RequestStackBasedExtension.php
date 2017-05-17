@@ -1,5 +1,5 @@
 <?php
-namespace DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension;
+namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
 
 use Symfony\Component\HttpFoundation\RequestStack;

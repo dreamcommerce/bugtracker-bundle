@@ -1,5 +1,5 @@
 <?php
-namespace DreamCommerce\Component\BugTracker\CollectorExtension;
+namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
 
 use PHPUnit\Framework\TestCase;
@@ -83,7 +83,7 @@ class CollectorExtensionPriorityQueueTest extends TestCase
 
     /**
      * @dataProvider invalidObjectDataForInsert
-     * @expectedException \DreamCommerce\Component\BugTracker\CollectorExtension\InvalidCollectorExtensionTypeException
+     * @expectedException \DreamCommerce\Component\BugTracker\Collector\Extension\InvalidCollectorExtensionTypeException
      */
     public function testInsertThrowsInvalidCollectorExtensionTypeException($name, $object)
     {
@@ -95,7 +95,7 @@ class CollectorExtensionPriorityQueueTest extends TestCase
     }
 
     /**
-     * @expectedException \DreamCommerce\Component\BugTracker\CollectorExtension\NotUniqueCollectorExtension
+     * @expectedException \DreamCommerce\Component\BugTracker\Collector\Extension\NotUniqueCollectorExtension
      */
     public function testInsertThrowsNotUniqueCollectorExtension()
     {

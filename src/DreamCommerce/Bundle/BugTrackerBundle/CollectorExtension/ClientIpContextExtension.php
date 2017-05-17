@@ -1,9 +1,9 @@
 <?php
-namespace DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension;
+namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
 
 
-use DreamCommerce\Component\BugTracker\CollectorExtension\ContextCollectorExtensionInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ClientIpContextExtension extends RequestStackBasedExtension implements ContextCollectorExtensionInterface

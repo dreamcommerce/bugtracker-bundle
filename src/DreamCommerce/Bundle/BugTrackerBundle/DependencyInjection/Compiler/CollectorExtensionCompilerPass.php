@@ -1,8 +1,8 @@
 <?php
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
-use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChainInterface;
-use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionQueueInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionChainInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;

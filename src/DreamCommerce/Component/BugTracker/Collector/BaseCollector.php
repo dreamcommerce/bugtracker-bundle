@@ -11,7 +11,7 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
-use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionQueueInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 use DreamCommerce\Component\Common\Exception\ContextInterface;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;

@@ -11,7 +11,7 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle\Handler;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
-use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionChainInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionChainInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;

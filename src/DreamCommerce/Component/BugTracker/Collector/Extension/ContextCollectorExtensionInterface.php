@@ -1,5 +1,5 @@
 <?php
-namespace DreamCommerce\Component\BugTracker\CollectorExtension;
+namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
 
 interface ContextCollectorExtensionInterface extends CollectorExtensionInterface

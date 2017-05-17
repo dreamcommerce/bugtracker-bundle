@@ -3,9 +3,9 @@ namespace DreamCommerce\Tests\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorExtensionCompilerPass;
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\DreamCommerceBugTrackerExtension;
-use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionPriorityQueue;
-use DreamCommerce\Component\BugTracker\CollectorExtension\CollectorExtensionQueueInterface;
-use DreamCommerce\Component\BugTracker\CollectorExtension\ContextCollectorExtensionInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionPriorityQueue;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
