@@ -12,7 +12,7 @@ class QueryDataContextExtension extends RequestStackBasedExtension
         $request = $this->requestStack->getMasterRequest();
 
         if ($request === null) {
-            return ['b'];
+            return [];
         }
 
         return [

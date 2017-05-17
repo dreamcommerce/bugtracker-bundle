@@ -13,7 +13,7 @@ class ClientIpContextExtension extends RequestStackBasedExtension
         $request = $this->requestStack->getMasterRequest();
 
         if ($request === null) {
-            return ['a'];
+            return [];
         }
 
         return [

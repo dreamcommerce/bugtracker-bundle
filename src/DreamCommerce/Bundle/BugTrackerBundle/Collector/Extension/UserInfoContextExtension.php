@@ -24,7 +24,7 @@ class UserInfoContextExtension implements ContextCollectorExtensionInterface
         $token = $this->tokenStorage->getToken();
 
         if ($token === null) {
-            return ['c'];
+            return [];
         }
 
         return [
