@@ -38,12 +38,6 @@ interface CollectorInterface
     public function handle(Throwable $exception, string $level = LogLevel::ERROR, array $context = array());
 
     /**
-     * @param CollectorExtensionQueueInterface $extensionChain
-     * @return null
-     */
-    public function setExtensionQueue(CollectorExtensionQueueInterface $extensionChain);
-
-    /**
      * @return bool
      */
     public function isCollected(): bool;

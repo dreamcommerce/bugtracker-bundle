@@ -11,6 +11,7 @@
 namespace DreamCommerce\Component\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\BugHandler;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtendable;
 use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
 use DreamCommerce\Component\BugTracker\Generator\TokenGeneratorInterface;
 use DreamCommerce\Component\Common\Exception\ContextInterface;
@@ -21,7 +22,7 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Webmozart\Assert\Assert;
 
-abstract class BaseCollector implements BaseCollectorInterface
+abstract class BaseCollector implements BaseCollectorInterface, CollectorExtendable
 {
     use ArrayableTrait;
 
@@ -305,7 +306,7 @@ abstract class BaseCollector implements BaseCollectorInterface
         return $context;
     }
 
-    public function setExtensionQueue(CollectorExtensionQueueInterface $extensionChain)
+    public function setExtensionQueue(CollectorExtensionQueueInterface $extensionChain = null)
     {
         $this->_extensionChain = $extensionChain;
     }

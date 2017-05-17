@@ -32,9 +32,4 @@ class CustomTestCollector implements CollectorInterface
     {
         return false;
     }
-
-    public function setExtensionQueue(CollectorExtensionQueueInterface $extensionChain)
-    {
-        // empty
-    }
 }
