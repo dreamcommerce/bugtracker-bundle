@@ -2,10 +2,9 @@
 namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
 
-use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class QueryDataContextExtension extends RequestStackBasedExtension implements ContextCollectorExtensionInterface
+class QueryDataContextExtension extends RequestStackBasedExtension
 {
     public function getAdditionalContext(\Throwable $throwable): array
     {

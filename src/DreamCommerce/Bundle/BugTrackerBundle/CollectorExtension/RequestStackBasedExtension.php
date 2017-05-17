@@ -4,7 +4,7 @@ namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 
-abstract class RequestStackBasedExtension
+abstract class RequestStackBasedExtension implements ContextCollectorExtensionInterface
 {
     /**
      * @var RequestStack
