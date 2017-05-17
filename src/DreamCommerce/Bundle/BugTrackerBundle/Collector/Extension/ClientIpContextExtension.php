@@ -17,7 +17,7 @@ class ClientIpContextExtension extends RequestStackBasedExtension
         }
 
         return [
-            'client_ip' => $request->server->get(['REMOTE_ADDR'], ''),
+            'client_ip' => $request->getClientIps(),
         ];
     }
 }

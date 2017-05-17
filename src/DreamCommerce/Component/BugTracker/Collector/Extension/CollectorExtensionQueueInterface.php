@@ -4,6 +4,8 @@ namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
 interface CollectorExtensionQueueInterface extends \Countable
 {
+    const DEFAULT_PRIORITY = 0;
+
     const TAG_NAME = 'dream_commerce_bug_tracker.collector_extension';
 
     /**

@@ -15,7 +15,7 @@ class RequestDataContextExtension extends RequestStackBasedExtension
         }
 
         return [
-            'query' => $request->request->all()
+            'request' => $request->request->all()
         ];
     }
 }

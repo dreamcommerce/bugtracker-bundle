@@ -21,7 +21,7 @@ class CollectorExtensionCompilerPass implements CompilerPassInterface
         $taggedServices = $container->findTaggedServiceIds(CollectorExtensionQueueInterface::TAG_NAME);
 
         foreach ($taggedServices as $id => $tags) {
-            $priority = (isset($tags[0]['priority'])) ? (int)$tags[0]['priority'] : -1;
+            $priority = (isset($tags[0]['priority'])) ? (int)$tags[0]['priority'] : CollectorExtensionQueueInterface::DEFAULT_PRIORITY;
             $chainDefinition->addMethodCall('registerExtension', [
                 $id,
                 new Reference($id),
