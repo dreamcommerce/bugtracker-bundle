@@ -2,58 +2,55 @@
 namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
 use SplPriorityQueue;
+use DreamCommerce\Component\Common\Model\TypedSplPriorityQueue;
 
-class CollectorExtensionPriorityQueue extends SplPriorityQueue implements CollectorExtensionQueueInterface
+class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements CollectorExtensionQueueInterface
 {
-    const   NAME_KEY = 'name',
-            OBJ_KEY  = 'object'
+    const   CLASS_KEY       = 'class',
+            PRIORITY_KEY    = 'priority'
     ;
 
     /**
-     * {@inheritdoc}
+     * Define expected object type
+     *
+     * @var string
      */
-    public function insert($value, $priority)
+    protected $expectedObjectType = CollectorExtensionInterface::class;
+
+    /**
+     * @var array
+     */
+    private $registeredExtensions = [];
+
+    public function insert($object, $priority)
     {
-        if (!is_array($value) || !isset($value[self::NAME_KEY]) || !isset($value[self::OBJ_KEY])) {
-            throw new \InvalidArgumentException(
-                sprintf("%s::%s need %s and %s keys in value array that contains extension name and extension object",
-                    self::class,
-                    __METHOD__,
-                    self::NAME_KEY,
-                    self::OBJ_KEY
-                )
-            );
-        }
+        parent::insert($object, $priority);
 
-        if (!is_object($value[self::OBJ_KEY]) || is_object($value[self::OBJ_KEY]) && !($value[self::OBJ_KEY] instanceof CollectorExtensionInterface)) {
-            throw new InvalidCollectorExtensionTypeException($value[self::OBJ_KEY]);
+        if (!$this->isUnique($object, $priority)) {
+            throw NotUniqueCollectorExtension::forExtension(get_class($object));
         }
-
-        if ($this->has($value[self::NAME_KEY])) {
-            throw NotUniqueCollectorExtension::forExtension($value[self::NAME_KEY]);
-        }
-
-        parent::insert($value, $priority);
     }
 
     /**
      * Register new extension for bug tracker
      *
+     * @param string $name
      * @param CollectorExtensionInterface $extension
      * @param int $priority
      */
-    public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority = -1)
+    public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority = 0)
     {
         if ($priority < 0) {
             $priority = $this->getMaxPriority() + 1;
         }
-
         $this->remove($name);
 
-        $this->insert([
-            self::NAME_KEY => $name,
-            self::OBJ_KEY  => $extension
-        ], $priority);
+        $this->registeredExtensions[$name] = [
+            self::CLASS_KEY     => get_class($extension),
+            self::PRIORITY_KEY  => $priority
+        ];
+
+        $this->insert($extension, $priority);
     }
 
     /**
@@ -67,13 +64,19 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
             return false;
         }
 
+        $removingExtension = $this->registeredExtensions[$name];
+        unset($this->registeredExtensions[$name]);
+
         $tmpExtensions = [];
-        $found = false;
 
         $this->setExtractFlags(self::EXTR_BOTH);
         foreach ($this as $extension) {
-            if (isset($extension['data'][self::NAME_KEY]) && $extension['data'][self::NAME_KEY] == $name) {
-                $found = true;
+            if (!is_object($extension['data'])) {
+                continue;
+            }
+            if (get_class($extension['data']) !== $removingExtension[self::CLASS_KEY] ||
+                $extension['priority'] !== $removingExtension[self::PRIORITY_KEY]
+            ) {
                 continue;
             }
             $tmpExtensions[] = $extension;
@@ -83,9 +86,8 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
             $this->insert($extension['data'], $extension['priority']);
         }
 
-        return $found;
+        return true;
     }
-
 
     /**
      * Check if extension is registered
@@ -95,13 +97,7 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
      */
     public function has($name): bool
     {
-        foreach (clone $this as $extension) {
-            if (isset($extension[self::NAME_KEY]) && $extension[self::NAME_KEY] == $name) {
-                return true;
-            }
-        }
-
-        return false;
+        return (isset($this->registeredExtensions[$name]));
     }
 
     /**
@@ -114,13 +110,8 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
     {
         $additionalContext = [];
 
-        /** @var ContextCollectorExtensionInterface $extension */
-        foreach (clone $this as $extension) {
-            if (!isset($extension[self::OBJ_KEY])) {
-                continue;
-            }
-
-            $extensionObj = $extension[self::OBJ_KEY];
+        /** @var ContextCollectorExtensionInterface $extensionObj */
+        foreach (clone $this as $extensionObj) {
             if (!($extensionObj instanceof ContextCollectorExtensionInterface)) {
                 continue;
             }
@@ -152,5 +143,33 @@ class CollectorExtensionPriorityQueue extends SplPriorityQueue implements Collec
         }
 
         return $maxPriority;
+    }
+
+    /**
+     * Test if given object is unique
+     *
+     * @param CollectorExtensionInterface $object
+     * @param int $priority
+     * @return bool
+     */
+    private function isUnique(CollectorExtensionInterface $object, int $priority): bool
+    {
+        $queue = clone $this;
+        $queue->setExtractFlags(self::EXTR_BOTH);
+
+        foreach ($queue as $extension) {
+            var_dump(get_class($object));
+            var_dump(get_class($extension['data']));
+            var_dump($priority);
+            var_dump($extension['priority']);
+            echo PHP_EOL;
+            if (is_object($extension['data']) && get_class($extension['data']) === get_class($object) &&
+                (int)$extension['priority'] === (int)$priority
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
