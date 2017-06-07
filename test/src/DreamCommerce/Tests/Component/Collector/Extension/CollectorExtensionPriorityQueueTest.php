@@ -6,93 +6,88 @@ use PHPUnit\Framework\TestCase;
 
 class CollectorExtensionPriorityQueueTest extends TestCase
 {
+    /**
+     * @var int
+     */
+    private static $unique = 0;
+
     public function testRegisteringExtensions()
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
         $this->assertEquals(0, $collectorExtensionQueue->count());
 
-        $collectorExtensionQueue->registerExtension('extension1', $this->getDummyForCollectorExtensionInterface());
+        $collectorExtensionQueue->registerExtension($this->getDummyForCollectorExtensionInterface('1'));
         $this->assertEquals(1, $collectorExtensionQueue->count());
 
-        $collectorExtensionQueue->registerExtension('extension2', $this->getDummyForCollectorExtensionInterface());
+        $collectorExtensionQueue->registerExtension($this->getDummyForCollectorExtensionInterface('2'));
         $this->assertEquals(2, $collectorExtensionQueue->count());
 
-        $collectorExtensionQueue->registerExtension('extension3', $this->getDummyForContextCollectorExtensionInterface());
+        $collectorExtensionQueue->registerExtension($this->getDummyForContextCollectorExtensionInterface('3'));
         $this->assertEquals(3, $collectorExtensionQueue->count());
 
-        $collectorExtensionQueue->registerExtension('extension1', $this->getDummyForContextCollectorExtensionInterface());
+        $collectorExtensionQueue->registerExtension($this->getDummyForContextCollectorExtensionInterface('3'));
         $this->assertEquals(3, $collectorExtensionQueue->count());
     }
 
     public function testPriority()
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-        $collectorExtensionQueue->registerExtension('a', $this->getStubForContextCollectorExtensionInterface(['a']), 3);
-        $collectorExtensionQueue->registerExtension('b', $this->getStubForContextCollectorExtensionInterface(['b']), 2);
-        $collectorExtensionQueue->registerExtension('c', $this->getStubForContextCollectorExtensionInterface(['c']), 1);
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface(['a']), 3);
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface(['b']), 2);
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface(['c']), 1);
         $this->assertEquals(['a', 'b', 'c'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
 
 
-//        $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-//        $collectorExtensionQueue->registerExtension('a', $this->getStubForContextCollectorExtensionInterface(['a']));
-//        $collectorExtensionQueue->registerExtension('b', $this->getStubForContextCollectorExtensionInterface(['b']));
-//        $collectorExtensionQueue->registerExtension('c', $this->getStubForContextCollectorExtensionInterface(['c']));
-//        $this->assertEquals(['a', 'b', 'c'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
+        $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface(['a']));
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface(['b']));
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface(['c']));
+        $this->assertEquals(['c', 'b', 'a'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
     }
 
     public function testRemovingExtensions()
     {
+        $ext1 = $this->getStubForContextCollectorExtensionInterface([]);
+        $ext2 = $this->getStubForContextCollectorExtensionInterface([]);
+        $ext3 = $this->getStubForContextCollectorExtensionInterface([]);
+        $ext4 = $this->getStubForContextCollectorExtensionInterface([]);
+
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-        $collectorExtensionQueue->registerExtension('ext2', $this->getStubForContextCollectorExtensionInterface([]), 1);
-        $collectorExtensionQueue->registerExtension('ext1', $this->getStubForContextCollectorExtensionInterface([]), 4);
-        $collectorExtensionQueue->registerExtension('ext3', $this->getStubForContextCollectorExtensionInterface([]), 1);
-        $collectorExtensionQueue->registerExtension('ext4', $this->getStubForContextCollectorExtensionInterface([]));
+        $collectorExtensionQueue->registerExtension($ext1, 1);
+        $collectorExtensionQueue->registerExtension($ext2, 4);
+        $collectorExtensionQueue->registerExtension($ext3, 1);
+        $collectorExtensionQueue->registerExtension($ext4);
         $this->assertEquals(4, $collectorExtensionQueue->count());
 
-        $this->assertTrue($collectorExtensionQueue->remove('ext1'));
+        $this->assertTrue($collectorExtensionQueue->remove(get_class($ext1)));
         $this->assertEquals(3, $collectorExtensionQueue->count());
-        $this->assertFalse($collectorExtensionQueue->remove('ext1'));
+        $this->assertFalse($collectorExtensionQueue->remove(get_class($ext1)));
         $this->assertEquals(3, $collectorExtensionQueue->count());
-        $this->assertTrue($collectorExtensionQueue->remove('ext2'));
-        $this->assertTrue($collectorExtensionQueue->remove('ext3'));
+        $this->assertTrue($collectorExtensionQueue->remove(get_class($ext2)));
+        $this->assertTrue($collectorExtensionQueue->remove(get_class($ext3)));
         $this->assertEquals(1, $collectorExtensionQueue->count());
-        $this->assertTrue($collectorExtensionQueue->remove('ext4'));
+        $this->assertTrue($collectorExtensionQueue->remove(get_class($ext4)));
         $this->assertEquals(0, $collectorExtensionQueue->count());
     }
 
     public function testInsert()
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-        $collectorExtensionQueue->insert([
-            CollectorExtensionPriorityQueue::NAME_KEY => 'a1',
-            CollectorExtensionPriorityQueue::OBJ_KEY  => $this->getStubForContextCollectorExtensionInterface([])
-        ], 1);
+        $collectorExtensionQueue->insert($this->getStubForContextCollectorExtensionInterface([]), 1);
 
         $this->assertEquals(1, $collectorExtensionQueue->count());
     }
 
     /**
      * @dataProvider invalidDataPreparedForInsert
-     * @expectedException \InvalidArgumentException
+     * @expectedException \TypeError
      */
-    public function testInsertThrowsInvalidArgumentException($value)
+    public function testInsertThrowsTypeError($value)
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
         $collectorExtensionQueue->insert($value, 1);
     }
 
-    /**
-     * @dataProvider invalidObjectDataForInsert
-     * @expectedException \DreamCommerce\Component\BugTracker\Collector\Extension\InvalidCollectorExtensionTypeException
-     */
-    public function testInsertThrowsInvalidCollectorExtensionTypeException($name, $object)
-    {
-        $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-        $collectorExtensionQueue->insert([
-            CollectorExtensionPriorityQueue::NAME_KEY => $name, 
-            CollectorExtensionPriorityQueue::OBJ_KEY  => $object
-        ], 1);
-    }
 
     /**
      * @expectedException \DreamCommerce\Component\BugTracker\Collector\Extension\NotUniqueCollectorExtension
@@ -100,38 +95,27 @@ class CollectorExtensionPriorityQueueTest extends TestCase
     public function testInsertThrowsNotUniqueCollectorExtension()
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-//        $collectorExtensionQueue->insert([
-//            CollectorExtensionPriorityQueue::NAME_KEY => 'a1',
-//            CollectorExtensionPriorityQueue::OBJ_KEY  => $this->getStubForContextCollectorExtensionInterface([])
-//        ], 1);
-//
-//        $collectorExtensionQueue->insert([
-//            CollectorExtensionPriorityQueue::NAME_KEY => 'a1',
-//            CollectorExtensionPriorityQueue::OBJ_KEY  => $this->getStubForContextCollectorExtensionInterface([])
-//        ], 1);
-
-        $collectorExtensionQueue->insert($this->getStubForContextCollectorExtensionInterface([]), 1);
-
-        $collectorExtensionQueue->insert($this->getStubForContextCollectorExtensionInterface([]), 1);
+        $collectorExtensionQueue->insert($this->getStubForContextCollectorExtensionInterface([], '1'), 1);
+        $collectorExtensionQueue->insert($this->getStubForContextCollectorExtensionInterface([], '1'), 1);
     }
 
     public function testAdditionalContext()
     {
         $collectorExtensionQueue = new CollectorExtensionPriorityQueue();
-        $collectorExtensionQueue->registerExtension('ext1', $this->getStubForContextCollectorExtensionInterface([
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface([
             'a' => 'a',
             'b' => 'b'
         ]), 3);
         $this->assertEquals(['a' => 'a', 'b' => 'b'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
 
-        $collectorExtensionQueue->registerExtension('ext2', $this->getStubForContextCollectorExtensionInterface([
+        $collectorExtensionQueue->registerExtension($this->getStubForContextCollectorExtensionInterface([
             'c' => 'c',
             'a' => 'd'
         ]), 1);
 
         $this->assertEquals(['b' => 'b', 'c' => 'c', 'a' => 'd'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
         /** Ignore because stub implements only CollectorExtensionInterface */
-        $collectorExtensionQueue->registerExtension('ext3', $this->getStubForCollectorExtensionInterface());
+        $collectorExtensionQueue->registerExtension($this->getStubForCollectorExtensionInterface());
         $this->assertEquals(['b' => 'b', 'c' => 'c', 'a' => 'd'], $collectorExtensionQueue->getAdditionalContext(new \Exception()));
 
     }
@@ -139,21 +123,36 @@ class CollectorExtensionPriorityQueueTest extends TestCase
     /****************
      * STUBS
      ***************/
-    public function getDummyForCollectorExtensionInterface()
+    public function getDummyForCollectorExtensionInterface($name = null)
     {
+        if ($name === null) {
+            $name = ++self::$unique;
+        }
+
         return $this->getMockBuilder(CollectorExtensionInterface::class)
+            ->setMockClassName('ContextCollectorExtension_'.$name)
             ->getMock();
     }
 
-    public function getDummyForContextCollectorExtensionInterface()
+    public function getDummyForContextCollectorExtensionInterface($name = null)
     {
+        if ($name === null) {
+            $name = ++self::$unique;
+        }
+
         return $this->getMockBuilder(ContextCollectorExtensionInterface::class)
+            ->setMockClassName('ContextCollectorExtension_'.$name)
             ->getMock();
     }
 
-    public function getStubForContextCollectorExtensionInterface(array $return)
+    public function getStubForContextCollectorExtensionInterface(array $return, $name = null)
     {
+        if ($name === null) {
+            $name = ++self::$unique;
+        }
+
         $stub = $this->getMockBuilder(ContextCollectorExtensionInterface::class)
+            ->setMockClassName('ContextCollectorExtension_'.$name)
             ->setMethods(['getAdditionalContext'])
             ->getMock();
         
@@ -163,9 +162,14 @@ class CollectorExtensionPriorityQueueTest extends TestCase
         return $stub;
     }
 
-    public function getStubForCollectorExtensionInterface()
+    public function getStubForCollectorExtensionInterface($name=null)
     {
+        if ($name === null) {
+            $name = ++self::$unique;
+        }
+
         $stub = $this->getMockBuilder(CollectorExtensionInterface::class)
+            ->setMockClassName('ContextCollectorExtension_'.$name)
             ->setMethods(['getAdditionalContext'])
             ->getMock();
 
@@ -185,21 +189,11 @@ class CollectorExtensionPriorityQueueTest extends TestCase
     public function invalidDataPreparedForInsert()
     {
         return [
-            [ [CollectorExtensionPriorityQueue::NAME_KEY, CollectorExtensionPriorityQueue::OBJ_KEY] ],
-            [ ['str'] ],
-            [ [null] ],
-            [ [CollectorExtensionPriorityQueue::NAME_KEY => ''] ],
-            [ [CollectorExtensionPriorityQueue::OBJ_KEY => ''] ]
-        ];
-    }
-
-    public function invalidObjectDataForInsert()
-    {
-        return [
-            [ 'ext1', new \stdClass() ],
-            [ 'ext1', 'test' ],
-            [ 'ext1', 1 ],
-            [ 'ext1', [] ],
+            [ 'A' ],
+            [ new \stdClass() ],
+            [ null ],
+            [ [] ],
+            [ 1 ]
         ];
     }
 }

@@ -24,66 +24,60 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
 
     public function insert($object, $priority)
     {
-        parent::insert($object, $priority);
-
         if (!$this->isUnique($object, $priority)) {
             throw NotUniqueCollectorExtension::forExtension(get_class($object));
         }
+
+        parent::insert($object, $priority);
     }
 
     /**
      * Register new extension for bug tracker
      *
-     * @param string $name
      * @param CollectorExtensionInterface $extension
      * @param int $priority
      */
-    public function registerExtension(string $name, CollectorExtensionInterface $extension, int $priority = 0)
+    public function registerExtension(CollectorExtensionInterface $extension, int $priority = null)
     {
-        if ($priority < 0) {
+        if ($priority == null ) {
             $priority = $this->getMaxPriority() + 1;
         }
+
+        $name = get_class($extension);
         $this->remove($name);
 
-        $this->registeredExtensions[$name] = [
-            self::CLASS_KEY     => get_class($extension),
-            self::PRIORITY_KEY  => $priority
-        ];
-
+        $this->registeredExtensions[$name] = $priority;
         $this->insert($extension, $priority);
     }
 
     /**
      * Remove extension called $name from queue and return operation status
-     * @param $name
+     * @param $extensionClass
      * @return bool
      */
-    public function remove(string $name): bool
+    public function remove(string $extensionClass): bool
     {
-        if (!$this->has($name)) {
+        if (!$this->has($extensionClass)) {
             return false;
         }
 
-        $removingExtension = $this->registeredExtensions[$name];
-        unset($this->registeredExtensions[$name]);
+        unset($this->registeredExtensions[$extensionClass]);
 
         $tmpExtensions = [];
 
         $this->setExtractFlags(self::EXTR_BOTH);
         foreach ($this as $extension) {
-            if (!is_object($extension['data'])) {
-                continue;
-            }
-            if (get_class($extension['data']) !== $removingExtension[self::CLASS_KEY] ||
-                $extension['priority'] !== $removingExtension[self::PRIORITY_KEY]
+            if (!is_object($extension['data']) ||
+                (is_object($extension['data']) && get_class($extension['data']) === $extensionClass)
             ) {
                 continue;
             }
+
             $tmpExtensions[] = $extension;
         }
 
         foreach ($tmpExtensions as $extension) {
-            $this->insert($extension['data'], $extension['priority']);
+            $this->insert($extension['data'], $extension['priority'][0]);
         }
 
         return true;
@@ -97,7 +91,13 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
      */
     public function has($name): bool
     {
-        return (isset($this->registeredExtensions[$name]));
+        foreach (clone $this as $item) {
+            if (is_object($item) && get_class($item) === $name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -137,8 +137,8 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
         $queue->setExtractFlags(SplPriorityQueue::EXTR_PRIORITY);
         $maxPriority = 0;
         foreach ($queue as $priority) {
-            if ($priority > $maxPriority) {
-                $maxPriority = $priority;
+            if ($priority[0] > $maxPriority) {
+                $maxPriority = $priority[0];
             }
         }
 
@@ -154,22 +154,19 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
      */
     private function isUnique(CollectorExtensionInterface $object, int $priority): bool
     {
+
         $queue = clone $this;
         $queue->setExtractFlags(self::EXTR_BOTH);
 
-        foreach ($queue as $extension) {
-            var_dump(get_class($object));
-            var_dump(get_class($extension['data']));
-            var_dump($priority);
-            var_dump($extension['priority']);
-            echo PHP_EOL;
-            if (is_object($extension['data']) && get_class($extension['data']) === get_class($object) &&
-                (int)$extension['priority'] === (int)$priority
-            ) {
+        foreach ($queue as $item) {
+            $queuedObj      = $item['data'];
+            $queuedPriority = (int)$item['priority'][0];
+
+            if (is_object($queuedObj) && get_class($queuedObj) === get_class($object) && $queuedPriority === $priority) {
                 return false;
             }
         }
-
         return true;
     }
 }
+
