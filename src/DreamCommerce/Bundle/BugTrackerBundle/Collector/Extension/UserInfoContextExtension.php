@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class UserInfoContextExtension implements ContextCollectorExtensionInterface
 {
+
     /**
      * @var TokenStorage
      */
