@@ -320,7 +320,7 @@ For details look to the interface file
     <?php
     namespace AppBundle\BugTracker\Extension;
     
-    use DreamCommerce\Component\BugTracker\CollectorExtension\ContextCollectorExtensionInterface;
+    use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
     use Symfony\Component\HttpKernel\Exception\HttpException;
     use Symfony\Component\HttpFoundation\RequestStack;
     
@@ -371,7 +371,7 @@ Now whenever HttpException will be threw we will see our additional information 
 If you want you can use our embeded extensions:
 * **ClientIpContextExtension** - append to log client ip
 ```xml
-<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\ClientIpContextExtension">
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\ClientIpContextExtension">
     <argument type="service" id="request_stack" />
     <tag name="dream_commerce_bug_tracker.collector_extension" />
 </service>
@@ -379,7 +379,7 @@ If you want you can use our embeded extensions:
 
 * **QueryDataContextExtension** - append to log parameters stored in $_GET variable
 ```xml
-<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\QueryDataContextExtension">
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\QueryDataContextExtension">
     <argument type="service" id="request_stack" />
     <tag name="dream_commerce_bug_tracker.collector_extension" />
 </service>
@@ -387,7 +387,7 @@ If you want you can use our embeded extensions:
 
 * **RequestDataContextExtension** - append to log parameters stored in $_POST variable
 ```xml
-<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\RequestDataContextExtension">
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\RequestDataContextExtension">
     <argument type="service" id="request_stack" />
     <tag name="dream_commerce_bug_tracker.collector_extension" />
 </service>
@@ -395,7 +395,7 @@ If you want you can use our embeded extensions:
 
 * **UserInfoContextExtension** - append to log information from security component about current user(login, role, credentials etc.)
 ```xml
-<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\CollectorExtension\UserInfoContextExtension">
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\UserInfoContextExtension">
     <argument type="service" id="security.token_storage" />
     <tag name="dream_commerce_bug_tracker.collector_extension" />
 </service>
