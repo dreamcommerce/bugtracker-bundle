@@ -3,6 +3,8 @@ namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
 
 use PHPUnit\Framework\TestCase;
+use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
+
 
 class CollectorExtensionPriorityQueueTest extends TestCase
 {
@@ -145,21 +147,19 @@ class CollectorExtensionPriorityQueueTest extends TestCase
             ->getMock();
     }
 
-    public function getStubForContextCollectorExtensionInterface(array $return, $name = null)
+
+
+    public function getStubForContextCollectorExtensionInterface(array $return, string $name = null)
     {
         if ($name === null) {
             $name = ++self::$unique;
         }
+        $className = 'ContextCollectorExtension'.$name;
+        if (!class_exists($className)) {
+            eval($this->getCollectorExtensionInterfaceClassDeclaration($className));
+        }
 
-        $stub = $this->getMockBuilder(ContextCollectorExtensionInterface::class)
-            ->setMockClassName('ContextCollectorExtension_'.$name)
-            ->setMethods(['getAdditionalContext'])
-            ->getMock();
-        
-        $stub->method('getAdditionalContext')
-            ->willReturn($return);
-
-        return $stub;
+        return new $className($return);
     }
 
     public function getStubForCollectorExtensionInterface($name=null)
@@ -195,5 +195,23 @@ class CollectorExtensionPriorityQueueTest extends TestCase
             [ [] ],
             [ 1 ]
         ];
+    }
+
+    private function getCollectorExtensionInterfaceClassDeclaration($className)
+    {
+        return 'class '.$className.' implements \DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface
+            {
+                private $return;
+    
+                public function __construct(array $return)
+            {
+                $this->return = $return;
+            }
+    
+                public function getAdditionalContext(\Throwable $throwable): array
+            {
+                return $this->return;
+            }
+        }';
     }
 }
