@@ -22,7 +22,7 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Webmozart\Assert\Assert;
 
-abstract class BaseCollector implements BaseCollectorInterface, CollectorExtendable
+abstract class BaseCollector implements BaseCollectorInterface
 {
     use ArrayableTrait;
 
