@@ -306,3 +306,102 @@ dream_commerce_bug_tracker:
         }
     }
 ```
+
+
+## Extending
+Bug Tracker can inject additional context to exceptions from other packages without modifying them. These context is visible in logs and it can help diagnose errors.
+It can be realise by simple service implements suitable interface with special tag.
+For more information look for below examples.
+
+First you need to create service that implements **ContextCollectorExtensionInterface** interface
+Class that implement ContextCollectorExtensionInterface need one method called **getAdditionalContext**
+For details look to the interface file
+```php
+    <?php
+    namespace AppBundle\BugTracker\Extension;
+    
+    use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
+    use Symfony\Component\HttpKernel\Exception\HttpException;
+    use Symfony\Component\HttpFoundation\RequestStack;
+    
+    class ContextCollectorExtension implements ContextCollectorExtensionInterface
+    {
+        /**
+         * @var RequestStack 
+         */
+        private $requestStack;
+        
+        public function __construct(RequestStack $requestStack) {
+            $this->requestStack = $requestStack;
+        }
+        
+        public function getAdditionalContext(\Throwable $throwable): array
+        {
+            if ($throwable instanceof HttpException) {
+                $request = $this->requestStack->getMasterRequest();
+                
+                if ($request === null) {
+                    return [];
+                }
+                
+                return [
+                    'query'     => serialize($request->query->all()),
+                    'client_ip' => $request->server->get('REMOTE_ADDR')
+                ];
+            }
+            
+            return [];
+        }
+    }
+```
+
+Next step is create our service definition with tag **dream_commerce_bug_tracker.collector_extension**
+```xml
+    ...
+    <service id="app.bug_tracker_extension" class="AppBundle\BugTracker\Extension\ContextCollectorExtension">
+        <argument type="service" id="request_stack" />
+
+        <tag name="dream_commerce_bug_tracker.collector_extension" />
+    </service>
+    ...
+```
+
+Now whenever HttpException will be threw we will see our additional information in log files.
+
+If you want you can use our embeded extensions:
+* **ClientIpContextExtension** - append to log client ip
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\ClientIpContextExtension">
+    <argument type="service" id="request_stack" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+* **QueryDataContextExtension** - append to log parameters stored in $_GET variable
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\QueryDataContextExtension">
+    <argument type="service" id="request_stack" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+* **RequestDataContextExtension** - append to log parameters stored in $_POST variable
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\RequestDataContextExtension">
+    <argument type="service" id="request_stack" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+* **UserInfoContextExtension** - append to log information from security component about current user(login, role, credentials etc.)
+```xml
+<service id="app.bug_tracker_client_ip_extension" class="DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension\UserInfoContextExtension">
+    <argument type="service" id="security.token_storage" />
+    <tag name="dream_commerce_bug_tracker.collector_extension" />
+</service>
+```
+
+## Authors
+
+* Michał Korus <michal.korus@dreamcommerce.com>
+* Daniel Hornik <daniel.1302@gmail.com>

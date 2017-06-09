@@ -25,7 +25,10 @@ class AppKernel extends Kernel
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new DreamCommerce\Bundle\CommonBundle\DreamCommerceCommonBundle(),
             new DreamCommerce\Bundle\BugTrackerBundle\DreamCommerceBugTrackerBundle(),
-            new AppBundle\AppBundle(),
+            new \Sylius\Bundle\ResourceBundle\SyliusResourceBundle(),
+            new \JMS\SerializerBundle\JMSSerializerBundle(),
+            new \FOS\RestBundle\FOSRestBundle(),
+            new AppBundle\AppBundle()
         );
     }
 

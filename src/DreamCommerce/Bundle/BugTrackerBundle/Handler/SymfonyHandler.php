@@ -23,7 +23,7 @@ final class SymfonyHandler
 
     public function __construct(CollectorInterface $collector)
     {
-        $this->_collector = $collector;
+        $this->_collector       = $collector;
     }
 
     /**

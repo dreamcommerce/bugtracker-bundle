@@ -11,6 +11,8 @@
 namespace DreamCommerce\Fixtures\BugTracker\Collector;
 
 use DreamCommerce\Component\BugTracker\Collector\CollectorInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionChainInterface;
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 

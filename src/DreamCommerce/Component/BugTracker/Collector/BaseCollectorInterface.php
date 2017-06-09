@@ -10,11 +10,12 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtendable;
 use DreamCommerce\Component\Common\Model\ArrayableInterface;
 use InvalidArgumentException;
 use Throwable;
 
-interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface, ArrayableInterface
+interface BaseCollectorInterface extends CollectorInterface, TokenAwareInterface, ArrayableInterface, CollectorExtendable
 {
     /**
      * @return array

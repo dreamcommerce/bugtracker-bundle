@@ -10,6 +10,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
+use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
 use InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Throwable;

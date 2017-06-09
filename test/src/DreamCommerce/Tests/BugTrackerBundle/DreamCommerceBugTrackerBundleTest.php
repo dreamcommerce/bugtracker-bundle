@@ -20,6 +20,7 @@ class DreamCommerceBugTrackerBundleTest extends WebTestCase
     {
         /** @var ContainerInterface $container */
         $container = self::createClient()->getContainer();
+
         $services = array(
             'bug_tracker',
             DreamCommerceBugTrackerExtension::ALIAS . '.collector_queue',
