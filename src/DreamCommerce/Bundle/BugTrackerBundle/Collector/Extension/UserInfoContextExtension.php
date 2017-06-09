@@ -1,6 +1,14 @@
 <?php
-namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
+namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
 use DreamCommerce\Component\BugTracker\Collector\Extension\ContextCollectorExtensionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -25,11 +33,11 @@ class UserInfoContextExtension implements ContextCollectorExtensionInterface
         $token = $this->tokenStorage->getToken();
 
         if ($token === null) {
-            return [];
+            return array();
         }
 
-        return [
+        return array(
             'user_info' => $token->__toString()
-        ];
+        );
     }
 }

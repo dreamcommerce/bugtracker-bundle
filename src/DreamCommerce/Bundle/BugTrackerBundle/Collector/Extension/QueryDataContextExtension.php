@@ -1,6 +1,14 @@
 <?php
-namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
+namespace DreamCommerce\Bundle\BugTrackerBundle\Collector\Extension;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,11 +20,11 @@ class QueryDataContextExtension extends RequestStackBasedExtension
         $request = $this->requestStack->getMasterRequest();
 
         if ($request === null) {
-            return [];
+            return array();
         }
 
-        return [
+        return array(
             'query' => $request->query->all()
-        ];
+        );
     }
 }

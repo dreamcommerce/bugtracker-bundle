@@ -400,3 +400,8 @@ If you want you can use our embeded extensions:
     <tag name="dream_commerce_bug_tracker.collector_extension" />
 </service>
 ```
+
+## Authors
+
+* Michał Korus <michal.korus@dreamcommerce.com>
+* Daniel Hornik <daniel.hornik@dreamcommerce.com>

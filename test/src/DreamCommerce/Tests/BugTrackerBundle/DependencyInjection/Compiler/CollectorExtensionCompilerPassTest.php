@@ -1,4 +1,13 @@
 <?php
+
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Tests\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler\CollectorExtensionCompilerPass;
@@ -18,7 +27,8 @@ class CollectorExtensionCompilerPassTest extends AbstractCompilerPassTestCase
         $this->registerService(DreamCommerceBugTrackerExtension::ALIAS. '.collector_extension_chain', CollectorExtensionPriorityQueue::class);
     }
 
-    public function testCompiling() {
+    public function testCompiling()
+    {
         $this->assertContainerBuilderHasService(DreamCommerceBugTrackerExtension::ALIAS . '.collector_extension_chain');
         $this->registerService('collector_extansion_example1', ContextCollectorExtensionInterface::class)
             ->addTag(CollectorExtensionQueueInterface::TAG_NAME);

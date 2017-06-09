@@ -1,8 +1,17 @@
 <?php
+
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Component\BugTracker\Collector\Extension;
 
-use SplPriorityQueue;
 use DreamCommerce\Component\Common\Model\TypedSplPriorityQueue;
+use SplPriorityQueue;
 
 class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements CollectorExtensionQueueInterface
 {
@@ -20,7 +29,7 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
     /**
      * @var array
      */
-    private $registeredExtensions = [];
+    private $registeredExtensions = array();
 
     public function insert($object, $priority)
     {
@@ -39,7 +48,7 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
      */
     public function registerExtension(CollectorExtensionInterface $extension, int $priority = null)
     {
-        if ($priority == null ) {
+        if ($priority == null) {
             $priority = $this->getMaxPriority() + 1;
         }
 
@@ -63,7 +72,7 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
 
         unset($this->registeredExtensions[$extensionClass]);
 
-        $tmpExtensions = [];
+        $tmpExtensions = array();
 
         $this->setExtractFlags(self::EXTR_BOTH);
         foreach ($this as $extension) {
@@ -108,7 +117,7 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
      */
     public function getAdditionalContext(\Throwable $throwable): array
     {
-        $additionalContext = [];
+        $additionalContext = array();
 
         /** @var ContextCollectorExtensionInterface $extensionObj */
         foreach (clone $this as $extensionObj) {
@@ -154,7 +163,6 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
      */
     private function isUnique(CollectorExtensionInterface $object, int $priority): bool
     {
-
         $queue = clone $this;
         $queue->setExtractFlags(self::EXTR_BOTH);
 
@@ -169,4 +177,3 @@ class CollectorExtensionPriorityQueue extends TypedSplPriorityQueue implements C
         return true;
     }
 }
-

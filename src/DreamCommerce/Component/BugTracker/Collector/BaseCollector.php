@@ -129,7 +129,7 @@ abstract class BaseCollector implements BaseCollectorInterface, CollectorExtenda
         $level = strtolower($level);
         Assert::oneOf($level, BugHandler::getSupportedLogLevels());
 
-        $additionalContext = ($this->_extensionChain) ? $this->_extensionChain->getAdditionalContext($exception) : [];
+        $additionalContext = ($this->_extensionChain) ? $this->_extensionChain->getAdditionalContext($exception) : array();
 
         $context = array_merge($context, $this->getContext($exception), $additionalContext);
 

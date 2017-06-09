@@ -1,10 +1,19 @@
 <?php
+
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Bundle\BugTrackerBundle\DependencyInjection\Compiler;
 
 use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionChainInterface;
 use DreamCommerce\Component\BugTracker\Collector\Extension\CollectorExtensionQueueInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 class CollectorExtensionCompilerPass implements CompilerPassInterface
@@ -22,10 +31,10 @@ class CollectorExtensionCompilerPass implements CompilerPassInterface
 
         foreach ($taggedServices as $id => $tags) {
             $priority = (isset($tags[0]['priority'])) ? (int)$tags[0]['priority'] : CollectorExtensionQueueInterface::DEFAULT_PRIORITY;
-            $chainDefinition->addMethodCall('registerExtension',  [
+            $chainDefinition->addMethodCall('registerExtension',  array(
                 new Reference($id),
                 $priority
-            ]);
+            ));
         }
     }
 }

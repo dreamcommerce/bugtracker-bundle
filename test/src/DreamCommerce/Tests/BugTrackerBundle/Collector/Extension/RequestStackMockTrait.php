@@ -1,10 +1,19 @@
 <?php
+
+/*
+ * (c) 2017 DreamCommerce
+ *
+ * @package DreamCommerce\Component\BugTracker
+ * @author Michał Korus <michal.korus@dreamcommerce.com>
+ * @link https://www.dreamcommerce.com
+ */
+
 namespace DreamCommerce\Tests\BugTrackerBundle\Collector\Extension;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-trait RequestStackMock
+trait RequestStackMockTrait
 {
 
     /** @param array           $query      The GET parameters
@@ -24,9 +33,9 @@ trait RequestStackMock
         $request = new Request(
             $this->getQueryMockData(),
             $this->getRequestMockData(),
-            [], //Attributes
-            [], //Cookies
-            [], //Files
+            array(), //Attributes
+            array(), //Cookies
+            array(), //Files
             $this->getServerMockData()
         );
 
@@ -44,13 +53,13 @@ trait RequestStackMock
      */
     public function getQueryMockData(): array
     {
-        return [
+        return array(
             'query_param1' => 'value_for_query_param1',
             'query_param2' => 'value_for_query_param2',
             'query_param3' => 'value_for_query_param3',
             'query_param4' => 'value_for_query_param4',
             'query_param5' => 'value_for_query_param5',
-        ];
+        );
     }
 
     /**
@@ -60,13 +69,13 @@ trait RequestStackMock
      */
     public function getRequestMockData(): array
     {
-        return [
+        return array(
             'request_param1' => 'value_for_request_param1',
             'request_param2' => 'value_for_request_param2',
             'request_param3' => 'value_for_request_param3',
             'request_param4' => 'value_for_request_param4',
             'request_param5' => 'value_for_request_param5'
-        ];
+        );
     }
 
     /**
@@ -76,8 +85,8 @@ trait RequestStackMock
      */
     public function getServerMockData(): array
     {
-        return [
+        return array(
             'REMOTE_ADDR' => '127.0.0.1'
-        ];
+        );
     }
 }
