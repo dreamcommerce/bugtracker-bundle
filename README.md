@@ -404,4 +404,4 @@ If you want you can use our embeded extensions:
 ## Authors
 
 * Michał Korus <michal.korus@dreamcommerce.com>
-* Daniel Hornik <daniel.hornik@dreamcommerce.com>
+* Daniel Hornik <daniel.1302@gmail.com>
