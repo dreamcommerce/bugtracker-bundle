@@ -1,6 +1,13 @@
 # DreamCommerce BugTracker Bundle
 
+[![License](https://img.shields.io/packagist/l/dreamcommerce/bugtracker-bundle.svg)](https://packagist.org/packages/dreamcommerce/bugtracker-bundle)
+[![Version](https://img.shields.io/packagist/vpre/dreamcommerce/bugtracker-bundle.svg)](https://packagist.org/packages/dreamcommerce/bugtracker-bundle)
+[![Build status on Linux](https://img.shields.io/travis/dreamcommerce/bugtracker-bundle/master.svg)](http://travis-ci.org/dreamcommerce/bugtracker-bundle)
+
 ## Changelog
+
+``1.4.0``
+  - added support for extending context for bugtracker collectors
 
 ``1.3.4``
   - bump minimum Symfony version to 2.8
