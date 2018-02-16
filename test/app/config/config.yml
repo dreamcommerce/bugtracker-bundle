@@ -32,3 +32,18 @@ doctrine:
         entity_managers:
             default:
                 auto_mapping: true
+
+dream_commerce_bug_tracker:
+    configuration:
+        jira:
+            entry_point: "https://jira.example.com"
+            username: "login"
+            password: "password"
+            project: "PROJECT_SYMBOL"
+
+    collectors:
+        psr3:
+            type: psr3
+
+        jira:
+            type: jira

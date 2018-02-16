@@ -25,7 +25,9 @@ class DreamCommerceBugTrackerBundleTest extends WebTestCase
             'bug_tracker',
             DreamCommerceBugTrackerExtension::ALIAS . '.collector_queue',
             DreamCommerceBugTrackerExtension::ALIAS . '.symfony_handler',
-            DreamCommerceBugTrackerExtension::ALIAS . '.token_generator'
+            DreamCommerceBugTrackerExtension::ALIAS . '.token_generator',
+            DreamCommerceBugTrackerExtension::ALIAS . '.jira_collector',
+            DreamCommerceBugTrackerExtension::ALIAS . '.psr3_collector',
         );
 
         foreach ($services as $id) {

@@ -133,7 +133,6 @@ final class DreamCommerceBugTrackerExtension extends Extension
         }
 
         $container->setParameter($this->getAlias().'.collectors', $config['collectors']);
-        $container->addCompilerPass(new CollectorCompilerPass());
     }
 
     public function getAlias()
