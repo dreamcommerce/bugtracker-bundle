@@ -6,6 +6,9 @@
 
 ## Changelog
 
+``1.5.0``
+  - bump minimum PHP version to 7.1
+
 ``1.4.0``
   - added support for extending context for bugtracker collectors
 
