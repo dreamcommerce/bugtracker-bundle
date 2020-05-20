@@ -6,6 +6,10 @@
 
 ## Changelog
 
+``1.6.0``
+  - bump minimum PHP version to 7.2
+  - bump minimum Symfony version to 3.4.35 or 4.4
+
 ``1.5.0``
   - bump minimum PHP version to 7.1
 
