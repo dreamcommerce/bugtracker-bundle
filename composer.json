@@ -4,7 +4,7 @@
   "description": "DreamCommerce Bugtracker Bundle",
   "license": "MIT",
   "require": {
-    "php": "^7.1",
+    "php": "^7.2",
     "psr/log": "^1.0",
     "psr/http-message": "^1.0",
     "symfony/polyfill-php70": "^1.0",
