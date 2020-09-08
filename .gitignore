@@ -12,9 +12,8 @@
 /coveralls-upload.json
 /phpunit.xml
 /vendor
-/bin
 .php_cs.cache
-/docker/docker-compose.yml
+/.docker/.env
 /test/app/cache
 /test/app/logs
 /test/app/config/parameters.yml

@@ -1,30 +1,27 @@
 <?php
 
+$year = date('Y');
 $header = <<<EOF
-
-(c) 2017 DreamCommerce
+(c) 2017-$year DreamCommerce
 
 @package DreamCommerce\Component\BugTracker
 @author Michał Korus <michal.korus@dreamcommerce.com>
 @link https://www.dreamcommerce.com
-
 EOF;
 
-Symfony\CS\Fixer\Contrib\HeaderCommentFixer::setHeader($header);
-
-$finder = Symfony\CS\Finder\DefaultFinder::create()
-    ->in(array(__DIR__))
+$finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__)
 ;
 
-return Symfony\CS\Config::create()
-    ->level(Symfony\CS\FixerInterface::PSR2_LEVEL)
-    ->fixers(array(
-        'header_comment',
-        'newline_after_open_tag',
-        'ordered_use',
-        'long_array_syntax',
-        'php_unit_construct',
+return \PhpCsFixer\Config::create()
+    ->setRules(array(
+        '@PSR2' => true,
+        'header_comment' => [
+            'commentType' => 'PHPDoc',
+            'header' => $header,
+            'location' => 'after_open',
+            'separate' => 'both',
+        ]
     ))
-    ->setUsingCache(true)
-    ->finder($finder)
+    ->setFinder($finder)
 ;

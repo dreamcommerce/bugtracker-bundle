@@ -1,0 +1,16 @@
+version: '3'
+services:
+    bugtracker-php:
+        hostname: bugtracker-php
+        container_name: bugtracker-php-$PHP_VERSION
+        build: ./_images/bugtracker-php-$PHP_VERSION
+        restart: on-failure
+        working_dir: /docker/app
+        volumes:
+            - ../:/docker/app
+            - ./_conf/bugtracker-php/php/php.ini:/usr/local/etc/php/php.ini:ro
+            - ~/.composer:/docker/.composer
+        ports:
+            - ${XDEBUG_PORT}:9000
+        environment:
+            XDEBUG_CONFIG: idekey=${XDEBUG_IDEKEY} remote_host=${XDEBUG_IP}

@@ -1,7 +1,7 @@
 <?php
 
-/*
- * (c) 2017 DreamCommerce
+/**
+ * (c) 2017-2020 DreamCommerce
  *
  * @package DreamCommerce\Component\BugTracker
  * @author Michał Korus <michal.korus@dreamcommerce.com>
@@ -51,7 +51,8 @@ class QueueCollector extends BaseCollector implements QueueCollectorInterface
                 'collector' => $collector,
                 'level' => $level,
             ),
-            $priority);
+            $priority
+        );
     }
 
     /**

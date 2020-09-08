@@ -1,7 +1,7 @@
 <?php
 
-/*
- * (c) 2017 DreamCommerce
+/**
+ * (c) 2017-2020 DreamCommerce
  *
  * @package DreamCommerce\Component\BugTracker
  * @author Michał Korus <michal.korus@dreamcommerce.com>
@@ -31,7 +31,7 @@ class CollectorExtensionCompilerPass implements CompilerPassInterface
 
         foreach ($taggedServices as $id => $tags) {
             $priority = (isset($tags[0]['priority'])) ? (int)$tags[0]['priority'] : CollectorExtensionQueueInterface::DEFAULT_PRIORITY;
-            $chainDefinition->addMethodCall('registerExtension',  array(
+            $chainDefinition->addMethodCall('registerExtension', array(
                 new Reference($id),
                 $priority
             ));

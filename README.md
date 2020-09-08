@@ -6,6 +6,9 @@
 
 ## Changelog
 
+``1.7.0``
+  - bump minimum Symfony version to 4.4.13
+
 ``1.6.0``
   - bump minimum PHP version to 7.2
   - bump minimum Symfony version to 3.4.35 or 4.4
@@ -85,7 +88,7 @@ $ composer require doctrine/orm
 $ composer require swiftmailer/swiftmailer
 ```
 
-## Installation (In Symfony 3 Application)
+## Installation (In Symfony 4 Application)
 
 ### Enable the bundle
 
