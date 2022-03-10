@@ -10,7 +10,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Collector;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 use DreamCommerce\Component\BugTracker\Repository\ErrorRepositoryInterface;
 use DreamCommerce\Component\Common\Exception\NotDefinedException;

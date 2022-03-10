@@ -10,7 +10,7 @@
 
 namespace DreamCommerce\Component\BugTracker\Repository;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use DreamCommerce\Component\BugTracker\Model\ErrorInterface;
 
 interface ErrorRepositoryInterface extends ObjectRepository

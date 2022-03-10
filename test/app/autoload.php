@@ -8,7 +8,7 @@
  * @link https://www.dreamcommerce.com
  */
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Annotations\AnnotationRegistry;
 
 $loader = require __DIR__.'/../../vendor/autoload.php';
 
