@@ -9,7 +9,7 @@
     "psr/http-message": "^1.0",
     "symfony/debug": "^4.4.13",
     "webmozart/assert": "^1.1.0",
-    "dreamcommerce/common-bundle": "^1.0"
+    "dreamcommerce/common-bundle": "dev-bump-version"
   },
   "require-dev": {
     "symfony/symfony": "^4.4.13",
@@ -58,7 +58,6 @@
     ]
   },
   "minimum-stability": "dev",
-  "prefer-stable": true,
   "authors": [
     {
       "name": "Michał Korus",
